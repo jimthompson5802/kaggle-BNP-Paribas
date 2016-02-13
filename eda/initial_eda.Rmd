@@ -1,0 +1,69 @@
+---
+title: "Initial EDA for BNP Paribas Cardif Competition"
+author: "Jim Thompson"
+date: "11Feb2016"
+output: html_document
+---
+
+```{r setup}
+library(tidyr)
+library(knitr)
+library(Hmisc)
+library(ggplot2)
+library(plyr)
+
+library(data.table)
+
+#opts_chunk$set(root.dir = "..")
+cat(getwd())
+```
+
+
+Load up the data
+```{r}
+
+
+data.dir <- "../data"
+
+load(file=paste0(data.dir,"/train_calib_test.RData"))
+
+# delete the calibration and test data sets
+rm(calib.raw,test.raw)
+
+# combine only the training data
+train.raw <- rbind(train1.raw,train2.raw)
+train.raw <- data.frame(train.raw[sample(nrow(train.raw),0.9*nrow(train.raw))],stringsAsFactors = FALSE)
+```
+
+Determine attribute types found in data set
+```{r}
+# extract only candidate feture names
+candidate.features <- setdiff(names(train.raw),c("ID","target"))
+data.type <- sapply(candidate.features,function(x){class(train.raw[,x])})
+table(data.type)
+
+print(data.type)
+```
+
+Initial summary look at the variables
+```{r}
+cat("Number of observations:",nrow(train.raw),", number complete obserations:",nrow(na.omit(train.raw)),
+    ", pct complete:",100*nrow(na.omit(train.raw))/nrow(train.raw),"\n")
+
+# summary stats
+cat("distribution of target:\n")
+table(train.raw$target)/nrow(train.raw)
+summary(train.raw[,candidate.features])
+```
+
+Density plot
+```{r fig.height=34,fig.width=8}
+# convert to long format 
+predictor.vars <- names(data.type[data.type=="numeric" | data.type=="integer"])
+df <- gather(train.raw[,c(predictor.vars,"ID","target")], feature, value, one_of(predictor.vars))
+
+ggplot(df) + 
+    geom_density(aes(x=value, colour=factor(target))) +
+    facet_wrap(~feature,ncol=4,scales="free") 
+```
+
