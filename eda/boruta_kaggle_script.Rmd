@@ -87,7 +87,7 @@ plot(bor.results)
 Detailed results for each explanatory results
 ```{r, echo=FALSE}
 cat("\n\nAttribute importance details:\n")
-arrange(attStats(bor.results),desc(medianImp))
+arrange(cbind(attr=rownames(attStats(bor.results)),attStats(bor.results)),desc(medianImp))
 ```
 
 
