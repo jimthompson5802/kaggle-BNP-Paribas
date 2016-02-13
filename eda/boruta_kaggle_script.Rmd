@@ -79,7 +79,11 @@ cat("\n\nAttributes determined to be relevant:\n")
 getSelectedAttributes(bor.results)
 ```
 
-Plot of variable importance
+The following plot shows the relevance of each feature.  Green color indicate
+the feature has been deemed relevance to the **target** attribute.  Red color
+indicates the attribute is not relevant.  Yellow attributes are tentative, may or 
+may not be relevant.  Increasing maxRuns parameter can help further refine
+the list of tentative attributes as relevant or not.
 ```{r echo=FALSE,fig.width=9,fig.height=7}
 plot(bor.results)
 ```
@@ -87,6 +91,7 @@ plot(bor.results)
 Detailed results for each explanatory results
 ```{r, echo=FALSE}
 cat("\n\nAttribute importance details:\n")
+options(width=125)
 arrange(cbind(attr=rownames(attStats(bor.results)),attStats(bor.results)),desc(medianImp))
 ```
 
