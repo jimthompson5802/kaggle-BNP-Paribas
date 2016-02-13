@@ -1,0 +1,62 @@
+
+```{r}
+###
+#  profile numeric data
+###
+
+library(plyr)
+library(ggplot2)
+library(caret)
+library(moments)
+
+
+DATA.DIR <- "../data"
+
+load(paste0(DATA.DIR,"/sample_data_for_eda.RData"))
+
+# combine integer and numeric attributes
+number.attr <- c(attr.by.data.types[["numeric"]],attr.by.data.types[["integer"]])
+
+# determine percent of missing values for each number attributes
+number.missing <- apply(sample.df[number.attr],2,function(x){sum(is.na(x))})
+pct.missing <- 100 * number.missing/nrow(sample.df)
+qplot(pct.missing,geom = "histogram",binwidth=1)
+number.exclude.too.many.na <- names(pct.missing)[pct.missing>50]
+
+# update list of eligible attributes
+number.attr <- setdiff(number.attr,number.exclude.too.many.na)
+
+# determine if any constant observations
+sd.value <- apply(sample.df[number.attr],2,sd,na.rm=TRUE)
+number.exclude.zero.sd <- number.attr[sd.value==0]
+number.attr <- setdiff(number.attr,number.exclude.zero.sd)
+
+# determine skewness
+skew.value <- apply(sample.df[number.attr],2,skewness,na.rm=TRUE)
+qplot(skew.value,geom = "histogram")
+
+# perform anova
+# first center and scale all predictors, with median imputation
+pp <- preProcess(sample.df[number.attr],method=c("center","scale","medianImpute"))
+pp.sample.df <- predict(pp,sample.df[number.attr])
+
+p.value <- sapply(names(pp.sample.df),function(x,df,target){
+    p.value <- anovaScores(df[,x],target)
+},pp.sample.df,sample.df$target)
+
+hist(p.value)
+
+# determine cut-off value based on Bonferroni criteria
+bonferroni.cut.off <- 0.05/length(number.attr)
+
+number.exclude.by.anova <- number.attr[p.value > bonferroni.cut.off]
+number.attr <- setdiff(number.attr,number.exclude.by.anova)
+
+# save results 
+save(number.attr,
+     number.exclude.too.many.na,
+     number.exclude.zero.sd,
+     number.exclude.by.anova,
+     file=paste0(DATA.DIR,"/number_attributes.RData"))
+```
+
