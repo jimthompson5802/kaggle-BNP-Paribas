@@ -1,0 +1,56 @@
+```{r ,cache=TRUE}
+###
+#  initial feature selection based on Boruta package
+###
+
+# test adding trees to rf
+
+library(caret)
+library(Boruta)
+library(dplyr)
+library(pROC)
+
+DATA.DIR <- "../data"
+
+# retrive sample data for analysis
+load(paste0(DATA.DIR,"/sample_data_for_eda.RData"))
+
+# retrieve list of attributes for analysis
+load(paste0(DATA.DIR,"/char_attributes.RData"))
+load(paste0(DATA.DIR,"/number_attributes.RData"))
+
+set.seed(123)
+sample.df <- sample.df[sample(nrow(sample.df),0.2*nrow(sample.df)),]
+
+# address any na in numeric data
+pp <- preProcess(sample.df[number.attr],method=c("center","scale","medianImpute"))
+pp.sample.df <- predict(pp,sample.df[number.attr])
+
+# create data set
+df <- cbind(pp.sample.df,sample.df[char.attr])
+
+set.seed(13)
+bor.results <- Boruta(df,factor(sample.df$target),
+                   maxRuns=50,
+                   doTrace=2)
+
+save(bor.results,file=paste0(DATA.DIR,"/boruta_feature_analysis.RData"))
+```
+
+
+# print Boruta results
+```{r}
+cat("\nsummary of Boruta run:\n")
+print(bor.results)
+
+
+cat("\n\nAttribute importance details:\n")
+attStats(bor.results)
+```
+
+
+Plot of variable importance
+```{r}
+plot(bor.results)
+```
+
