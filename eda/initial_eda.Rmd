@@ -32,14 +32,14 @@ rm(calib.raw,test.raw)
 
 # combine only the training data
 train.raw <- rbind(train0.raw,train1.raw)
-train.raw <- data.frame(train.raw[sample(nrow(train.raw),0.9*nrow(train.raw))],stringsAsFactors = FALSE)
+train.raw <- train.raw[sample(nrow(train.raw),0.9*nrow(train.raw))]
 ```
 
 Determine attribute types found in data set
 ```{r}
 # extract only candidate feture names
 candidate.features <- setdiff(names(train.raw),c("ID","target"))
-data.type <- sapply(candidate.features,function(x){class(train.raw[,x])})
+data.type <- sapply(candidate.features,function(x){class(train.raw[[x]])})
 table(data.type)
 
 print(data.type)
@@ -60,7 +60,7 @@ Density plot
 ```{r fig.height=34,fig.width=8}
 # convert to long format 
 predictor.vars <- names(data.type[data.type=="numeric" | data.type=="integer"])
-df <- gather(train.raw[,c(predictor.vars,"ID","target")], feature, value, one_of(predictor.vars))
+df <- gather(train.raw[,c(predictor.vars,"ID","target"),with=FALSE], feature, value, one_of(predictor.vars))
 
 ggplot(df) + 
     geom_density(aes(x=value, colour=factor(target))) +
