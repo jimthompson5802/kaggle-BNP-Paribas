@@ -43,7 +43,7 @@ PREPARE.MODEL.DATA <- prepGBMModelData
 MODEL.COMMENT <- ""
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.2
+FRACTION.TRAIN.DATA <- 0.3
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
@@ -57,8 +57,8 @@ train.df <- train.df[idx,]
 # prepare data for training
 train.data <- PREPARE.MODEL.DATA(train.df)
 
-# library(doMC)
-# registerDoMC(cores = 5)
+library(doMC)
+registerDoMC(cores = 5)
 
 # library(doSNOW)
 # cl <- makeCluster(5,type="SOCK")
@@ -90,7 +90,7 @@ score
 modelPerf.df <- read.delim(paste0(WORK.DIR,"/model_performance.tsv"),
                          stringsAsFactors=FALSE)
 # determine if score improved
-improved <- ifelse(score > max(modelPerf.df$score),"Yes","No")
+improved <- ifelse(score < min(modelPerf.df$score),"Yes","No")
 
 recordModelPerf(paste0(WORK.DIR,"/model_performance.tsv"),
                               mdl.fit$method,
