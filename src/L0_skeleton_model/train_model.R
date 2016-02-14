@@ -1,13 +1,13 @@
 ?###
 # training skeleton
 ###
-
+library(data.tables)
 library(caret)
 # add any model specific package library commands
 library(gbm)
 
 # set working directory
-WORK.DIR <- "./src/skeleton_model"  # modify to specify directory to contain model artififacts
+WORK.DIR <- "./src/L0_skeleton_model"  # modify to specify directory to contain model artififacts
 
 # Common Functions and Global variables
 source("./src/CommonFunctions.R")
@@ -43,11 +43,11 @@ PREPARE.MODEL.DATA <- prepGBMModelData
 MODEL.COMMENT <- ""
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.3
+FRACTION.TRAIN.DATA <- 0.4
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
-train.df <- train1.raw
+train.df <- train0.raw
 
 # extract subset for inital training
 set.seed(29)
