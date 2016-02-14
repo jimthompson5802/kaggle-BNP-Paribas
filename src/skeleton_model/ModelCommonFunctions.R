@@ -3,45 +3,39 @@
 ###
 
 # this function prepares data for training or use in predictions
-prepModelData <- function(df,only.predictors=FALSE){
+prepGBMModelData <- function(df,only.predictors=FALSE){
     # df: raw data
     # if only.predcitors is TRUE then return list(predictors)
     # if only.predictors is FALSE then return list(predictors,response)
     
     require(plyr)
+    require(caret)
     
     # load in structures on what to model
-    load(paste0(DATA.DIR,"/char_attributes.RData"))
-    load(paste0(DATA.DIR,"/numeric_attr_to_model.RData"))
-    load(paste0(DATA.DIR,"/pp_medianImpute.RData"))
+#     load(paste0(DATA.DIR,"/char_attributes.RData"))
+#     load(paste0(DATA.DIR,"/numeric_attr_to_model.RData"))
+#     load(paste0(DATA.DIR,"/pp_medianImpute.RData"))
+    
+    num.vars <- c("v10","v12","v14", "v17", "v32", "v48", "v50", "v51", "v64", "v73", 
+                        "v76","v93","v101","v106","v62","v129")
+    
+    char.vars <- c("v31", "v47", "v66", "v110")
+
+    
+    df2  <- na.omit(df[,c("target",num.vars,char.vars)])
     
     # eliminate unwanted variables
-    predictors <- df[,char.attr]
-    
-    # handle missing values for character attributes
-    ll <- alply(predictors,2,function(one.col){
-        ans <- one.col[,1]
-        idx <- nchar(ans) == 0 | ans == "-1"
-        ans[idx] <- "MISSING"
-        ans <- make.names(ans)
-        return(ans)}
-    )
-    
-    names(ll) <- names(predictors)
-    predictors <- data.frame(do.call(cbind,ll))
-    
-    num.predictors <- predict(pp.medianImpute,df[,num.attr])
-    
-    
-    predictors <- cbind(predictors,num.predictors)
+    predictors <- df2[,c(num.vars,char.vars)]
+    for (x in char.vars) {
+        predictors[[x]] <- factor(predictors[[x]])
+    }
+    response <- factor(ifelse(df2$target == 1,"Yes","No"),levels=c("Yes","No"))
    
     if (only.predictors) {
 
         ans <- list(predictors=predictors)
         
     } else {
-        
-        response <- factor(ifelse(df$target == 1,"Yes","No"),levels=c("Yes","No"))
         
         ans <- list(predictors=predictors,response=response)
     }

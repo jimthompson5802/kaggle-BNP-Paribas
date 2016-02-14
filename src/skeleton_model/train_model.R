@@ -7,7 +7,7 @@ library(caret)
 library(gbm)
 
 # set working directory
-WORK.DIR <- "./src/L1_gbm1"  # modify to specify directory to contain model artififacts
+WORK.DIR <- "./src/skeleton_model"  # modify to specify directory to contain model artififacts
 
 # Common Functions and Global variables
 source("./src/CommonFunctions.R")
@@ -25,17 +25,20 @@ CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning paramete
 CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
                                  number=5,
                                  repeats=1,
-                                 verboseIter=TRUE,
+                                 verboseIter=FALSE,
                                  classProbs=TRUE,
-                                 summaryFunction=twoClassSummary)
+                                 summaryFunction=caretLogLossSummary)
 
 CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
-                            maximize=TRUE,
+                            maximize=FALSE,
                            tuneGrid=CARET.TUNE.GRID,
                            tuneLength=5,
-                           metric="ROC")
+                           metric="LogLoss")
 
-MODEL.SPECIFIC.PARMS <- NULL # Other model specific parameters
+MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific parameters
+
+PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
+PREPARE.MODEL.DATA <- prepGBMModelData
 
 MODEL.COMMENT <- ""
 
@@ -52,10 +55,10 @@ idx <- createDataPartition(train.df$target,p=FRACTION.TRAIN.DATA,list=FALSE)
 train.df <- train.df[idx,]
 
 # prepare data for training
-train.data <- prepModelData(train.df)
+train.data <- PREPARE.MODEL.DATA(train.df)
 
-library(doMC)
-registerDoMC(cores = 5)
+# library(doMC)
+# registerDoMC(cores = 5)
 
 # library(doSNOW)
 # cl <- makeCluster(5,type="SOCK")
@@ -74,23 +77,22 @@ time.data <- system.time(mdl.fit <- do.call(train,c(list(x=train.data$predictors
 
 time.data
 mdl.fit
-
 # stopCluster(cl)
 
 # prepare data for training
-test.data <- prepModelData(test.raw)
+test.data <- PREPARE.MODEL.DATA(test.raw)
 pred.probs <- predict(mdl.fit,newdata = test.data$predictors,type = "prob")
 
-score <- evalModelPerf(pred.probs[,1],test.data$response)
+score <- logLossEval(pred.probs[,1],test.data$response)
 score
 
 # record Model performance
-modelPerf.df <- read.csv(paste0(WORK.DIR,"/model_performance.csv"),
+modelPerf.df <- read.delim(paste0(WORK.DIR,"/model_performance.tsv"),
                          stringsAsFactors=FALSE)
 # determine if score improved
 improved <- ifelse(score > max(modelPerf.df$score),"Yes","No")
 
-recordModelPerf(paste0(WORK.DIR,"/model_performance.csv"),
+recordModelPerf(paste0(WORK.DIR,"/model_performance.tsv"),
                               mdl.fit$method,
                               time.data,
                               train.data$predictors,
@@ -103,7 +105,7 @@ recordModelPerf(paste0(WORK.DIR,"/model_performance.csv"),
                                                 sep="=",collapse=","),
                               comment=MODEL.COMMENT)
 
-modelPerf.df <- read.csv(paste0(WORK.DIR,"/model_performance.csv"),
+modelPerf.df <- read.delim(paste0(WORK.DIR,"/model_performance.tsv"),
                          stringsAsFactors=FALSE)
 
 
