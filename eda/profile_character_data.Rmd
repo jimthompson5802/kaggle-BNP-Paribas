@@ -68,6 +68,8 @@ chisq.df <- do.call(rbind,ll)
 # determine cut-off value based on Bonferroni criteria
 bonferroni.cut.off <- 0.05/length(char.attr)
 
+cat("Bonferroni cut-off:",bonferroni.cut.off,"\n")
+
 #determine attributes to exclude
 chisq.to.exclude <- subset(chisq.df,p.value > bonferroni.cut.off)
 char.exclude.by.chisq <- chisq.to.exclude$attr
