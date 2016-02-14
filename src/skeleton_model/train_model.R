@@ -125,8 +125,8 @@ if (last.idx == 1 || improved == "Yes") {
     save(mdl.fit,file=paste0(WORK.DIR,file.name))
     
     # estalish pointer to current model
-    file.remove(paste0(WORK.DIR,"/this.model"))
-    file.symlink(paste0(WORK.DIR,file.name),paste0(WORK.DIR,"/this.model"))
+    file.remove(paste0(WORK.DIR,"/this_model.RData"))
+    file.symlink(paste0(WORK.DIR,file.name),paste0(WORK.DIR,"/this_model.RData"))
 } else {
     cat("no improvement!!!\n")
     flush.console()
