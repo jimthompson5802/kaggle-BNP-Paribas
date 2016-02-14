@@ -21,15 +21,19 @@ prepGBMModelData <- function(df,only.predictors=FALSE){
     
     char.vars <- c("v31", "v47", "v66", "v110")
 
-    
-    df2  <- na.omit(df[,c("target",num.vars,char.vars)])
+    if (only.predictors) {
+        df2  <- na.omit(df[,c(num.vars,char.vars)])  
+    } else {
+        df2  <- na.omit(df[,c("target",num.vars,char.vars)])   
+    }
+
     
     # eliminate unwanted variables
     predictors <- df2[,c(num.vars,char.vars)]
     for (x in char.vars) {
         predictors[[x]] <- factor(predictors[[x]])
     }
-    response <- factor(ifelse(df2$target == 1,"Yes","No"),levels=c("Yes","No"))
+
    
     if (only.predictors) {
 
@@ -37,6 +41,7 @@ prepGBMModelData <- function(df,only.predictors=FALSE){
         
     } else {
         
+        response <- factor(ifelse(df2$target == 1,"Yes","No"),levels=c("Yes","No"))
         ans <- list(predictors=predictors,response=response)
     }
 
