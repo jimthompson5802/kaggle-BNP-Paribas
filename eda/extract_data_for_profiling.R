@@ -10,7 +10,7 @@ TARGET.VAR <- "target"
 ID.VAR <- "ID"
 
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
-train.raw <- rbind(train1.raw,train2.raw)
+train.raw <- rbind(train0.raw,train1.raw)
 
 # extract data for profling
 set.seed(19)
@@ -18,7 +18,7 @@ sample.df <-  data.frame(train.raw[sample(nrow(train.raw),0.5*nrow(train.raw)),]
                          stringsAsFactors = FALSE)
 comment(sample.df) <- "sample of training data for initial data profiling"
 
-rm(train1.raw,train2.raw,test.raw,calib.raw,train.raw)
+rm(train0.raw,train1.raw,test.raw,calib.raw,train.raw)
 
 # deterimine data types
 explanatory.attributes <- setdiff(names(sample.df),c(ID.VAR,TARGET.VAR))
