@@ -16,7 +16,9 @@ logLossEval <- function(pred.probs, true.class) {
     # adjust probabilities to avoid numerical issues with log() function
     new.probs <- pmax(pmin(pred.probs,1-1e-15),1e-15)
     
-    ans <- -sum(true.class*log(new.probs) + (1-true.class)*log((1-new.probs)))/length(new.probs)
+    resp <- ifelse(true.class == "Yes",1,0)
+    
+    ans <- -sum(resp*log(new.probs) + (1-resp)*log((1-new.probs)))/length(new.probs)
     
     if (is.nan(ans) | is.na(ans)) {
         stop("Returning NAN or NA from LogLoss Function.")
@@ -27,7 +29,7 @@ logLossEval <- function(pred.probs, true.class) {
 
 # caret custom model performance function for log-loss
 caretLogLossSummary <- function(data,lev,model) {
-    out <- logLossEval(data[,"pred"],data[,"obs"])
+    out <- logLossEval(data[,"Yes"],data[,"obs"])
     if (is.na(out) | is.nan(out)) {
         stop("Error in LogLoss Function")
     }
