@@ -31,7 +31,7 @@ load(file=paste0(data.dir,"/train_calib_test.RData"))
 rm(calib.raw,test.raw)
 
 # combine only the training data
-train.raw <- rbind(train1.raw,train2.raw)
+train.raw <- rbind(train0.raw,train1.raw)
 train.raw <- data.frame(train.raw[sample(nrow(train.raw),0.9*nrow(train.raw))],stringsAsFactors = FALSE)
 ```
 
