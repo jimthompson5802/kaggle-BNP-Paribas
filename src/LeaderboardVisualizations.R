@@ -17,9 +17,11 @@ DATA.DIR <- "./data"  # directory where publicleaderboarddata.zip is stored
 
 TEAM.NAME <- "JMT5802"  # specify team name 
 
+COMPETITION.NAME <- "BNP Paribas Cardif Claims Management"
+
 # read the leaderboard data
 lb.df <- read.csv(unz(paste0(DATA.DIR,"/publicleaderboarddata.zip"),
-                       "otto-group-product-classification-challenge_public_leaderboard.csv"),
+                       "bnp-paribas-cardif-claims-management_public_leaderboard.csv"),
                   stringsAsFactors=FALSE)
 
 # convert date/time to numeric representation
@@ -31,7 +33,7 @@ lb.df$leader.score <- sapply(1:nrow(lb.df),function(pos,df){min(df[1:pos,"Score"
 lb.df$report.date <- as.Date(lb.df[,"SubmissionDate"])
 
 # get only data during the competition
-lb.df <- subset(lb.df,report.date < as.Date("2015-05-19"))
+#lb.df <- subset(lb.df,report.date < as.Date("2015-05-19"))
 
 # function to get team standings by day
 teamStandings <- function(this.date,lb.df) {
@@ -96,9 +98,9 @@ p1 <- ggplot() +
                                                                    vjust=-0.2, hjust=0.5, lineheight=0.8,
                                                                    label=paste("Team:\n",TEAM.NAME),
                                                                    fontface="bold")) +
-    ylab("(Better) MLL (Worse)") +
+    ylab("(Better) LogLoss (Worse)") +
     xlab("Submission Date") +
-    ggtitle(paste("Kaggle: Otto Group Product Classification Challenge\nAll Participant Scores as of",last.submission.date)) +
+    ggtitle(paste(COMPETITION.NAME,"\nAll Participant Scores as of",last.submission.date)) +
     this.theme
 
 # plot leader score for the first 24 hours of competition
@@ -112,7 +114,7 @@ p2 <- ggplot(data=lb24.df) +
 #                                         vjust=1.0, hjust=1.0, linegeight=0.8,
 #                                         angle=0,
 #                                         label=leader.score)) +
-    ylab("(Better) MLL (Worse)") +
+    ylab("(Better) LogLoss (Worse)") +
     xlab("Submission Date") +
     ggtitle("Leader Score During First 24 Hours of Competition") +
     this.theme
