@@ -45,8 +45,11 @@ recordModelPerf <- function(model.performance.file,
     # time.data is a proc_time object from system.time() function call
     # bestTune is data frame for optimal model hyper-paramters
     # 
+    parts.of.file.name <- unlist(strsplit(model.performance.file,split = "/"))
+    model.level <- parts.of.file.name[length(parts.of.file.name)-1]
     
     new.row <- data.frame(date.time=as.character(Sys.time()),
+                          model.level=model.level,
                           model=model,
                           user.cpu.time=summary(time.data)["user"],
                           sys.cpu.time=summary(time.data)["system"],
