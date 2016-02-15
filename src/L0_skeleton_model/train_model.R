@@ -1,7 +1,8 @@
-?###
+###
 # training skeleton
 ###
-library(data.tables)
+
+library(data.table)
 library(caret)
 # add any model specific package library commands
 library(gbm)
@@ -11,7 +12,6 @@ WORK.DIR <- "./src/L0_skeleton_model"  # modify to specify directory to contain 
 
 # Common Functions and Global variables
 source("./src/CommonFunctions.R")
-source(paste0(WORK.DIR,"/ModelCommonFunctions.R"))
 
 # set caret training parameters
 CARET.TRAIN.PARMS <- list(method="gbm")   # Replace MODEL.METHOD with appropriate caret model
@@ -38,9 +38,9 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
 MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific parameters
 
 PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
-PREPARE.MODEL.DATA <- prepGBMModelData
+PREPARE.MODEL.DATA <- prepL0SkltnModelData
 
-MODEL.COMMENT <- ""
+MODEL.COMMENT <- "testing setup"
 
 # amount of data to train
 FRACTION.TRAIN.DATA <- 0.4
