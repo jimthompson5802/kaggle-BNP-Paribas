@@ -1,11 +1,10 @@
-```{r ,cache=TRUE}
-###
-#  initial feature selection based on Boruta package
-###
+---
+output: html_document
+---
 
-# test adding trees to rf
-
+```{r setup}
 library(caret)
+library(data.table)
 library(Boruta)
 library(dplyr)
 library(pROC)
@@ -14,43 +13,59 @@ DATA.DIR <- "../data"
 
 # retrive sample data for analysis
 load(paste0(DATA.DIR,"/sample_data_for_eda.RData"))
+load(paste0(DATA.DIR,"/attr_data_types.RData"))
 
-# retrieve list of attributes for analysis
-load(paste0(DATA.DIR,"/char_attributes.RData"))
-load(paste0(DATA.DIR,"/number_attributes.RData"))
+```
+
+
+```{r ,cache=TRUE,dependson="setup"}
+###
+#  initial feature selection based on Boruta package
+###
 
 set.seed(123)
 sample.df <- sample.df[sample(nrow(sample.df),0.2*nrow(sample.df)),]
 
+# for numeric variables that contain missing values, set up dummy indicator variable
+ll <- lapply(attr.data.types$contain.na,function(x){as.integer(is.na(sample.df[[x]]))})
+na.ind <- do.call(cbind,ll)
+colnames(na.ind) <- paste0(attr.data.types$contain.na,".na")
+
+
 # address any na in numeric data
-pp <- preProcess(sample.df[number.attr],method=c("center","scale","medianImpute"))
-pp.sample.df <- predict(pp,sample.df[number.attr])
+pp <- preProcess(sample.df[,c(attr.data.types$numeric,attr.data.types$integer), with=FALSE],
+                 method=c("center","scale","medianImpute"))
+pp.sample.df <- predict(pp,sample.df[,c(attr.data.types$numeric,attr.data.types$integer), with=FALSE])
 
 # create data set
-df <- cbind(pp.sample.df,sample.df[char.attr])
+df <- cbind(pp.sample.df,na.ind,sample.df[,attr.data.types$character,with=FALSE])
 
 set.seed(13)
 bor.results <- Boruta(df,factor(sample.df$target),
-                   maxRuns=50,
+                   maxRuns=76,
                    doTrace=2)
 
 save(bor.results,file=paste0(DATA.DIR,"/boruta_feature_analysis.RData"))
 ```
 
 
-# print Boruta results
-```{r}
+Print Boruta results
+```{r echo=FALSE}
 cat("\nsummary of Boruta run:\n")
 print(bor.results)
 
-
-cat("\n\nAttribute importance details:\n")
-attStats(bor.results)
+cat("\n\nAttributes determined to be relevant:\n")
+getSelectedAttributes(bor.results)
 ```
 
-
-Plot of variable importance
-```{r}
+The following plot shows the relevance of each feature.  
+```{r echo=FALSE,fig.width=9,fig.height=7}
 plot(bor.results)
 ```
 
+Detailed results for each explanatory results
+```{r, echo=FALSE}
+cat("\n\nAttribute importance details:\n")
+options(width=125)
+arrange(cbind(attr=rownames(attStats(bor.results)), attStats(bor.results)),desc(medianImp))
+```
