@@ -3,3 +3,4 @@
 .RData
 data
 eda/*.html
+model_results
