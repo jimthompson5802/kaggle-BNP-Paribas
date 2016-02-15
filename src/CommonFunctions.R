@@ -105,10 +105,10 @@ prepL0SkltnModelData <- function(df,includeResponse=TRUE){
     char.vars <- c("v31", "v47", "v66", "v110")
     
     if (includeResponse) {
-        df2  <- na.omit(df[,c("target",num.vars,char.vars),with=FALSE])   
+        df2  <- df[,c("target",num.vars,char.vars),with=FALSE]
         
     } else {
-        df2  <- na.omit(df[,c(num.vars,char.vars),with=FALSE])  
+        df2  <- df[,c(num.vars,char.vars),with=FALSE] 
     }
     
     
