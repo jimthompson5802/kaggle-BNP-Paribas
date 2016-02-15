@@ -5,10 +5,8 @@
 DATA.DIR <- "./data"
 
 
-###
-# Model Evaluation function - Log Los
-###
-# Evaulation Function
+#####
+# Model Evaluation functions - Log Loss
 logLossEval <- function(pred.probs, true.class) {
     # pred.probs: vector of predicted probabilities
     # true.class:  true class designation
@@ -37,7 +35,9 @@ caretLogLossSummary <- function(data,lev,model) {
     out
 }
 
-# function to record model performance
+
+#####
+# functions to record model performance
 recordModelPerf <- function(model.performance.file,
                             model=NULL,time.data=NULL,train.df=NULL,score=NA,
                             improved="No", bestTune="", tune.grid="",
@@ -79,14 +79,10 @@ flattenDF <- function(df) {
 
 
 
-###
-#  
+#####
 #  Model Data Preparation Functions  
-#                                    
-####
 
-
-# this function prepares data for training or use in predictions
+# template function for data preparaton of Level 0 Models
 prepL0SkltnModelData <- function(df,includeResponse=TRUE){
     # df: raw data
     # if only.predcitors is TRUE then return list(predictors)
@@ -134,6 +130,7 @@ prepL0SkltnModelData <- function(df,includeResponse=TRUE){
     return(ans)
 }
 
+# template data prep function for L1 models
 prepL1SkltnModelData <- function(df,includeResponse=TRUE){
     # df: raw data
     # if only.predcitors is TRUE then return list(predictors)
