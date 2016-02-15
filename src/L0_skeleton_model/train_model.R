@@ -122,7 +122,7 @@ if (last.idx == 1 || improved == "Yes") {
     file.name <- gsub(" ","_",file.name)
     file.name <- gsub(":","_",file.name)
     
-    save(mdl.fit,file=paste0(WORK.DIR,file.name))
+    save(mdl.fit,PREPARE.MODEL.DATA,file=paste0(WORK.DIR,file.name))
     
     # estalish pointer to current model
     file.remove(paste0(WORK.DIR,"/this_model.RData"))
