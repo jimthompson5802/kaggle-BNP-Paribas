@@ -6,7 +6,7 @@ DATA.DIR <- "./data"
 
 
 #####
-# Model Evaluation functions - Log Loss
+# Model Evaluation functions - LogLoss
 logLossEval <- function(pred.probs, true.class) {
     # pred.probs: vector of predicted probabilities
     # true.class:  true class designation
@@ -34,6 +34,8 @@ caretLogLossSummary <- function(data,lev,model) {
     names(out) <- "LogLoss"
     out
 }
+
+
 
 
 #####
@@ -176,15 +178,16 @@ prepL1SkltnModelData <- function(df,includeResponse=TRUE){
     
     predictors <- do.call(cbind,ll)
     
-    if (only.predictors) {
-        
-        ans <- list(predictors=predictors)
-        
-    } else {
+    if (includeResponse) {
         
         response <- factor(ifelse(df$target == 1,"Class_1","Class_0"),
                            levels=c("Class_1","Class_0"))
         ans <- list(predictors=predictors,response=response)
+ 
+    } else {
+        
+        ans <- list(predictors=predictors)
+
     }
     
     return(ans)
