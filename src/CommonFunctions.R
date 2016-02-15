@@ -133,6 +133,34 @@ prepL0SkltnModelData <- function(df,includeResponse=TRUE){
     return(ans)
 }
 
+# generic function to create Level 1 features from Level 0 model predictions
+createLevel1Features <- function (work.dir,df) {
+    # work.dir: directory containing Level 0 model
+    # df: training data to generate Level 1 features
+    
+    # specify Level 0 model working directories
+    
+    # create environment to hold Level 0 Model data structures
+    l0.env <- new.env()
+    load(Sys.readlink(paste0(work.dir,"/this_model.RData")),envir=l0.env)
+    
+    #prepare data for L0 model
+    train.data <- l0.env$PREPARE.MODEL.DATA(df)
+    
+    # create Level 1 features
+    pred.probs <- predict(l0.env$mdl.fit,newdata = train.data$predictors,type = "prob")
+    
+    # Attribute Level 0 model to the created predictions
+    file.name <- Sys.readlink(paste0(work.dir,"/this_model.RData"))
+    file.name.parts <- unlist(strsplit(file.name,"/"))
+    model.level <- file.name.parts[length(file.name.parts) - 1]
+    new.names <- paste0(model.level,".",names(pred.probs))
+    names(pred.probs) <- new.names
+    
+    return(pred.probs)
+}
+
+
 # template data prep function for L1 models
 prepL1SkltnModelData <- function(df,includeResponse=TRUE){
     # df: raw data
@@ -142,14 +170,11 @@ prepL1SkltnModelData <- function(df,includeResponse=TRUE){
     require(plyr)
     require(caret)
     
-    # load in structures on what to model
-    #     load(paste0(DATA.DIR,"/char_attributes.RData"))
-    #     load(paste0(DATA.DIR,"/numeric_attr_to_model.RData"))
-    #     load(paste0(DATA.DIR,"/pp_medianImpute.RData"))
+    level0.models <- c("./src/L0_skeleton_model")
     
-    pred.names <- setdiff(names(df),c("ID","target"))
+    ll <- lapply(level0.models,createLevel1Features,df)
     
-    predictors <- df[,pred.names,with=FALSE]
+    predictors <- do.call(cbind,ll)
     
     if (only.predictors) {
         
