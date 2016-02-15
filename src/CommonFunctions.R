@@ -136,7 +136,7 @@ prepL0SkltnModelData <- function(df,includeResponse=TRUE){
 }
 
 # generic function to create Level 1 features from Level 0 model predictions
-createLevel1Features <- function (work.dir,df) {
+createLevel1Features <- function (work.dir,df,...) {
     # work.dir: directory containing Level 0 model
     # df: training data to generate Level 1 features
     
@@ -147,7 +147,7 @@ createLevel1Features <- function (work.dir,df) {
     load(Sys.readlink(paste0(work.dir,"/this_model.RData")),envir=l0.env)
     
     #prepare data for L0 model
-    train.data <- l0.env$PREPARE.MODEL.DATA(df)
+    train.data <- l0.env$PREPARE.MODEL.DATA(df,...)
     
     # create Level 1 features
     pred.probs <- predict(l0.env$mdl.fit,newdata = train.data$predictors,type = "prob")
@@ -174,7 +174,7 @@ prepL1SkltnModelData <- function(df,includeResponse=TRUE){
     
     level0.models <- c("./src/L0_skeleton_model")
     
-    ll <- lapply(level0.models,createLevel1Features,df)
+    ll <- lapply(level0.models,createLevel1Features,df,includeResponse)
     
     predictors <- do.call(cbind,ll)
     
