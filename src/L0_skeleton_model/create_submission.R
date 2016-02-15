@@ -3,26 +3,26 @@
 ###
 
 library(caret)
+library(data.table)
 # add model specific libraries
 library(caTools)
 
 # set working directory
-WORK.DIR <- "./src/skeleton_model"   # directory where model artifacts are stored
+WORK.DIR <- "./src/L0_skeleton_model"   # directory where model artifacts are stored
 
 # Common Functions and Global variables
 source("./src/CommonFunctions.R")
-source(paste0(WORK.DIR,"/ModelCommonFunctions.R"))
 
-PREPARE.MODEL.DATA <- prepGBMModelData
+PREPARE.MODEL.DATA <- prepL0SkltnModelData
 
 # read kaggle submission data
-new.df <- read.csv(paste0(DATA.DIR,"/test.csv"),stringsAsFactors=FALSE)
+new.df <- fread(paste0(DATA.DIR,"/test.csv"))
 
 #save id vector
 id <- new.df$ID
 
 # prep the data for submission
-submission <- PREPARE.MODEL.DATA(new.df,only.predictors=TRUE)
+submission <- PREPARE.MODEL.DATA(new.df,includeResponse=FALSE)
 
 # retrive generated model-name created in training run
 load(Sys.readlink(paste0(WORK.DIR,"/this_model.RData")))
