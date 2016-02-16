@@ -35,15 +35,15 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
                            tuneLength=5,
                            metric="LogLoss")
 
-MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific parameters
+MODEL.SPECIFIC.PARMS <- list(verbose=0) #NULL # Other model specific parameters
 
 PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
-PREPARE.MODEL.DATA <- prepL0rngr1ModelData
+PREPARE.MODEL.DATA <- prepL0xgb1ModelData
 
 MODEL.COMMENT <- ""
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.1
+FRACTION.TRAIN.DATA <- 0.25
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
