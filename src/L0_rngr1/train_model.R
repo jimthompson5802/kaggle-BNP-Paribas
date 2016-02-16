@@ -1,5 +1,5 @@
 ###
-# training skeleton
+# rngr1 Model
 ###
 
 library(data.table)
@@ -27,7 +27,8 @@ CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
                                  repeats=1,
                                  verboseIter=FALSE,
                                  classProbs=TRUE,
-                                 summaryFunction=caretLogLossSummary)
+                                 summaryFunction=caretLogLossSummary,
+                                 allowParallel = FALSE)
 
 CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
                             maximize=FALSE,
@@ -38,12 +39,12 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
 MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific parameters
 
 PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
-PREPARE.MODEL.DATA <- prepL0gbm1ModelData
+PREPARE.MODEL.DATA <- prepL0rngr1ModelData
 
-MODEL.COMMENT <- "modeling with pre-defined factor levels"
+MODEL.COMMENT <- "modeling with pre-defined factor levels, imputing median values"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.2
+FRACTION.TRAIN.DATA <- 0.1
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
