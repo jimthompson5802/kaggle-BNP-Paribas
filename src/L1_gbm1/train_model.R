@@ -43,7 +43,7 @@ PREPARE.MODEL.DATA <- prepL1gbm1ModelData
 MODEL.COMMENT <- "first attempt at Level 1 model"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.1
+FRACTION.TRAIN.DATA <- 0.5
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
