@@ -43,7 +43,7 @@ PREPARE.MODEL.DATA <- prepL0gbm1ModelData
 MODEL.COMMENT <- "gbm"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.3
+FRACTION.TRAIN.DATA <- 0.75
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
