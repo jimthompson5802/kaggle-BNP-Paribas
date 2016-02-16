@@ -40,7 +40,7 @@ MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific paramet
 PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
 PREPARE.MODEL.DATA <- prepL1gbm1ModelData
 
-MODEL.COMMENT <- "first attempt at Level 1 model"
+MODEL.COMMENT <- "added L0_xgb2"
 
 # amount of data to train
 FRACTION.TRAIN.DATA <- 0.5

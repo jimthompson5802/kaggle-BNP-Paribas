@@ -203,6 +203,7 @@ prepL1gbm1ModelData <- function(df,includeResponse=TRUE){
     
     level0.models <- c("./src/L0_gbm1",
                        "./src/L0_rngr1",
+                       "./src/L0_xgb2",
                        "./src/L0_xgb1")
     
     ll <- lapply(level0.models,createLevel1Features,df,includeResponse)
