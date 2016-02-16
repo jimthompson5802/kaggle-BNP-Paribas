@@ -8,7 +8,7 @@ library(data.table)
 library(caTools)
 
 # set working directory
-WORK.DIR <- "./src/L0_skeleton_model"   # directory where model artifacts are stored
+WORK.DIR <- "./src/L0_gbm1"   # directory where model artifacts are stored
 
 # Common Functions and Global variables
 source("./src/CommonFunctions.R")
