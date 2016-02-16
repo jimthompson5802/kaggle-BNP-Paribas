@@ -27,7 +27,8 @@ CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
                                  repeats=1,
                                  verboseIter=FALSE,
                                  classProbs=TRUE,
-                                 summaryFunction=caretLogLossSummary)
+                                 summaryFunction=caretLogLossSummary,
+                                 allowParallel = TRUE)
 
 CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
                             maximize=FALSE,
@@ -40,10 +41,10 @@ MODEL.SPECIFIC.PARMS <- list(verbose=1) #NULL # Other model specific parameters
 PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
 PREPARE.MODEL.DATA <- prepL0xgb1ModelData
 
-MODEL.COMMENT <- "added back factor attributes as their numeric representation"
+MODEL.COMMENT <- "initial test, no parallel"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.25
+FRACTION.TRAIN.DATA <- 0.1
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
