@@ -162,7 +162,6 @@ createLevel1Features <- function (work.dir,df,...) {
     return(pred.probs)
 }
 
-
 # template data prep function for L1 models
 prepL1SkltnModelData <- function(df,includeResponse=TRUE){
     # df: raw data
@@ -188,6 +187,38 @@ prepL1SkltnModelData <- function(df,includeResponse=TRUE){
         
         ans <- list(predictors=predictors)
 
+    }
+    
+    return(ans)
+}
+
+# template data prep function for L1 models
+prepL1gbm1ModelData <- function(df,includeResponse=TRUE){
+    # df: raw data
+    # if only.predcitors is TRUE then return list(predictors)
+    # if only.predictors is FALSE then return list(predictors,response)
+    
+    require(plyr)
+    require(caret)
+    
+    level0.models <- c("./src/L0_gbm1",
+                       "./src/L0_rngr1",
+                       "./src/L0_xgb1")
+    
+    ll <- lapply(level0.models,createLevel1Features,df,includeResponse)
+    
+    predictors <- do.call(cbind,ll)
+    
+    if (includeResponse) {
+        
+        response <- factor(ifelse(df$target == 1,"Class_1","Class_0"),
+                           levels=c("Class_1","Class_0"))
+        ans <- list(predictors=predictors,response=response)
+        
+    } else {
+        
+        ans <- list(predictors=predictors)
+        
     }
     
     return(ans)
