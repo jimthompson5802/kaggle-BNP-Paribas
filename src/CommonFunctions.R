@@ -215,12 +215,13 @@ prepL0gbm1ModelData <- function(df,includeResponse=TRUE){
     
     # get data types and change all strings to factors
     load(paste0(DATA.DIR,"/attr_data_types.RData"))
+    load(paste0(DATA.DIR,"/factor_levels.RData"))
     
     # get subset of character variables selected by Boruta
     char.attr <- intersect(predictor.vars,attr.data.types$character)
     
     for (x in char.attr) {
-        predictors[[x]] <- factor(predictors[[x]])
+        predictors[[x]] <- factor(predictors[[x]],levels = factor.levels[[x]])
     }
     
     
