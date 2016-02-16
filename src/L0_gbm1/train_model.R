@@ -8,7 +8,7 @@ library(caret)
 library(gbm)
 
 # set working directory
-WORK.DIR <- "./src/L0_skeleton_model"  # modify to specify directory to contain model artififacts
+WORK.DIR <- "./src/L0_gbm1"  # modify to specify directory to contain model artififacts
 
 # Common Functions and Global variables
 source("./src/CommonFunctions.R")
@@ -38,12 +38,12 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
 MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific parameters
 
 PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
-PREPARE.MODEL.DATA <- prepL0SkltnModelData
+PREPARE.MODEL.DATA <- prepL0gbm1ModelData
 
-MODEL.COMMENT <- "testing setup"
+MODEL.COMMENT <- "gbm"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.4
+FRACTION.TRAIN.DATA <- 0.3
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
@@ -83,7 +83,7 @@ mdl.fit
 test.data <- PREPARE.MODEL.DATA(test.raw)
 pred.probs <- predict(mdl.fit,newdata = test.data$predictors,type = "prob")
 
-score <- logLossEval(pred.probs[,1],test.data$response)
+score <- logLossEval(pred.probs[,"Class_1"],test.data$response)
 score
 
 # record Model performance

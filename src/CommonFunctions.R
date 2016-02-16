@@ -192,3 +192,48 @@ prepL1SkltnModelData <- function(df,includeResponse=TRUE){
     
     return(ans)
 }
+
+
+# data prep Level 0 gbm1 model
+prepL0gbm1ModelData <- function(df,includeResponse=TRUE){
+    # df: raw data
+    # if only.predcitors is TRUE then return list(predictors)
+    # if only.predictors is FALSE then return list(predictors,response)
+    
+    require(plyr)
+    require(caret)
+    require(Boruta)
+    
+   # use only attributes confirmed by Boruta feature analysis
+    load(paste0(DATA.DIR,"/boruta_feature_analysis.RData"))
+    
+    predictor.vars <- getSelectedAttributes(bor.results)
+    
+    
+#     # eliminate unwanted variables
+    predictors <- df[,predictor.vars,with=FALSE]
+    
+    # get data types and change all strings to factors
+    load(paste0(DATA.DIR,"/attr_data_types.RData"))
+    
+    # get subset of character variables selected by Boruta
+    char.attr <- intersect(predictor.vars,attr.data.types$character)
+    
+    for (x in char.attr) {
+        predictors[[x]] <- factor(predictors[[x]])
+    }
+    
+    
+    if (includeResponse) {
+        
+        response <- factor(ifelse(df$target == 1,"Class_1","Class_0"),
+                           levels=c("Class_1","Class_0"))
+        ans <- list(predictors=predictors,response=response)
+        
+    } else {
+        
+        ans <- list(predictors=predictors)
+    }
+    
+    return(ans)
+}
