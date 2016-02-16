@@ -44,7 +44,7 @@ PREPARE.MODEL.DATA <- prepL0rngr1ModelData
 MODEL.COMMENT <- "modeling with pre-defined factor levels, imputing median values"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.1
+FRACTION.TRAIN.DATA <- 0.5
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
