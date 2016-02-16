@@ -309,19 +309,18 @@ prepL0xgb1ModelData <- function(df,includeResponse=TRUE){
     load(paste0(DATA.DIR,"/factor_levels.RData"))
     load(paste0(DATA.DIR,"/median_values.RData"))
     
-    predictor.vars <- intersect(getSelectedAttributes(bor.results),
-                                c(attr.data.types$numeric,attr.data.types$integer))
+    predictor.vars <- getSelectedAttributes(bor.results)
     
     
     #     # eliminate unwanted variables
     predictors <- df[,predictor.vars,with=FALSE]
     
 
-#     # standardize factor levels for modeling
-#     char.attr <- intersect(predictor.vars,attr.data.types$character)
-#     for (x in char.attr) {
-#         predictors[[x]] <- factor(predictors[[x]],levels = factor.levels[[x]])
-#     }
+    # convert factors to numeric reprsentation
+    char.attr <- intersect(predictor.vars,attr.data.types$character)
+    for (x in char.attr) {
+        predictors[[x]] <- as.integer(factor(predictors[[x]],levels = factor.levels[[x]]))
+    }
     
     # impute pre-defined median value for any missing values
     num.attr <- intersect(predictor.vars,c(attr.data.types$numeric,attr.data.types$integer))

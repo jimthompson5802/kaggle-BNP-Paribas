@@ -40,7 +40,7 @@ MODEL.SPECIFIC.PARMS <- list(verbose=0) #NULL # Other model specific parameters
 PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
 PREPARE.MODEL.DATA <- prepL0xgb1ModelData
 
-MODEL.COMMENT <- ""
+MODEL.COMMENT <- "added back factor attributes as their numeric representation"
 
 # amount of data to train
 FRACTION.TRAIN.DATA <- 0.25
