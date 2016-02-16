@@ -40,7 +40,7 @@ MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific paramet
 PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
 PREPARE.MODEL.DATA <- prepL0gbm1ModelData
 
-MODEL.COMMENT <- "gbm"
+MODEL.COMMENT <- "modeling with pre-defined factor levels"
 
 # amount of data to train
 FRACTION.TRAIN.DATA <- 0.75
@@ -58,7 +58,7 @@ train.df <- train.df[idx,]
 train.data <- PREPARE.MODEL.DATA(train.df)
 
 library(doMC)
-registerDoMC(cores = 5)
+registerDoMC(cores = 6)
 
 # library(doSNOW)
 # cl <- makeCluster(5,type="SOCK")
