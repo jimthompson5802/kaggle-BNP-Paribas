@@ -290,3 +290,57 @@ prepL0rngr1ModelData <- function(df,includeResponse=TRUE){
     
     return(ans)
 }
+
+# data prep Level 0 xgb1 model
+prepL0xgb1ModelData <- function(df,includeResponse=TRUE){
+    # df: raw data
+    # if only.predcitors is TRUE then return list(predictors)
+    # if only.predictors is FALSE then return list(predictors,response)
+    
+    require(plyr)
+    require(caret)
+    require(Boruta)
+    
+    # use only attributes confirmed by Boruta feature analysis
+    load(paste0(DATA.DIR,"/boruta_feature_analysis.RData"))
+    
+    # get data types and change all strings to factors
+    load(paste0(DATA.DIR,"/attr_data_types.RData"))
+    load(paste0(DATA.DIR,"/factor_levels.RData"))
+    load(paste0(DATA.DIR,"/median_values.RData"))
+    
+    predictor.vars <- intersect(getSelectedAttributes(bor.results),
+                                c(attr.data.types$numeric,attr.data.types$integer))
+    
+    
+    #     # eliminate unwanted variables
+    predictors <- df[,predictor.vars,with=FALSE]
+    
+
+#     # standardize factor levels for modeling
+#     char.attr <- intersect(predictor.vars,attr.data.types$character)
+#     for (x in char.attr) {
+#         predictors[[x]] <- factor(predictors[[x]],levels = factor.levels[[x]])
+#     }
+    
+    # impute pre-defined median value for any missing values
+    num.attr <- intersect(predictor.vars,c(attr.data.types$numeric,attr.data.types$integer))
+    for (x in num.attr) {
+        idx <- is.na(predictors[[x]])
+        predictors[[x]][idx] <- median.values[[x]]
+    }
+    
+    
+    if (includeResponse) {
+        
+        response <- factor(ifelse(df$target == 1,"Class_1","Class_0"),
+                           levels=c("Class_1","Class_0"))
+        ans <- list(predictors=predictors,response=response)
+        
+    } else {
+        
+        ans <- list(predictors=predictors)
+    }
+    
+    return(ans)
+}
