@@ -14,7 +14,7 @@ WORK.DIR <- "./src/L1_rf1"  # modify to specify directory to contain model artif
 source("./src/CommonFunctions.R")
 
 # set caret training parameters
-CARET.TRAIN.PARMS <- list(method="randomForest")   # Replace MODEL.METHOD with appropriate caret model
+CARET.TRAIN.PARMS <- list(method="rf")   # Replace MODEL.METHOD with appropriate caret model
 
 CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
 
