@@ -24,5 +24,6 @@ median.values <- lapply(c(attr.data.types$numeric,attr.data.types$integer),funct
 })
 
 names(median.values) <- c(attr.data.types$numeric,attr.data.types$integer)
+comment(median.values) <- "median values of raw numeric data, used to impute missing values"
 
 save(median.values,file=paste0(DATA.DIR,"/median_values.RData"))
