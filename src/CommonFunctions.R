@@ -244,7 +244,7 @@ prepL1gbm2ModelData <- function(df,includeResponse=TRUE){
     predictors <- do.call(cbind,ll)
     
     #extract only Class_1 probabilities
-    class1.names <- grep("Class_1",names(train.data$predictors),value = TRUE)
+    class1.names <- grep("Class_1",names(predictors),value = TRUE)
     predictors <- predictors[class1.names]
 
     if (includeResponse) {
