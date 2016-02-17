@@ -43,7 +43,7 @@ PREPARE.MODEL.DATA <- prepL1gbm1ModelData
 MODEL.COMMENT <- "added L0_xgb2"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.5
+FRACTION.TRAIN.DATA <- 1.0
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
@@ -58,7 +58,7 @@ train.df <- train.df[idx,]
 train.data <- PREPARE.MODEL.DATA(train.df)
 
 library(doMC)
-registerDoMC(cores = 5)
+registerDoMC(cores = 7)
 
 # library(doSNOW)
 # cl <- makeCluster(5,type="SOCK")
