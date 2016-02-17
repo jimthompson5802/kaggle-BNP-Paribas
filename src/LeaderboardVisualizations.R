@@ -132,10 +132,10 @@ p3 <- ggplot(data=ranking.df) +
     geom_line(aes(x=report.date, y=team.score), color="red",size=1.25) +
     # identify selected team
     geom_text(data=head(ranking.df[!is.na(ranking.df$team.score),],1),aes(x=report.date, y=team.score,
-                                                                   vjust=2, hjust=-0.4, lineheight=0.8,
+                                                                   vjust=2, hjust=1.0, lineheight=0.8,
                                                                    label=paste(TEAM.NAME))) +
     xlab("Submission Date") +
-    ylab("(Better)  MLL  (Worse)") +
+    ylab("(Better)  LogLoss  (Worse)") +
     ggtitle(paste("Comparision of\nLeader Score vs. Team:",TEAM.NAME)) +
     this.theme
 
@@ -144,14 +144,14 @@ p4 <- ggplot(ranking.df) +
     scale_y_continuous(limits=c(0,100),minor_breaks = seq(0 , 100, 5), breaks = seq(0, 100, 10)) +
     xlim(min(ranking.df$report.date),max(ranking.df$report.date)) +
     xlab("SubmissionDate") +
-    ylab("(Lower)  Percentile  (Higher)") +
+    ylab("(Worse)  Percentile  (Better)") +
     ggtitle(paste("Team Standing for",TEAM.NAME)) +
     theme(panel.grid.major.y=element_line(color="grey50", linetype="dashed")) +
     this.theme
 
     
 # display 4 charts on one page
-png(filename="./model_results/leaderboard_analysis.png",width=8.5, height=11,units="in",res=600)
+png(filename="./model_results/leaderboard_analysis.png",width=17, height=11,units="in",res=600)
 grid.newpage()
 pushViewport(viewport(layout=grid.layout(2,2)))
 
