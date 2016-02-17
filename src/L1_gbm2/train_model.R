@@ -43,7 +43,7 @@ PREPARE.MODEL.DATA <- prepL1gbm2ModelData
 MODEL.COMMENT <- "using only Class_1 probabilites as features"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.5
+FRACTION.TRAIN.DATA <- 1.0
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
