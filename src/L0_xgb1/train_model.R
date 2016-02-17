@@ -43,7 +43,7 @@ PREPARE.MODEL.DATA <- prepL0xgb1ModelData
 MODEL.COMMENT <- "added back factor attributes as their numeric representation"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.5
+FRACTION.TRAIN.DATA <- 1.0
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
