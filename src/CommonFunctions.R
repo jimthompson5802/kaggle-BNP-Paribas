@@ -192,7 +192,7 @@ prepL1SkltnModelData <- function(df,includeResponse=TRUE){
     return(ans)
 }
 
-# template data prep function for L1 models
+# uses both Class_1 and Class_0 probabilities as features
 prepL1gbm1ModelData <- function(df,includeResponse=TRUE){
     # df: raw data
     # if only.predcitors is TRUE then return list(predictors)
@@ -225,6 +225,42 @@ prepL1gbm1ModelData <- function(df,includeResponse=TRUE){
     return(ans)
 }
 
+# using only Class_1 probabilities for features
+prepL1gbm2ModelData <- function(df,includeResponse=TRUE){
+    # df: raw data
+    # if only.predcitors is TRUE then return list(predictors)
+    # if only.predictors is FALSE then return list(predictors,response)
+    
+    require(plyr)
+    require(caret)
+    
+    level0.models <- c("./src/L0_gbm1",
+                       "./src/L0_rngr1",
+                       "./src/L0_xgb2",
+                       "./src/L0_xgb1")
+    
+    ll <- lapply(level0.models,createLevel1Features,df,includeResponse)
+    
+    predictors <- do.call(cbind,ll)
+    
+    #extract only Class_1 probabilities
+    class1.names <- grep("Class_1",names(train.data$predictors),value = TRUE)
+    predictors <- predictors[class1.names]
+
+    if (includeResponse) {
+        
+        response <- factor(ifelse(df$target == 1,"Class_1","Class_0"),
+                           levels=c("Class_1","Class_0"))
+        ans <- list(predictors=predictors,response=response)
+        
+    } else {
+        
+        ans <- list(predictors=predictors)
+        
+    }
+    
+    return(ans)
+}
 
 # data prep Level 0 gbm1 model
 prepL0gbm1ModelData <- function(df,includeResponse=TRUE){

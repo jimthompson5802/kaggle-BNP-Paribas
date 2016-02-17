@@ -38,7 +38,7 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
 MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific parameters
 
 PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
-PREPARE.MODEL.DATA <- prepL1gbm1ModelData
+PREPARE.MODEL.DATA <- prepL1gbm2ModelData
 
 MODEL.COMMENT <- "using only Class_1 probabilites as features"
 
@@ -58,7 +58,7 @@ train.df <- train.df[idx,]
 train.data <- PREPARE.MODEL.DATA(train.df)
 
 library(doMC)
-registerDoMC(cores = 5)
+registerDoMC(cores = 7)
 
 # library(doSNOW)
 # cl <- makeCluster(5,type="SOCK")
