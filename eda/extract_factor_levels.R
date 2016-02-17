@@ -27,5 +27,6 @@ factor.levels <- lapply(attr.data.types$character,function(x){
 })
 
 names(factor.levels) <- attr.data.types$character
+comment(factor.levels) <- "defines factor levels for categorical attributes"
 
 save(factor.levels,file=paste0(DATA.DIR,"/factor_levels.RData"))
