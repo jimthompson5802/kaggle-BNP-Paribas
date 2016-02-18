@@ -87,60 +87,13 @@ flattenDF <- function(df) {
 #####
 #  Model Data Preparation Functions  
 
-# template function for data preparaton of Level 0 Models
-prepL0SkltnModelData <- function(df,includeResponse=TRUE){
-    # df: raw data
-    # if only.predcitors is TRUE then return list(predictors)
-    # if only.predictors is FALSE then return list(predictors,response)
-    
-    require(plyr)
-    require(caret)
-    
-    # load in structures on what to model
-    #     load(paste0(DATA.DIR,"/char_attributes.RData"))
-    #     load(paste0(DATA.DIR,"/numeric_attr_to_model.RData"))
-    #     load(paste0(DATA.DIR,"/pp_medianImpute.RData"))
-    
-    num.vars <- c("v10","v12","v14", "v17", "v32", "v48", "v50", "v51", "v64", "v73", 
-                  "v76","v93","v101","v106","v62","v129")
-    
-    char.vars <- c("v31", "v47", "v66", "v110")
-    
-    if (includeResponse) {
-        df2  <- df[,c("target",num.vars,char.vars),with=FALSE]
-        
-    } else {
-        df2  <- df[,c(num.vars,char.vars),with=FALSE] 
-    }
-    
-    
-    # eliminate unwanted variables
-    predictors <- df2[,c(num.vars,char.vars),with=FALSE]
-    for (x in char.vars) {
-        predictors[[x]] <- factor(predictors[[x]])
-    }
-    
-    
-    if (includeResponse) {
-        
-        response <- factor(ifelse(df2$target == 1,"Class_1","Class_0"),
-                           levels=c("Class_1","Class_0"))
-        ans <- list(predictors=predictors,response=response)
-        
-    } else {
-        
-        ans <- list(predictors=predictors)
-    }
-    
-    return(ans)
-}
-
 # generic function to create Level 1 features from Level 0 model predictions
 createLevel1Features <- function (work.dir,df,...) {
     # work.dir: directory containing Level 0 model
     # df: training data to generate Level 1 features
     
-    # specify Level 0 model working directories
+    force(df)
+    force(work.dir)
     
     # create environment to hold Level 0 Model data structures
     l0.env <- new.env()
@@ -162,8 +115,8 @@ createLevel1Features <- function (work.dir,df,...) {
     return(pred.probs)
 }
 
-# template data prep function for L1 models
-prepL1SkltnModelData <- function(df,includeResponse=TRUE){
+# create Level 2 Features From Level 1 Models - Class_1 probabilities only
+prepL2FeatureSet <- function(df,includeResponse=TRUE){
     # df: raw data
     # if only.predcitors is TRUE then return list(predictors)
     # if only.predictors is FALSE then return list(predictors,response)
@@ -171,22 +124,29 @@ prepL1SkltnModelData <- function(df,includeResponse=TRUE){
     require(plyr)
     require(caret)
     
-    level0.models <- c("./src/L0_skeleton_model")
+    force(df)
     
-    ll <- lapply(level0.models,createLevel1Features,df,includeResponse)
+    level1.models <- c("./src/L1_gbm2",
+                       "./src/L1_rf1")
+    
+    ll <- lapply(level1.models,createLevel1Features,df,includeResponse)
     
     predictors <- do.call(cbind,ll)
+    
+    #extract only Class_1 probabilities
+    class1.names <- grep("Class_1",names(predictors),value = TRUE)
+    predictors <- predictors[class1.names]
     
     if (includeResponse) {
         
         response <- factor(ifelse(df$target == 1,"Class_1","Class_0"),
                            levels=c("Class_1","Class_0"))
         ans <- list(predictors=predictors,response=response)
- 
+        
     } else {
         
         ans <- list(predictors=predictors)
-
+        
     }
     
     return(ans)
@@ -411,3 +371,82 @@ prepL0xgb1ModelData <- function(df,includeResponse=TRUE){
     
     return(ans)
 }
+
+# template function for data preparaton of Level 0 Models
+prepL0SkltnModelData <- function(df,includeResponse=TRUE){
+    # df: raw data
+    # if only.predcitors is TRUE then return list(predictors)
+    # if only.predictors is FALSE then return list(predictors,response)
+    
+    require(plyr)
+    require(caret)
+    
+    # load in structures on what to model
+    #     load(paste0(DATA.DIR,"/char_attributes.RData"))
+    #     load(paste0(DATA.DIR,"/numeric_attr_to_model.RData"))
+    #     load(paste0(DATA.DIR,"/pp_medianImpute.RData"))
+    
+    num.vars <- c("v10","v12","v14", "v17", "v32", "v48", "v50", "v51", "v64", "v73", 
+                  "v76","v93","v101","v106","v62","v129")
+    
+    char.vars <- c("v31", "v47", "v66", "v110")
+    
+    if (includeResponse) {
+        df2  <- df[,c("target",num.vars,char.vars),with=FALSE]
+        
+    } else {
+        df2  <- df[,c(num.vars,char.vars),with=FALSE] 
+    }
+    
+    
+    # eliminate unwanted variables
+    predictors <- df2[,c(num.vars,char.vars),with=FALSE]
+    for (x in char.vars) {
+        predictors[[x]] <- factor(predictors[[x]])
+    }
+    
+    
+    if (includeResponse) {
+        
+        response <- factor(ifelse(df2$target == 1,"Class_1","Class_0"),
+                           levels=c("Class_1","Class_0"))
+        ans <- list(predictors=predictors,response=response)
+        
+    } else {
+        
+        ans <- list(predictors=predictors)
+    }
+    
+    return(ans)
+}
+
+# template data prep function for L1 models
+prepL1SkltnModelData <- function(df,includeResponse=TRUE){
+    # df: raw data
+    # if only.predcitors is TRUE then return list(predictors)
+    # if only.predictors is FALSE then return list(predictors,response)
+    
+    require(plyr)
+    require(caret)
+    
+    level0.models <- c("./src/L0_skeleton_model")
+    
+    ll <- lapply(level0.models,createLevel1Features,df,includeResponse)
+    
+    predictors <- do.call(cbind,ll)
+    
+    if (includeResponse) {
+        
+        response <- factor(ifelse(df$target == 1,"Class_1","Class_0"),
+                           levels=c("Class_1","Class_0"))
+        ans <- list(predictors=predictors,response=response)
+        
+    } else {
+        
+        ans <- list(predictors=predictors)
+        
+    }
+    
+    return(ans)
+}
+

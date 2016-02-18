@@ -4,95 +4,20 @@
 
 
 library(caret)
-library(gbm)
-library(randomForest)
 library(alabama)
-
-source("./src/CommonFunctions.R")
+library(data.table)
 
 # import global variabels and common functions
 source("./src/CommonFunctions.R")
-WORK.DIR <- "./src/ensemble_model"
+WORK.DIR <- "./src/L2_blend"
 
-MODEL.METHOD <- "ensemble"
+MODEL.METHOD <- "blend"
 
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
-load(paste0(DATA.DIR,"/diff_train_calib_test.RData"))
-#
-# make rf prediction with expanded feature set
-#
-source("./src/rf2_model/ModelCommonFunctions.R")
-# read kaggle submission data
-new.df <- prepModelData(calib.raw)
 
-# retrive rf model with expanded features
-load("./src/rf2_model/model_rf_all_data_ntree_4000.RData")
+# training data for blending
+train.data <- prepL2FeatureSet(calib.raw)
 
-# predict class probabilities
-system.time(rf2.probs <- predictInParallel(mdl.fit,new.df$predictors,5,only.predictors = TRUE))
-
-#
-# make one vs all using gbm predictions
-#
-
-predictForOneClass <- function(this.class,mdls,new.data) {
-    pred.probs <- predict(mdls[[this.class]],newdata = new.data,type = "prob")
-    return(pred.probs[,1])
-}
-
-# read kaggle submission data
-source("./src/gbm2_model/ModelCommonFunctions.R")
-new.df <- prepModelData(calib.raw)
-
-# retrive one versus all gbm model
-load(paste0("./src/gbm2_model/model_gbm_one_vs_all_2015-05-08_22_59_43.RData"))
-
-# predict class probabilities
-classes <- paste("Class_",1:9,sep="")  # generate list of classes to model
-ll <- lapply(classes,predictForOneClass,gbm.mdls,new.df$predictors)
-names(ll) <- classes
-
-gbm2.probs <- do.call(cbind,ll)
-
-
-#
-# gbm one vs all model
-# with class specific synthetic features
-#
-
-# import global variabels and common functions
-source("./src/gbm4_model/ModelCommonFunctions.R")
-
-# get class specific feature set
-load("./eda/selected_features_for_each_class.RData")
-
-# read kaggle submission data
-new.df <- calib.raw
-
-d.new.df <- d.calib.raw
-
-#save id vector
-id <- new.df$id
-
-# prep the data for submission
-new.df <- prepModelData(new.df,d.new.df)
-
-# retrive one versus all gbm model
-load("src/gbm4_model/model_gbm_one_vs_all_2015-05-14_12_00_38.RData")
-
-# predict class probabilities
-ll <- lapply(PRODUCT.CLASSES,predictForOneClass,gbm.mdls,new.df$predictors,
-             class.feature.list)
-names(ll) <- PRODUCT.CLASSES
-
-gbm4.probs <- do.call(cbind,ll)
-
-#
-# individual model Log Loss
-#
-cat("rf2",logLossEval(rf2.probs,calib.raw$target),"\n")
-cat("gbm2",logLossEval(gbm2.probs,calib.raw$target),"\n")
-cat("gbm4",logLossEval(gbm4.probs,calib.raw$target),"\n")
 
 
 #
