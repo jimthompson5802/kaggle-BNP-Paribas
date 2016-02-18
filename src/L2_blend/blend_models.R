@@ -23,7 +23,7 @@ train.data <- prepL2FeatureSet(calib.raw)
 #
 #  simple average
 #
-avg.probs <- (rf2.probs + gbm2.probs + gbm4.probs) / 3.0
+avg.probs <- apply(train.data$predictors,1,sum)/ncol(train.data$predictors)
 
 cat("simple avg",logLossEval(avg.probs,calib.raw$target),"\n")
 
@@ -33,46 +33,37 @@ cat("simple avg",logLossEval(avg.probs,calib.raw$target),"\n")
 #
 # determine optimal weighting factor for combining model estimates
 #
-makeEnsembleFunction <- function(target,rf2.probs, gbm2.probs,gbm4.probs) {
+makeBlendFunction <- function(target,probs.mat) {
     
-    probs.mat <- cbind(rf2.probs,gbm2.probs,gbm4.probs)
+    n.probs <- ncol(probs.mat)
     
     function(w) {
-        wmat <- rbind(diag(w[1:9]),diag(w[10:18]),diag(w[19:27]))
         
-        pred.probs <- probs.mat %*% wmat
+        pred.probs <- probs.mat * matrix(rep(w,nrow(probs.mat)),
+                                             ncol=ncol(probs.mat),byrow=TRUE)
         
-        colnames(pred.probs) <- paste0("Class_",1:9)
         logLossEval(pred.probs,target)
     }
 }
 
-ensFunc <- makeEnsembleFunction(calib.raw$target,rf2.probs,gbm2.probs,gbm4.probs)
 
+ensFunc <- makeBlendFunction(train.data$response,as.matrix(train.data$predictors))
 
-
-# grFunc <- makeGradientFunction(calib.raw$target,rf2.probs,gbm2.probs,gbm4.probs)
 
 # define equality constraints
 heq <- function(w) {
-    h <- rep(NA,9)
+    h <- rep(NA,1)
     
-    h[1] <- sum(w[c(1,10,19)]) - 1
-    h[2] <- sum(w[c(2,11,20)]) - 1
-    h[3] <- sum(w[c(3,12,21)]) - 1
-    h[4] <- sum(w[c(4,13,22)]) - 1
-    h[5] <- sum(w[c(5,14,23)]) - 1
-    h[6] <- sum(w[c(6,15,24)]) - 1
-    h[7] <- sum(w[c(7,16,25)]) - 1
-    h[8] <- sum(w[c(8,17,26)]) - 1
-    h[9] <- sum(w[c(9,18,27)]) - 1
+    h[1] <- sum(w) - 1
+
     return(h)
 }
 
-heq.jac <- function(w){
-    
-    return(cbind(diag(1,9),diag(1,9),diag(1,9)))
-}
+# heq.jac <- function(w){
+#     j <- matrix(NA,1,length(w))
+#     j[1,] <- rep(1,length(w))
+# }
+
 
 # define inequality constraints
 hin <- function(w) {
@@ -80,26 +71,27 @@ hin <- function(w) {
     return(c(w,1-w))
     
 }
-
-hin.jac <- function(w) {
-    
-    return(rbind(diag(1,27),diag(-1,27)))
-}
-
-system.time(opt.wts <- constrOptim.nl(rep(1/3,27),fn=ensFunc,  #gr=grFunc,
-                                      hin=hin, hin.jac=hin.jac,
-                                      heq=heq, heq.jac=heq.jac,
-                                      control.outer=list(itmax=1),
+# 
+# hin.jac <- function(w) {
+#     
+#     return(rbind(diag(1,27),diag(-1,27)))
+# }
+# 
+system.time(opt.wts <- constrOptim.nl(rep(1/ncol(train.data$predictors),ncol(train.data$predictors)),
+                                      fn=ensFunc,  #gr=grFunc,
+                                      hin=hin, #hin.jac=hin.jac,
+                                      heq=heq, #heq.jac=heq.jac,
+                                      #control.outer=list(itmax=10),
                                       control.optim=list(trace=2)))
 
 score <- opt.wts$value
-
-
-opt.probs <- opt.wts$par[1] * rf2.probs + opt.wts$par[2] * gbm2.probs + opt.wts$par[3] * gbm4.probs
-
-cat("optimaal weights",logLossEval(opt.probs,calib.raw$target),"\n")
-
-
+# 
+# 
+# opt.probs <- opt.wts$par[1] * rf2.probs + opt.wts$par[2] * gbm2.probs + opt.wts$par[3] * gbm4.probs
+# 
+# cat("optimaal weights",logLossEval(opt.probs,calib.raw$target),"\n")
+# 
+# 
 
 #
 # record Model performance
