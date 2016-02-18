@@ -25,7 +25,7 @@ train.data <- prepL2FeatureSet(calib.raw)
 #
 avg.probs <- apply(train.data$predictors,1,sum)/ncol(train.data$predictors)
 
-cat("simple avg",logLossEval(avg.probs,calib.raw$target),"\n")
+cat("simple avg",logLossEval(avg.probs,train.data$response),"\n")
 
 
 
@@ -41,6 +41,7 @@ makeBlendFunction <- function(target,probs.mat) {
         
         pred.probs <- probs.mat * matrix(rep(w,nrow(probs.mat)),
                                              ncol=ncol(probs.mat),byrow=TRUE)
+        pred.probs <- apply(pred.probs,1,sum)
         
         logLossEval(pred.probs,target)
     }
@@ -85,13 +86,21 @@ system.time(opt.wts <- constrOptim.nl(rep(1/ncol(train.data$predictors),ncol(tra
                                       control.optim=list(trace=2)))
 
 score <- opt.wts$value
-# 
-# 
-# opt.probs <- opt.wts$par[1] * rf2.probs + opt.wts$par[2] * gbm2.probs + opt.wts$par[3] * gbm4.probs
-# 
-# cat("optimaal weights",logLossEval(opt.probs,calib.raw$target),"\n")
-# 
-# 
+
+names(opt.wts$par) <- names(train.data$predictors)
+cat("optimaal weights",opt.wts$par,", training score:",opt.wts$value,"\n")
+
+
+# check score for test data
+test.data <- prepL2FeatureSet(test.raw)
+
+pred.probs <- test.data$predictors * matrix(rep(opt.wts$par,nrow(test.data$predictors)),
+                                            ncol=ncol(test.data$predictors),byrow=TRUE)
+pred.probs <- apply(pred.probs,1,sum)
+
+test.score <- logLossEval(pred.probs,test.data$response)
+
+cat("optimaal weights",opt.wts$par,", test score:",test.score,"\n")
 
 #
 # record Model performance
