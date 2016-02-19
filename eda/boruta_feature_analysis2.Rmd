@@ -1,0 +1,75 @@
+---
+output: html_document
+---
+
+```{r setup}
+library(caret)
+library(data.table)
+library(Boruta)
+library(dplyr)
+library(pROC)
+
+DATA.DIR <- "../data"
+
+# retrive sample data for analysis
+load(paste0(DATA.DIR,"/sample_data_for_eda.RData"))
+load(paste0(DATA.DIR,"/attr_data_types.RData"))
+
+```
+
+
+```{r ,cache=TRUE,dependson="setup"}
+###
+#  initial feature selection based on Boruta package
+###
+
+set.seed(123)
+sample.df <- sample.df[sample(nrow(sample.df),0.2*nrow(sample.df)),]
+
+# retrieve first Boruta analysis results
+load(paste0(DATA.DIR,"/boruta_feature_analysis.RData"))
+
+important.vars <- getSelectedAttributes(bor.results)
+
+# count missing values for all attributes and those deemed important by Boruta
+all.var.na.count <- apply(sample.df,1,function(row){sum(is.na(row))})
+imp.var.na.count <- apply(sample.df[,important.vars,with=FALSE],1,function(row){sum(is.na(row))})
+
+# address any na in numeric data
+pp <- preProcess(sample.df[,c(attr.data.types$numeric,attr.data.types$integer), with=FALSE],
+                 method=c("center","scale","medianImpute"))
+pp.sample.df <- predict(pp,sample.df[,c(attr.data.types$numeric,attr.data.types$integer), with=FALSE])
+
+# create data set
+df <- cbind(pp.sample.df,sample.df[,attr.data.types$character,with=FALSE],
+            all.var.na.count,imp.var.na.count)
+
+set.seed(13)
+bor.results <- Boruta(df,factor(sample.df$target),
+                   maxRuns=76,
+                   doTrace=2)
+
+save(bor.results,file=paste0(DATA.DIR,"/boruta_feature_analysis2.RData"))
+```
+
+
+Print Boruta results
+```{r echo=FALSE}
+cat("\nsummary of Boruta run:\n")
+print(bor.results)
+
+cat("\n\nAttributes determined to be relevant:\n")
+getSelectedAttributes(bor.results)
+```
+
+The following plot shows the relevance of each feature.  
+```{r echo=FALSE,fig.width=9,fig.height=7}
+plot(bor.results)
+```
+
+Detailed results for each explanatory results
+```{r, echo=FALSE}
+cat("\n\nAttribute importance details:\n")
+options(width=125)
+arrange(cbind(attr=rownames(attStats(bor.results)), attStats(bor.results)),desc(medianImp))
+```
