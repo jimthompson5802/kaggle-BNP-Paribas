@@ -1,7 +1,7 @@
 ---
 title: "Initial EDA for BNP Paribas Cardif Competition"
 author: "Jim Thompson"
-date: "11Feb2016"
+date: "`r Sys.Date()`"
 output: html_document
 ---
 
@@ -12,7 +12,7 @@ library(Hmisc)
 library(ggplot2)
 library(plyr)
 library(data.table)
-
+library(Boruta)
 
 # specify attributes used for identifying observations and response
 ID.VAR <- "ID"
@@ -59,6 +59,19 @@ num.missing <- sapply(c(attr.data.types$numeric,attr.data.types$integer),
                       function(x){sum(is.na(train.raw[[x]]))})
 attr.data.types$contain.na <- names(num.missing)[num.missing>0]
 save(attr.data.types,file=paste0(DATA.DIR,"/attr_data_types.RData"))
+
+# create synthetic features for analyis
+# retrieve Boruta analysis results
+load(paste0(DATA.DIR,"/boruta_feature_analysis.RData"))
+
+important.vars <- getSelectedAttributes(bor.results)
+
+# count missing values for all attributes and those deemed important by Boruta
+all.var.na.count <- apply(train.raw,1,function(row){sum(is.na(row))})
+imp.var.na.count <- apply(train.raw[,important.vars,with=FALSE],1,function(row){sum(is.na(row))})
+
+train.raw <- cbind(train.raw,all.var.na.count,imp.var.na.count)
+
 ```
 
 Initial summary look at the variables
@@ -72,13 +85,14 @@ attr.data.types
 # summary stats
 cat("distribution of target:\n")
 table(train.raw$target)/nrow(train.raw)
-summary(train.raw[,candidate.features,with=FALSE])
+summary(train.raw[,c(candidate.features,"all.var.na.count","imp.var.na.count"),with=FALSE])
 ```
 
 Density plot
 ```{r fig.height=34,fig.width=8}
 # convert to long format 
 predictor.vars <- names(data.type[data.type=="numeric" | data.type=="integer"])
+predictor.vars <- c(predictor.vars,"all.var.na.count","imp.var.na.count")
 df <- gather(train.raw[,c(predictor.vars,"ID","target"),with=FALSE], feature, value, one_of(predictor.vars))
 
 ggplot(df) + 
