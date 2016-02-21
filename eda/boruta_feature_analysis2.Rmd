@@ -46,8 +46,8 @@ df <- cbind(pp.sample.df,sample.df[,attr.data.types$character,with=FALSE],
 
 set.seed(13)
 bor.results <- Boruta(df,factor(sample.df$target),
-                   maxRuns=76,
-                   doTrace=2)
+                   maxRuns=101,
+                   doTrace=0)
 
 save(bor.results,file=paste0(DATA.DIR,"/boruta_feature_analysis2.RData"))
 ```
