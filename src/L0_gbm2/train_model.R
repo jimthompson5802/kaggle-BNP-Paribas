@@ -43,7 +43,7 @@ PREPARE.MODEL.DATA <- prepL0FeatureSet2
 MODEL.COMMENT <- "using expanded feature set "
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.2
+FRACTION.TRAIN.DATA <- 1.0
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))

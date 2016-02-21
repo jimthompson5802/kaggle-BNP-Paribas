@@ -195,6 +195,7 @@ prepL1gbm2ModelData <- function(df,includeResponse=TRUE){
     require(caret)
     
     level0.models <- c("./src/L0_gbm1",
+                       "./src/L0_gbm2",
                        "./src/L0_rngr1",
                        "./src/L0_xgb2",
                        "./src/L0_xgb1")
