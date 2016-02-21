@@ -223,6 +223,41 @@ prepL1gbm2ModelData <- function(df,includeResponse=TRUE){
     return(ans)
 }
 
+# using only Class_1 probabilities for features
+prepL1FeatureSet1 <- function(level0.models,df,includeResponse=TRUE){
+    # l0_models: character vector of Level 0 models to include the Level 1 Feature set
+    # df: raw data
+    # if only.predcitors is TRUE then return list(predictors)
+    # if only.predictors is FALSE then return list(predictors,response)
+    
+    require(plyr)
+    require(caret)
+    
+    work.dirs <- paste("./src/",level0.models)
+    
+    ll <- lapply(work.dirs,createLevel1Features,df,includeResponse)
+    
+    predictors <- do.call(cbind,ll)
+    
+    #extract only Class_1 probabilities
+    class1.names <- grep("Class_1",names(predictors),value = TRUE)
+    predictors <- predictors[class1.names]
+    
+    if (includeResponse) {
+        
+        response <- factor(ifelse(df$target == 1,"Class_1","Class_0"),
+                           levels=c("Class_1","Class_0"))
+        ans <- list(predictors=predictors,response=response)
+        
+    } else {
+        
+        ans <- list(predictors=predictors)
+        
+    }
+    
+    return(ans)
+}
+
 # data prep Level 0 gbm1 model
 prepL0gbm1ModelData <- function(df,includeResponse=TRUE){
     # df: raw data
