@@ -38,9 +38,15 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
 MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific parameters
 
 PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
-PREPARE.MODEL.DATA <- prepL1gbm2ModelData
+PREPARE.MODEL.DATA <- prepL1FeatureSet1
 
 MODEL.COMMENT <- "using only Class_1 probabilites as features"
+
+LEVEL0.MODELS <- c("L0_gbm1",
+                   "L0_gbm2",
+                   "L0_rngr1",
+                   "L0_xgb2",
+                   "L0_xgb1")
 
 # amount of data to train
 FRACTION.TRAIN.DATA <- 1.0
@@ -55,7 +61,7 @@ idx <- createDataPartition(train.df$target,p=FRACTION.TRAIN.DATA,list=FALSE)
 train.df <- train.df[idx,]
 
 # prepare data for training
-train.data <- PREPARE.MODEL.DATA(train.df)
+train.data <- PREPARE.MODEL.DATA(LEVEL0.MODELS,train.df)
 
 library(doMC)
 registerDoMC(cores = 7)
@@ -80,7 +86,7 @@ mdl.fit
 # stopCluster(cl)
 
 # prepare data for training
-test.data <- PREPARE.MODEL.DATA(test.raw)
+test.data <- PREPARE.MODEL.DATA(LEVEL0.MODELS,test.raw)
 pred.probs <- predict(mdl.fit,newdata = test.data$predictors,type = "prob")
 
 score <- logLossEval(pred.probs[,1],test.data$response)
@@ -103,7 +109,7 @@ recordModelPerf(paste0(WORK.DIR,"/model_performance.tsv"),
                               model.parms=paste(names(MODEL.SPECIFIC.PARMS),
                                                 as.character(MODEL.SPECIFIC.PARMS),
                                                 sep="=",collapse=","),
-                              comment=MODEL.COMMENT)
+                              comment=paste0(MODEL.COMMENT,":",paste0(LEVEL0.MODELS,collapse=", ")))
 
 modelPerf.df <- read.delim(paste0(WORK.DIR,"/model_performance.tsv"),
                          stringsAsFactors=FALSE)
@@ -122,7 +128,7 @@ if (last.idx == 1 || improved == "Yes") {
     file.name <- gsub(" ","_",file.name)
     file.name <- gsub(":","_",file.name)
     
-    save(PREPARE.MODEL.DATA,mdl.fit,file=paste0(WORK.DIR,file.name))
+    save(LEVEL0.MODELS,PREPARE.MODEL.DATA,mdl.fit,file=paste0(WORK.DIR,file.name))
     
     # estalish pointer to current model
     file.remove(paste0(WORK.DIR,"/this_model.RData"))
