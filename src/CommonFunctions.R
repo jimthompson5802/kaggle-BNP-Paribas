@@ -233,7 +233,7 @@ prepL1FeatureSet1 <- function(level0.models,df,includeResponse=TRUE){
     require(plyr)
     require(caret)
     
-    work.dirs <- paste("./src/",level0.models)
+    work.dirs <- paste0("./src/",level0.models)
     
     ll <- lapply(work.dirs,createLevel1Features,df,includeResponse)
     
