@@ -45,6 +45,7 @@ MODEL.COMMENT <- "using only Class_1 probabilites as features"
 LEVEL0.MODELS <- c("L0_gbm1",
                    "L0_gbm2",
                    "L0_rngr1",
+                   "L0_xgb3",
                    "L0_xgb2",
                    "L0_xgb1")
 
