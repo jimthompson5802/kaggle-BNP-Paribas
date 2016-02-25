@@ -28,7 +28,7 @@ calib.raw <- raw[idx]
 test.raw <- raw[-idx]
 
 set.seed(17)
-idx <- createDataPartition(train.raw$target, p=0.5, list=FALSE)
+idx <- createDataPartition(train.raw$target, p=0.75, list=FALSE)
 train0.raw <- train.raw[idx]
 train1.raw <- train.raw[-idx]
 
