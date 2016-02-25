@@ -38,12 +38,12 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
 MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific parameters
 
 PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
-PREPARE.MODEL.DATA <- prepL0gbm1ModelData
+PREPARE.MODEL.DATA <- prepL0FeatureSet1
 
 MODEL.COMMENT <- "modeling with pre-defined factor levels"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 1.0
+FRACTION.TRAIN.DATA <- 0.25
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
