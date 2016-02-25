@@ -258,8 +258,8 @@ prepL1FeatureSet1 <- function(level0.models,df,includeResponse=TRUE){
     return(ans)
 }
 
-# data prep Level 0 gbm1 model
-prepL0gbm1ModelData <- function(df,includeResponse=TRUE){
+# Boruta selected attributes, characters set as factor levels
+prepL0FeatureSet1 <- function(df,includeResponse=TRUE){
     # df: raw data
     # if only.predcitors is TRUE then return list(predictors)
     # if only.predictors is FALSE then return list(predictors,response)
