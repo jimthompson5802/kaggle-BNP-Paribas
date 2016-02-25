@@ -16,7 +16,7 @@ source("./src/CommonFunctions.R")
 # set caret training parameters
 CARET.TRAIN.PARMS <- list(method="xgbTree")   # Replace MODEL.METHOD with appropriate caret model
 
-CARET.TUNE.GRID <-  expand.grid(nrounds=500, 
+CARET.TUNE.GRID <-  expand.grid(nrounds=c(100,200,300), 
                                 max_depth=10, 
                                 eta=0.01, 
                                 gamma=0.1, 
@@ -27,8 +27,8 @@ CARET.TUNE.GRID <-  expand.grid(nrounds=500,
 #CARET.TUNE.GRID <- expand.grid(nIter=c(100))
 
 # model specific training parameter
-CARET.TRAIN.CTRL <- trainControl(method="none",
-                                 number=1,
+CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
+                                 number=5,
                                  repeats=1,
                                  verboseIter=FALSE,
                                  classProbs=TRUE,
@@ -40,7 +40,7 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
                            tuneLength=5,
                            metric="LogLoss")
 
-MODEL.SPECIFIC.PARMS <- list(verbose=0)
+MODEL.SPECIFIC.PARMS <- list(verbose=0,nthread=6)
                              
 
 PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
