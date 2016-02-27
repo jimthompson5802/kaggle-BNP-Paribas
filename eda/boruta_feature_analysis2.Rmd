@@ -24,7 +24,7 @@ load(paste0(DATA.DIR,"/attr_data_types.RData"))
 ###
 
 set.seed(123)
-sample.df <- sample.df[sample(nrow(sample.df),0.2*nrow(sample.df)),]
+sample.df <- sample.df[sample(nrow(sample.df),0.3*nrow(sample.df)),]
 
 # retrieve first Boruta analysis results
 load(paste0(DATA.DIR,"/boruta_feature_analysis.RData"))
