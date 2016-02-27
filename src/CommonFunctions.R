@@ -97,7 +97,8 @@ createLevel1Features <- function (work.dir,df,...) {
     
     # create environment to hold Level 0 Model data structures
     l0.env <- new.env()
-    load(Sys.readlink(paste0(work.dir,"/this_model.RData")),envir=l0.env)
+    model.file.name <- readLines(paste0(WORK.DIR,"/this_model"))
+    load(paste0(WORK.DIR,"/",model.file.name),envir=l0.env)
     
     #prepare data for L0 model
     train.data <- l0.env$PREPARE.MODEL.DATA(df,...)
