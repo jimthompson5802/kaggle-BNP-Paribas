@@ -259,6 +259,7 @@ prepL1FeatureSet1 <- function(level0.models,df,includeResponse=TRUE){
 }
 
 # Boruta selected attributes, characters set as factor levels
+# original Boruta analysis
 prepL0FeatureSet1 <- function(df,includeResponse=TRUE){
     # df: raw data
     # if only.predcitors is TRUE then return list(predictors)
@@ -271,10 +272,7 @@ prepL0FeatureSet1 <- function(df,includeResponse=TRUE){
    # use only attributes confirmed by Boruta feature analysis
     load(paste0(DATA.DIR,"/boruta_feature_analysis.RData"))
     
-    predictor.vars <- getSelectedAttributes(bor.results)
-    
-    
-#     # eliminate unwanted variables
+    # eliminate unwanted variables
     predictors <- df[,predictor.vars,with=FALSE]
     
     # get data types and change all strings to factors
@@ -303,7 +301,8 @@ prepL0FeatureSet1 <- function(df,includeResponse=TRUE){
     return(ans)
 }
 
-# Features selected from expanded Boruta analysis
+# Features selected from expanded Boruta analysis 
+# character attributes set as factor level numbers
 prepL0FeatureSet2 <- function(df,includeResponse=TRUE){
     # df: raw data
     # if only.predcitors is TRUE then return list(predictors)
@@ -316,11 +315,15 @@ prepL0FeatureSet2 <- function(df,includeResponse=TRUE){
     # use only attributes confirmed by Boruta feature analysis
     load(paste0(DATA.DIR,"/boruta_feature_analysis2.RData"))
     
-    predictor.vars <- getSelectedAttributes(bor.results)
+    predictor.vars <- setdiff(getSelectedAttributes(bor.results),
+                              c("all.var.na.count","imp.var.na.count"))
     
+    # count missing values for all attributes and those deemed important by Boruta
+    all.var.na.count <- apply(df,1,function(row){sum(is.na(row))})
+    imp.var.na.count <- apply(df[,predictor.vars,with=FALSE],1,function(row){sum(is.na(row))})
     
-    #     # eliminate unwanted variables
-    predictors <- df[,predictor.vars,with=FALSE]
+    # eliminate unwanted variables
+    predictors <- cbind(df[,predictor.vars,with=FALSE],all.var.na.count,imp.var.na.count)
     
     # get data types and change all strings to factors
     load(paste0(DATA.DIR,"/attr_data_types.RData"))

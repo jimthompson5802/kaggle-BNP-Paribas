@@ -16,13 +16,15 @@ source("./src/CommonFunctions.R")
 # set caret training parameters
 CARET.TRAIN.PARMS <- list(method="gbm")   # Replace MODEL.METHOD with appropriate caret model
 
-CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
+#CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
+CARET.TUNE.GRID <- expand.grid(interaction.depth=5,n.trees=1000,
+                               shrinkage=0.01,n.minobsinnode=10)
 
 # user specified tuning parameters
 #CARET.TUNE.GRID <- expand.grid(nIter=c(100))
 
 # model specific training parameter
-CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
+CARET.TRAIN.CTRL <- trainControl(method="none",
                                  number=5,
                                  repeats=1,
                                  verboseIter=FALSE,
@@ -118,15 +120,14 @@ if (last.idx == 1 || improved == "Yes") {
     cat("found improved model, saving...\n")
     flush.console()
     #yes we have improvement or first score, save generated model
-    file.name <- paste0("/model_",mdl.fit$method,"_",modelPerf.df$date.time[last.idx],".RData")
+    file.name <- paste0("model_",mdl.fit$method,"_",modelPerf.df$date.time[last.idx],".RData")
     file.name <- gsub(" ","_",file.name)
     file.name <- gsub(":","_",file.name)
     
-    save(mdl.fit,PREPARE.MODEL.DATA,file=paste0(WORK.DIR,file.name))
+    save(mdl.fit,PREPARE.MODEL.DATA,file=paste0(WORK.DIR,"/",file.name))
     
     # estalish pointer to current model
-    file.remove(paste0(WORK.DIR,"/this_model.RData"))
-    file.symlink(paste0(WORK.DIR,file.name),paste0(WORK.DIR,"/this_model.RData"))
+    writeLines(file.name,paste0(WORK.DIR,"/this_model"))
 } else {
     cat("no improvement!!!\n")
     flush.console()
