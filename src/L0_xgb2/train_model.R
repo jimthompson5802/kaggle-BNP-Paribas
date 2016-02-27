@@ -1,5 +1,5 @@
 ###
-# training skeleton
+# xgboost - xgbTree
 ###
 
 library(data.table)
