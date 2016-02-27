@@ -380,6 +380,10 @@ prepL0FeatureSet2a <- function(df,includeResponse=TRUE){
     load(paste0(DATA.DIR,"/attr_data_types.RData"))
     load(paste0(DATA.DIR,"/factor_levels.RData"))
     
+    # set NA to -999
+    num.vars <- intersect(predictor.vars,c(attr.data.types$numeric,attr.data.types$integer))
+    predictors[,num.vars][is.na(predictors[,num.vars])] <- -999
+    
     # standardize factor levels for modeling
     char.attr <- intersect(predictor.vars,attr.data.types$character)
     
