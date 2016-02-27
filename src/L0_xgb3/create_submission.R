@@ -14,7 +14,8 @@ WORK.DIR <- "./src/L0_xgb3"   # directory where model artifacts are stored
 source("./src/CommonFunctions.R")
 
 # retrive generated model-name created in training run
-load(Sys.readlink(paste0(WORK.DIR,"/this_model.RData")))
+model.file.name <- readLines(paste0(WORK.DIR,"/this_model"))
+load(paste0(WORK.DIR,"/",model.file.name))
 
 # read kaggle submission data
 new.df <- fread(paste0(DATA.DIR,"/test.csv"))
