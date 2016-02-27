@@ -304,6 +304,7 @@ prepL0FeatureSet1 <- function(df,includeResponse=TRUE){
 # Features selected from expanded Boruta analysis 
 # character attributes set as factor level numbers
 prepL0FeatureSet2 <- function(df,includeResponse=TRUE){
+    # prepL0FeatureSet2
     # df: raw data
     # if only.predcitors is TRUE then return list(predictors)
     # if only.predictors is FALSE then return list(predictors,response)
@@ -355,6 +356,7 @@ prepL0FeatureSet2 <- function(df,includeResponse=TRUE){
 # character attributes set as factor level numbers
 # set numeric NA to -999
 prepL0FeatureSet2a <- function(df,includeResponse=TRUE){
+    # prepL0FeatureSet2a
     # df: raw data
     # if only.predcitors is TRUE then return list(predictors)
     # if only.predictors is FALSE then return list(predictors,response)
@@ -381,14 +383,17 @@ prepL0FeatureSet2a <- function(df,includeResponse=TRUE){
     load(paste0(DATA.DIR,"/factor_levels.RData"))
     
     # set NA to -999
-    num.vars <- intersect(predictor.vars,c(attr.data.types$numeric,attr.data.types$integer))
-    predictors[,num.vars,with=FALSE][is.na(predictors[,num.vars,with=FALSE])] <- -999
+    num.attr <- intersect(predictor.vars,c(attr.data.types$numeric,attr.data.types$integer))
+    for (x in num.attr) {
+        idx <- is.na(predictors[[x]])
+        predictors[[x]][idx] <- -999
+    }
     
     # standardize factor levels for modeling
     char.attr <- intersect(predictor.vars,attr.data.types$character)
     
     for (x in char.attr) {
-        predictors[[x]] <- factor(predictors[[x]],levels = factor.levels[[x]])
+        predictors[[x]] <- as.integer(factor(predictors[[x]],levels = factor.levels[[x]]))
     }
     
     
