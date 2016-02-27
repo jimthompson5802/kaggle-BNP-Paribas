@@ -16,13 +16,13 @@ source("./src/CommonFunctions.R")
 # set caret training parameters
 CARET.TRAIN.PARMS <- list(method="ranger")   # Replace MODEL.METHOD with appropriate caret model
 
-CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
+#CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
 
 # user specified tuning parameters
-#CARET.TUNE.GRID <- expand.grid(nIter=c(100))
+CARET.TUNE.GRID <- expand.grid(mtry=c(29))
 
 # model specific training parameter
-CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
+CARET.TRAIN.CTRL <- trainControl(method="none",
                                  number=5,
                                  repeats=1,
                                  verboseIter=FALSE,
@@ -36,7 +36,7 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
                            tuneLength=5,
                            metric="LogLoss")
 
-MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific parameters
+MODEL.SPECIFIC.PARMS <- list(verbose=FALSE,num.trees=750) #NULL # Other model specific parameters
 
 PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
 PREPARE.MODEL.DATA <- prepL0FeatureSet2a
@@ -44,7 +44,7 @@ PREPARE.MODEL.DATA <- prepL0FeatureSet2a
 MODEL.COMMENT <- "expanded boruta feature set, imputing median values"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.5
+FRACTION.TRAIN.DATA <- 1.0
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
