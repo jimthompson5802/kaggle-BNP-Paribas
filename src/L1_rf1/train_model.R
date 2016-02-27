@@ -39,13 +39,9 @@ MODEL.SPECIFIC.PARMS <- list(do.trace=FALSE) #NULL # Other model specific parame
 
 #PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
 PREPARE.MODEL.DATA <- prepL1FeatureSet1
-LEVEL0.MODELS <- c("L0_gbm1",
-                   "L0_gbm2",
-                   "L0_rngr1",
-                   "L0_xgb3",
-                   "L0_xgb2",
-                   "L0_xgb1")
-
+LEVEL0.MODELS <- c("L0_gbm2",
+                   #"L0_rngr1",
+                   "L0_xgb3")
 
 
 MODEL.COMMENT <- "using only Class_1 probabilites as features"
@@ -126,15 +122,14 @@ if (last.idx == 1 || improved == "Yes") {
     cat("found improved model, saving...\n")
     flush.console()
     #yes we have improvement or first score, save generated model
-    file.name <- paste0("/model_",mdl.fit$method,"_",modelPerf.df$date.time[last.idx],".RData")
+    file.name <- paste0("model_",mdl.fit$method,"_",modelPerf.df$date.time[last.idx],".RData")
     file.name <- gsub(" ","_",file.name)
     file.name <- gsub(":","_",file.name)
     
-    save(LEVEL0.MODELS,PREPARE.MODEL.DATA,mdl.fit,file=paste0(WORK.DIR,file.name))
+    save(LEVEL0.MODELS,PREPARE.MODEL.DATA,mdl.fit,file=paste0(WORK.DIR,"/",file.name))
     
     # estalish pointer to current model
-    file.remove(paste0(WORK.DIR,"/this_model.RData"))
-    file.symlink(paste0(WORK.DIR,file.name),paste0(WORK.DIR,"/this_model.RData"))
+    writeLines(file.name,paste0(WORK.DIR,"/this_model"))
 } else {
     cat("no improvement!!!\n")
     flush.console()
