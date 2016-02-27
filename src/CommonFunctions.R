@@ -407,6 +407,59 @@ prepL0FeatureSet2a <- function(df,includeResponse=TRUE){
     return(ans)
 }
 
+# All Features in raw format including synthetic features
+# Categorical represented as integers
+# numeric NA set to -999
+prepL0FeatureSetAll <- function(df,includeResponse=TRUE){
+    # prepL0FeatureSetAll
+    # df: raw data
+    # if only.predcitors is TRUE then return list(predictors)
+    # if only.predictors is FALSE then return list(predictors,response)
+    
+    require(plyr)
+    require(caret)
+
+    predictor.vars <- setdiff(names(df),c("ID","target"))
+    
+    # count missing values for all attributes and those deemed important by Boruta
+    all.var.na.count <- apply(df,1,function(row){sum(is.na(row))})
+
+    # eliminate unwanted variables
+    predictors <- cbind(df,all.var.na.count)
+    
+    # get data types and change all strings to factors
+    load(paste0(DATA.DIR,"/attr_data_types.RData"))
+    load(paste0(DATA.DIR,"/factor_levels.RData"))
+    
+    # set NA to -999
+    num.attr <- intersect(predictor.vars,c(attr.data.types$numeric,attr.data.types$integer))
+    for (x in num.attr) {
+        idx <- is.na(predictors[[x]])
+        predictors[[x]][idx] <- -999
+    }
+    
+    # standardize factor levels for modeling
+    char.attr <- intersect(predictor.vars,attr.data.types$character)
+    
+    for (x in char.attr) {
+        predictors[[x]] <- as.integer(factor(predictors[[x]],levels = factor.levels[[x]]))
+    }
+    
+    
+    if (includeResponse) {
+        
+        response <- factor(ifelse(df$target == 1,"Class_1","Class_0"),
+                           levels=c("Class_1","Class_0"))
+        ans <- list(predictors=predictors,response=response)
+        
+    } else {
+        
+        ans <- list(predictors=predictors)
+    }
+    
+    return(ans)
+}
+
 # data prep Level 0 rngr1 model
 prepL0rngr1ModelData <- function(df,includeResponse=TRUE){
     # df: raw data
