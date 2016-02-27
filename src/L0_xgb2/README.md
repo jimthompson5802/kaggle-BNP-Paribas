@@ -6,7 +6,7 @@ caret based code templates for training and testing models.  Includes function
 to capture training run-time statistics.
 
 ## Model
-xgboost - xgbLinear
+xgboost - xgbTree with all raw features and synthetic features
 
 
 
