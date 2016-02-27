@@ -39,9 +39,9 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
 MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific parameters
 
 PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
-PREPARE.MODEL.DATA <- prepL0rngr1ModelData
+PREPARE.MODEL.DATA <- prepL0FeatureSet2a
 
-MODEL.COMMENT <- "modeling with pre-defined factor levels, imputing median values"
+MODEL.COMMENT <- "expanded boruta feature set, imputing median values"
 
 # amount of data to train
 FRACTION.TRAIN.DATA <- 0.5
@@ -119,15 +119,14 @@ if (last.idx == 1 || improved == "Yes") {
     cat("found improved model, saving...\n")
     flush.console()
     #yes we have improvement or first score, save generated model
-    file.name <- paste0("/model_",mdl.fit$method,"_",modelPerf.df$date.time[last.idx],".RData")
+    file.name <- paste0("model_",mdl.fit$method,"_",modelPerf.df$date.time[last.idx],".RData")
     file.name <- gsub(" ","_",file.name)
     file.name <- gsub(":","_",file.name)
     
-    save(mdl.fit,PREPARE.MODEL.DATA,file=paste0(WORK.DIR,file.name))
+    save(mdl.fit,PREPARE.MODEL.DATA,file=paste0(WORK.DIR,"/",file.name))
     
     # estalish pointer to current model
-    file.remove(paste0(WORK.DIR,"/this_model.RData"))
-    file.symlink(paste0(WORK.DIR,file.name),paste0(WORK.DIR,"/this_model.RData"))
+    writeLines(file.name,paste0(WORK.DIR,"/this_model"))
 } else {
     cat("no improvement!!!\n")
     flush.console()
