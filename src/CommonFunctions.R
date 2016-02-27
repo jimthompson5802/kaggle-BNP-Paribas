@@ -351,6 +351,57 @@ prepL0FeatureSet2 <- function(df,includeResponse=TRUE){
     return(ans)
 }
 
+# Features selected from expanded Boruta analysis 
+# character attributes set as factor level numbers
+# set numeric NA to -999
+prepL0FeatureSet2a <- function(df,includeResponse=TRUE){
+    # df: raw data
+    # if only.predcitors is TRUE then return list(predictors)
+    # if only.predictors is FALSE then return list(predictors,response)
+    
+    require(plyr)
+    require(caret)
+    require(Boruta)
+    
+    # use only attributes confirmed by Boruta feature analysis
+    load(paste0(DATA.DIR,"/boruta_feature_analysis2.RData"))
+    
+    predictor.vars <- setdiff(getSelectedAttributes(bor.results),
+                              c("all.var.na.count","imp.var.na.count"))
+    
+    # count missing values for all attributes and those deemed important by Boruta
+    all.var.na.count <- apply(df,1,function(row){sum(is.na(row))})
+    imp.var.na.count <- apply(df[,predictor.vars,with=FALSE],1,function(row){sum(is.na(row))})
+    
+    # eliminate unwanted variables
+    predictors <- cbind(df[,predictor.vars,with=FALSE],all.var.na.count,imp.var.na.count)
+    
+    # get data types and change all strings to factors
+    load(paste0(DATA.DIR,"/attr_data_types.RData"))
+    load(paste0(DATA.DIR,"/factor_levels.RData"))
+    
+    # standardize factor levels for modeling
+    char.attr <- intersect(predictor.vars,attr.data.types$character)
+    
+    for (x in char.attr) {
+        predictors[[x]] <- factor(predictors[[x]],levels = factor.levels[[x]])
+    }
+    
+    
+    if (includeResponse) {
+        
+        response <- factor(ifelse(df$target == 1,"Class_1","Class_0"),
+                           levels=c("Class_1","Class_0"))
+        ans <- list(predictors=predictors,response=response)
+        
+    } else {
+        
+        ans <- list(predictors=predictors)
+    }
+    
+    return(ans)
+}
+
 # data prep Level 0 rngr1 model
 prepL0rngr1ModelData <- function(df,includeResponse=TRUE){
     # df: raw data
