@@ -44,6 +44,7 @@ MODEL.COMMENT <- "Only Class_1 probabilites as features, expanded Boruta feature
 
 LEVEL0.MODELS <- c("L0_gbm2",
                    #"L0_rngr1",
+                   "L0_xgb2",
                    "L0_xgb3")
 
 # amount of data to train
