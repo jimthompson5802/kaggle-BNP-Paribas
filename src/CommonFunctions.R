@@ -88,17 +88,17 @@ flattenDF <- function(df) {
 #  Model Data Preparation Functions  
 
 # generic function to create Level 1 features from Level 0 model predictions
-createLevel1Features <- function (work.dir,df,...) {
+createLevel1Features <- function (model.dir,df,...) {
     # work.dir: directory containing Level 0 model
     # df: training data to generate Level 1 features
     
     force(df)
-    force(work.dir)
+    force(model.dir)
     
     # create environment to hold Level 0 Model data structures
     l0.env <- new.env()
-    model.file.name <- readLines(paste0(WORK.DIR,"/this_model"))
-    load(paste0(WORK.DIR,"/",model.file.name),envir=l0.env)
+    model.file.name <- readLines(paste0("./src/",model.dir,"/this_model"))
+    load(paste0("./src/",model.dir,"/",model.file.name),envir=l0.env)
     
     #prepare data for L0 model
     train.data <- l0.env$PREPARE.MODEL.DATA(df,...)
@@ -107,10 +107,7 @@ createLevel1Features <- function (work.dir,df,...) {
     pred.probs <- predict(l0.env$mdl.fit,newdata = train.data$predictors,type = "prob")
     
     # Attribute Level 0 model to the created predictions
-    file.name <- Sys.readlink(paste0(work.dir,"/this_model.RData"))
-    file.name.parts <- unlist(strsplit(file.name,"/"))
-    model.level <- file.name.parts[length(file.name.parts) - 1]
-    new.names <- paste0(model.level,".",names(pred.probs))
+    new.names <- paste0(model.dir,".",names(pred.probs))
     names(pred.probs) <- new.names
     
     return(pred.probs)
@@ -234,9 +231,7 @@ prepL1FeatureSet1 <- function(level0.models,df,includeResponse=TRUE){
     require(plyr)
     require(caret)
     
-    work.dirs <- paste0("./src/",level0.models)
-    
-    ll <- lapply(work.dirs,createLevel1Features,df,includeResponse)
+    ll <- lapply(level0.models,createLevel1Features,df,includeResponse)
     
     predictors <- do.call(cbind,ll)
     
