@@ -425,7 +425,7 @@ prepL0FeatureSetAll <- function(df,includeResponse=TRUE){
     all.var.na.count <- apply(df,1,function(row){sum(is.na(row))})
 
     # eliminate unwanted variables
-    predictors <- cbind(df,all.var.na.count)
+    predictors <- cbind(df[,predictor.vars,with=FALSE],all.var.na.count)
     
     # get data types and change all strings to factors
     load(paste0(DATA.DIR,"/attr_data_types.RData"))
