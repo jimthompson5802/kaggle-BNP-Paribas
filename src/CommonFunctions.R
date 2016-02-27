@@ -418,7 +418,7 @@ prepL0rngr1ModelData <- function(df,includeResponse=TRUE){
     require(Boruta)
     
     # use only attributes confirmed by Boruta feature analysis
-    load(paste0(DATA.DIR,"/boruta_feature_analysis.RData"))
+    load(paste0(DATA.DIR,"/boruta_feature_analysis2.RData"))
     
     predictor.vars <- getSelectedAttributes(bor.results)
     
