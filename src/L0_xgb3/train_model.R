@@ -16,7 +16,7 @@ source("./src/CommonFunctions.R")
 # set caret training parameters
 CARET.TRAIN.PARMS <- list(method="xgbTree")   # Replace MODEL.METHOD with appropriate caret model
 
-CARET.TUNE.GRID <-  expand.grid(nrounds=100, 
+CARET.TUNE.GRID <-  expand.grid(nrounds=500, 
                                 max_depth=10, 
                                 eta=0.01, 
                                 gamma=0.1, 
@@ -44,12 +44,12 @@ MODEL.SPECIFIC.PARMS <- list(verbose=0)
                              
 
 PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
-PREPARE.MODEL.DATA <- prepL0FeatureSet2
+PREPARE.MODEL.DATA <- prepL0FeatureSet2a
 
 MODEL.COMMENT <- "custom xgb tree model"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.3
+FRACTION.TRAIN.DATA <- 1.0
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
@@ -128,7 +128,7 @@ if (last.idx == 1 || improved == "Yes") {
     file.name <- gsub(" ","_",file.name)
     file.name <- gsub(":","_",file.name)
     
-    save(mdl.fit,PREPARE.MODEL.DATA,file=paste0(WORK.DIR,file.name))
+    save(mdl.fit,PREPARE.MODEL.DATA,file=paste0(WORK.DIR,"/",file.name))
     
     # estalish pointer to current model
     writeLines(file.name,paste0(WORK.DIR,"/this_model"))
