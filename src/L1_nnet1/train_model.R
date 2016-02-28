@@ -48,7 +48,7 @@ LEVEL0.MODELS <- c("L0_gbm2",
                    "L0_xgb3")
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.5
+FRACTION.TRAIN.DATA <- 1.0
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
