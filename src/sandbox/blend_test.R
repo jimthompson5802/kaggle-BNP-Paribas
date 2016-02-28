@@ -42,13 +42,21 @@ prepL2FeatureSet <- function(level1.models,df,includeResponse=TRUE){
     #prepL2FeatureSet
     #level1.models: vector of Level 1 model ids 
     #df: data set to prepare
+    force(level1.models)
     
     ll <- lapply(level1.models,createL2FeatureForOneModel,df)
     
     predictors <- do.call(cbind,ll)
     
+
+    
+#     ll <- lapply(predictors,function(x){x$predictors})
+#     predictors <- do.call(cbind,ll)
+#     names(predictors) <- paste(level1.models,"Class_1",sep=".")
+    
+    
     if (includeResponse) {
-        
+       
         response <- factor(ifelse(df$target == 1,"Class_1","Class_0"),
                            levels=c("Class_1","Class_0"))
         ans <- list(predictors=predictors,response=response)
@@ -63,6 +71,7 @@ prepL2FeatureSet <- function(level1.models,df,includeResponse=TRUE){
     
 }
 
-x <- lapply(level1.models,prepL2FeatureSet,train.df,FALSE)
+x <- lapply(level1.models,prepL2FeatureSet,train.df,TRUE)
+str(x)
 
 # y <- createL2FeatureForOneModel("L1_nnet1",train.df)
