@@ -114,7 +114,7 @@ createLevel1Features <- function (model.dir,df,...) {
 }
 
 # create Level 2 Features From Level 1 Models - Class_1 probabilities only
-prepL2FeatureSet <- function(df,includeResponse=TRUE){
+prepL2FeatureSet <- function(level1.models,includeResponse=TRUE){
     # df: raw data
     # if only.predcitors is TRUE then return list(predictors)
     # if only.predictors is FALSE then return list(predictors,response)
@@ -122,10 +122,7 @@ prepL2FeatureSet <- function(df,includeResponse=TRUE){
     require(plyr)
     require(caret)
     
-    force(df)
-    
-    level1.models <- c("./src/L1_gbm2",
-                       "./src/L1_rf1")
+    force(level1.models)
     
     ll <- lapply(level1.models,createLevel1Features,df,includeResponse)
     
