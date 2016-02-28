@@ -30,10 +30,10 @@ createL2FeatureForOneModel <- function(level1.model.dir,df,includeResponse=FALSE
     
     pred.probs <- predict(l1.env$mdl.fit,newdata=predictors,type="prob")
     
-    #extract only Class_1 probabilities
-    predictors <- data.table(pred.probs[,"Class_1"])
+#     #extract only Class_1 probabilities
+#     predictors <- data.table(pred.probs[,"Class_1"])
     
-    return(predictors)
+    return(pred.probs[,"Class_1"])
     
 }
 
@@ -63,6 +63,6 @@ prepL2FeatureSet <- function(level1.models,df,includeResponse=TRUE){
     
 }
 
-# x <- lapply(level1.models,prepL2FeatureSet,train.df)
+x <- lapply(level1.models,prepL2FeatureSet,train.df,FALSE)
 
-y <- createL2FeatureForOneModel("L1_nnet1",df)
+# y <- createL2FeatureForOneModel("L1_nnet1",train.df)
