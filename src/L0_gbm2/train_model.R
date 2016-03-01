@@ -42,14 +42,14 @@ MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific paramet
 PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
 PREPARE.MODEL.DATA <- prepL0FeatureSet2
 
-MODEL.COMMENT <- "using expanded feature set "
+MODEL.COMMENT <- "using expanded feature set, combined train0 and train1 "
 
 # amount of data to train
 FRACTION.TRAIN.DATA <- 1.0
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
-train.df <- rbind(train0.raw)
+train.df <- rbind(train0.raw,train1.raw)
 
 # extract subset for inital training
 set.seed(29)
