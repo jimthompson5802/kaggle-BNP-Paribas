@@ -11,7 +11,7 @@ load(paste0(DATA.DIR,"/train_calib_test.RData"))
 
 train.df <- train0.raw[1:100,]
 
-level1.models <- c("L1_gbm2","L1_nnet1")
+list.of.models <- c("L1_gbm2","L1_nnet1")
 
 createL2FeatureForOneModel <- function(level1.model.dir,df,includeResponse=FALSE){
     #level1.model.dir: model directory for Level 1 model
@@ -28,17 +28,19 @@ createL2FeatureForOneModel <- function(level1.model.dir,df,includeResponse=FALSE
     
     predictors <- do.call(cbind,ll)
     
+    #extract only Class_1 probabilities
+    class1.names <- grep("Class_1",names(predictors),value = TRUE)
+    predictors <- predictors[class1.names]
+    
     pred.probs <- predict(l1.env$mdl.fit,newdata=predictors,type="prob")
     
-#     #extract only Class_1 probabilities
-#     predictors <- data.table(pred.probs[,"Class_1"])
     
-    return(pred.probs[,"Class_1"])
+    return(as.array(pred.probs$Class_1))
     
 }
 
 
-prepL2FeatureSet <- function(level1.models,df,includeResponse=TRUE){
+prepL2FeatureSetX <- function(level1.models,df,includeResponse=TRUE){
     #prepL2FeatureSet
     #level1.models: vector of Level 1 model ids 
     #df: data set to prepare
@@ -71,7 +73,10 @@ prepL2FeatureSet <- function(level1.models,df,includeResponse=TRUE){
     
 }
 
-x <- lapply(level1.models,prepL2FeatureSet,train.df,TRUE)
+x <- lapply(list.of.models,prepL2FeatureSetX,train.df,TRUE)
 str(x)
+
+# do.call(cbind,lapply(x,function(x){x[[1]]}))
+
 
 # y <- createL2FeatureForOneModel("L1_nnet1",train.df)
