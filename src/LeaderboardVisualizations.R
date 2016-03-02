@@ -142,7 +142,7 @@ p3 <- ggplot(data=ranking.df) +
 p4 <- ggplot(ranking.df) +
     geom_bar(aes(x=report.date, y=team.percentile),color="red", fill="red",stat="identity") +
     scale_y_continuous(limits=c(0,100),minor_breaks = seq(0 , 100, 5), breaks = seq(0, 100, 10)) +
-    xlim(min(ranking.df$report.date),max(ranking.df$report.date)) +
+    xlim(min(ranking.df$report.date),max(ranking.df$report.date+1)) +
     xlab("SubmissionDate") +
     ylab("(Worse)  Percentile  (Better)") +
     ggtitle(paste("Team Standing for",TEAM.NAME)) +
