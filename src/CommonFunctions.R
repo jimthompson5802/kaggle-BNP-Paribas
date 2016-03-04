@@ -87,65 +87,65 @@ flattenDF <- function(df) {
 #####
 #  Model Data Preparation Functions  
 
-# generic function to create Level 2 features from Level 1 model predictions
-createLevel2Features <- function (model.dir,df,...) {
-    # model.dir: directory containing Level 0 model
-    # df: training data to generate Level 1 features
-    
-    force(df)
-    force(model.dir)
-    
-    # create environment to hold Level 0 Model data structures
-    l0.env <- new.env()
-    model.file.name <- readLines(paste0("./src/",model.dir,"/this_model"))
-    load(paste0("./src/",model.dir,"/",model.file.name),envir=l0.env)
-    
-    #prepare data for L0 model
-    train.data <- l0.env$PREPARE.MODEL.DATA(df,...)
-    
-    # create Level 1 features
-    pred.probs <- predict(l0.env$mdl.fit,newdata = train.data$predictors,type = "prob")
-    
-    # Attribute Level 0 model to the created predictions
-    new.names <- paste0(model.dir,".",names(pred.probs))
-    names(pred.probs) <- new.names
-    
-    return(pred.probs)
-}
-
-# create Level 2 Features From Level 1 Models - Class_1 probabilities only
-prepL2FeatureSet <- function(level1.models,includeResponse=TRUE){
-    # df: raw data
-    # if only.predcitors is TRUE then return list(predictors)
-    # if only.predictors is FALSE then return list(predictors,response)
-    
-    require(plyr)
-    require(caret)
-    
-    force(level1.models)
-    
-    ll <- lapply(level1.models,createLevel1Features,df,includeResponse)
-    
-    predictors <- do.call(cbind,ll)
-    
-    #extract only Class_1 probabilities
-    class1.names <- grep("Class_1",names(predictors),value = TRUE)
-    predictors <- predictors[class1.names]
-    
-    if (includeResponse) {
-        
-        response <- factor(ifelse(df$target == 1,"Class_1","Class_0"),
-                           levels=c("Class_1","Class_0"))
-        ans <- list(predictors=predictors,response=response)
-        
-    } else {
-        
-        ans <- list(predictors=predictors)
-        
-    }
-    
-    return(ans)
-}
+# # generic function to create Level 2 features from Level 1 model predictions
+# createLevel2Features <- function (model.dir,df,...) {
+#     # model.dir: directory containing Level 0 model
+#     # df: training data to generate Level 1 features
+#     
+#     force(df)
+#     force(model.dir)
+#     
+#     # create environment to hold Level 0 Model data structures
+#     l0.env <- new.env()
+#     model.file.name <- readLines(paste0("./src/",model.dir,"/this_model"))
+#     load(paste0("./src/",model.dir,"/",model.file.name),envir=l0.env)
+#     
+#     #prepare data for L0 model
+#     train.data <- l0.env$PREPARE.MODEL.DATA(df,...)
+#     
+#     # create Level 1 features
+#     pred.probs <- predict(l0.env$mdl.fit,newdata = train.data$predictors,type = "prob")
+#     
+#     # Attribute Level 0 model to the created predictions
+#     new.names <- paste0(model.dir,".",names(pred.probs))
+#     names(pred.probs) <- new.names
+#     
+#     return(pred.probs)
+# }
+# 
+# # create Level 2 Features From Level 1 Models - Class_1 probabilities only
+# prepL2FeatureSet <- function(level1.models,includeResponse=TRUE){
+#     # df: raw data
+#     # if only.predcitors is TRUE then return list(predictors)
+#     # if only.predictors is FALSE then return list(predictors,response)
+#     
+#     require(plyr)
+#     require(caret)
+#     
+#     force(level1.models)
+#     
+#     ll <- lapply(level1.models,createLevel1Features,df,includeResponse)
+#     
+#     predictors <- do.call(cbind,ll)
+#     
+#     #extract only Class_1 probabilities
+#     class1.names <- grep("Class_1",names(predictors),value = TRUE)
+#     predictors <- predictors[class1.names]
+#     
+#     if (includeResponse) {
+#         
+#         response <- factor(ifelse(df$target == 1,"Class_1","Class_0"),
+#                            levels=c("Class_1","Class_0"))
+#         ans <- list(predictors=predictors,response=response)
+#         
+#     } else {
+#         
+#         ans <- list(predictors=predictors)
+#         
+#     }
+#     
+#     return(ans)
+# }
 
 # generic function to create Level 1 features from Level 0 model predictions
 createLevel1Features <- function (model.dir,df,...) {
