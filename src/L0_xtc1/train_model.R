@@ -13,6 +13,9 @@ WORK.DIR <- "./src/L0_xtc1"  # modify to specify directory to contain model arti
 # Common Functions and Global variables
 source("./src/CommonFunctions.R")
 
+# load Python module
+python.load(paste0(WORK.DIR,"/train_model.py"))
+
 # set caret training parameters
 MODEL_NAME <= "ExtraTreeClassifier"
 
@@ -41,6 +44,7 @@ train.data <- PREPARE.MODEL.DATA(train.df)
 # save prepared training data for Python function
 # put response as first column in data set
 train <- cbind(response=train.data$response,train.data$predictors)
+
 write.table(train,file=paste0(WORK.DIR,"/py_train.tsv"),row.names = FALSE,
           sep="\t")
 
