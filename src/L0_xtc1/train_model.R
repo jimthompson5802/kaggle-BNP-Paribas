@@ -38,9 +38,8 @@ train.data <- PREPARE.MODEL.DATA(train.df)
 
 # save prepared training data for Python function
 # put response as first column in data set
-train <- cbind(response=train.data$response,train.data$predictors)
-
-write.table(train,file=paste0(WORK.DIR,"/py_train.tsv"),row.names = FALSE,
+write.table(cbind(response=train.data$response,train.data$predictors),
+            file=paste0(WORK.DIR,"/py_train.tsv"),row.names = FALSE,
           sep="\t")
 
 
@@ -56,7 +55,12 @@ time.data
 # stopCluster(cl)
 
 # prepare data for training
-test.data <- PREPARE.MODEL.DATA(LEVEL0.MODELS,test.raw)
+test.data <- PREPARE.MODEL.DATA(test.raw)
+write.table(test.data$predictors,file=paste0(WORK.DIR,"/py_test.tsv"),row.names = FALSE,
+            sep="\t")
+
+
+
 pred.probs <- predict(mdl.fit,newdata = test.data$predictors,type = "prob")
 
 score <- logLossEval(pred.probs[,1],test.data$response)
