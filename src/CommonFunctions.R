@@ -4,6 +4,8 @@
 
 DATA.DIR <- "./data"
 
+PYTHON_COMMAND <- "/Users/jim/anaconda/bin/python"
+
 
 #####
 # Model Evaluation functions - LogLoss
