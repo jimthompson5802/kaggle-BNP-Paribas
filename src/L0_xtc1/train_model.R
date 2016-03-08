@@ -5,7 +5,6 @@
 library(data.table)
 library(caret)
 # add any model specific package library commands
-library(rPython)
 
 # set working directory
 WORK.DIR <- "./src/L0_xtc1"  # modify to specify directory to contain model artififacts
@@ -13,14 +12,10 @@ WORK.DIR <- "./src/L0_xtc1"  # modify to specify directory to contain model arti
 # Common Functions and Global variables
 source("./src/CommonFunctions.R")
 
-# load Python module
-python.load(paste0(WORK.DIR,"/train_model.py"))
-
 # set caret training parameters
 MODEL_NAME <= "ExtraTreeClassifier"
 
-
-PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
+#PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
 PREPARE.MODEL.DATA <- prepL0FeatureSetAll
 
 MODEL.COMMENT <- "Only Class_1 probabilites as features, expanded Boruta feature set"
@@ -49,18 +44,15 @@ write.table(train,file=paste0(WORK.DIR,"/py_train.tsv"),row.names = FALSE,
           sep="\t")
 
 
-# train the model
-Sys.time()
-set.seed(825)
+# invoke Python training model
+python.train.command <- paste(PYTHON_COMMAND,paste0(WORK.DIR,"/train_model.py"),WORK.DIR)
 
-time.data <- system.time(mdl.fit <- do.call(train,c(list(x=train.data$predictors,
-                                                         y=train.data$response),
-                                                    CARET.TRAIN.PARMS,
-                                                    MODEL.SPECIFIC.PARMS,
-                                                    CARET.TRAIN.OTHER.PARMS)))
+Sys.time()
+
+
+time.data <- system.time(system(python.train.command))
 
 time.data
-mdl.fit
 # stopCluster(cl)
 
 # prepare data for training
