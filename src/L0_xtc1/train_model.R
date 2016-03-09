@@ -59,11 +59,20 @@ test.data <- PREPARE.MODEL.DATA(test.raw)
 write.table(test.data$predictors,file=paste0(WORK.DIR,"/py_test.tsv"),row.names = FALSE,
             sep="\t")
 
+# execute Python prediction code
+python.test.command <- paste(PYTHON_COMMAND,paste0(WORK.DIR,"/make_prediction.py"),
+                             WORK.DIR,
+                             "possible_model",
+                             "py_test.tsv",
+                             "py_test_predictions.tsv")
+system(python.test.command)
+
+# get predictions from Python model
+pred_probs <- fread(paste0(WORK.DIR,"/py_test_predictions.tsv"), sep="\t")
 
 
-pred.probs <- predict(mdl.fit,newdata = test.data$predictors,type = "prob")
 
-score <- logLossEval(pred.probs[,1],test.data$response)
+score <- logLossEval(pred.probs[,"Class_1"],test.data$response)
 score
 
 # record Model performance

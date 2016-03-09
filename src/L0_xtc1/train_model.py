@@ -54,3 +54,5 @@ if __name__ == "__main__":
     with open(model_file,"wb") as f:
         pickle.dump(model_dict,f)
         
+    print "Saved " + model_file
+        

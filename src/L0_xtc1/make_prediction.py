@@ -19,34 +19,34 @@ if __name__ == "__main__":
     print "Start making predictions"
     
     # retrieve work directory
-#    work_dir = sys.argv[1]
-#    model_file = sys.argv[2]
-#    predictors = sys.argv[3]
-    work_dir = "../../src/L0_xtc1"
-    model_file = 'possible_model'
-    predictors = 'py_test.tsv'
+    work_dir = sys.argv[1]  #work directory
+    model_file = sys.argv[2]  # name of file containing pickled model object
+    predictors_file = sys.argv[3]  # name of file contaiing predictor attributes
+    predictions_file = sys.argv[4]  # name of file to contain predicted responses
+
     
     
-    # retrieve model data
+    # retrieve pickled model object
     model_file = work_dir + "/" + model_file
+    print "Retrieving " + model_file
     with open(model_file,"rb") as f:
         model_dict = pickle.load(f)
         
     mdl_fit = model_dict['model']
     
     # retrieve data set to make prediction
-    predictor_file = work_dir + "/" + predictors
-    X_predictors = pd.read_csv(predictor_file,sep="\t")
+    predictors_file = work_dir + "/" + predictors_file
+    X_predictors = pd.read_csv(predictors_file,sep="\t")
     
-    # fit model
-    prediction = mdl_fit.predict_proba(X_predictors) 
+    # predict probabilities
+    predictions = mdl_fit.predict_proba(X_predictors) 
+    
+    # convert to DataFrame
+    predictions = pd.DataFrame(predictions,columns=mdl_fit.classes_)
+    
+    # save predictions to file
+    predictions_file = work_dir + "/" + predictions_file
+    predictions.to_csv(predictions_file,sep='\t',index=False)
     
     
-    
-    # save fitted model structure
-    model_dict = {'model':mdl_fit}    
-    
-    model_file = work_dir + "/possible_model"
-    with open(model_file,"wb") as f:
-        pickle.dump(model_dict,f)
         
