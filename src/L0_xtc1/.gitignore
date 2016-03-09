@@ -5,3 +5,5 @@ README.html
 py_test.tsv
 py_test_predictions.tsv
 possible_model
+*.PyData
+*.RData
