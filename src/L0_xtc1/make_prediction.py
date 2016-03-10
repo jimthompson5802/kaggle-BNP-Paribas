@@ -24,6 +24,10 @@ if __name__ == "__main__":
     predictors_file = sys.argv[3]  # name of file contaiing predictor attributes
     predictions_file = sys.argv[4]  # name of file to contain predicted responses
 
+#    work_dir = '../../src/L0_xtc1'   #debuging
+#    model_file = 'possible_model'    #debugging
+#    predictors_file = 'py_test.tsv'  #debugging
+#    predictions_file = 'py_test_predictions.tsv'  #debugging
     
     
     # retrieve pickled model object
@@ -42,7 +46,8 @@ if __name__ == "__main__":
     predictions = mdl_fit.predict_proba(X_predictors) 
     
     # convert to DataFrame
-    predictions = pd.DataFrame(predictions,columns=mdl_fit.classes_)
+    headers = ['Class_' + str(i) for i in mdl_fit.classes_]
+    predictions = pd.DataFrame(predictions,columns=headers)
     
     # save predictions to file
     predictions_file = work_dir + "/" + predictions_file
