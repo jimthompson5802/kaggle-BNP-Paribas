@@ -22,7 +22,7 @@ MODEL.COMMENT <- "All Features, Python model"
 
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 1
+FRACTION.TRAIN.DATA <- 0.1
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
 train.df <- rbind(train0.raw,train1.raw,calib.raw)
