@@ -38,10 +38,10 @@ if __name__ == "__main__":
     train = pd.read_csv(training_file,sep="\t")
     
     # isoloate response variable
-    response = train["response"]
+    response = [1 if x == 'Class_1' else 0 for x in train["response"]]
     
     # isolate predictors
-    predictors = list(set(train.columns.values) - set(["response"]))
+    predictors = train.columns[1:len(train.columns)].values
     X_train = train[predictors]
     
     # fit model
