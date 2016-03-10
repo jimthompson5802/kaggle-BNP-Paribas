@@ -7,3 +7,4 @@ py_test_predictions.tsv
 possible_model
 *.PyData
 *.RData
+submission.csv
