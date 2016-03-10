@@ -22,10 +22,10 @@ MODEL.COMMENT <- "All Features, Python model"
 
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.1
+FRACTION.TRAIN.DATA <- 1.0
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
-train.df <- rbind(train0.raw,train1.raw,calib.raw)
+train.df <- rbind(train0.raw)
 
 # extract subset for inital training
 set.seed(29)
@@ -68,8 +68,6 @@ system(python.test.command)
 
 # get predictions from Python model
 pred.probs <- fread(paste0(WORK.DIR,"/py_test_predictions.tsv"), sep="\t")
-
-
 
 score <- logLossEval(pred.probs[,Class_1],test.data$response)
 score
