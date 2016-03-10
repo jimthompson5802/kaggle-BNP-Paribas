@@ -50,7 +50,7 @@ system(python.test.command)
 pred.probs <- fread(paste0(WORK.DIR,"/py_test_predictions.tsv"), sep="\t")
 
 #create kaggle submission file
-write.csv(data.frame(ID=id,PredictedProb=pred.probs[,"Class_1"]),file=paste0(WORK.DIR,"/submission.csv"),
+write.csv(data.frame(ID=id,PredictedProb=pred.probs[,Class_1]),file=paste0(WORK.DIR,"/submission.csv"),
           row.names=FALSE)
 
 file.remove(c(paste0(WORK.DIR,"/py_test.tsv"),
