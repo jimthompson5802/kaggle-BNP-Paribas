@@ -2,6 +2,8 @@
 # Global Variables
 ###
 
+# TODO: Add Level 1 prepModelData to access L0 Python models
+
 DATA.DIR <- "./data"
 
 PYTHON_COMMAND <- "/Users/jim/anaconda/bin/python"
