@@ -161,18 +161,56 @@ createLevel1Features <- function (model.dir,df,...) {
     
     # create environment to hold Level 0 Model data structures
     l0.env <- new.env()
+
+    # determine if R or Python model
     model.file.name <- readLines(paste0("./src/",model.dir,"/this_model"))
-    load(paste0("./src/",model.dir,"/",model.file.name),envir=l0.env)
-    
-    #prepare data for L0 model
-    train.data <- l0.env$PREPARE.MODEL.DATA(df,...)
-    
-    # create Level 1 features
-    pred.probs <- predict(l0.env$mdl.fit,newdata = train.data$predictors,type = "prob")
-    
-    # Attribute Level 0 model to the created predictions
-    new.names <- paste0(model.dir,".",names(pred.probs))
-    names(pred.probs) <- new.names
+    if (length(model.file.name) == 1) {
+        # R Model
+        load(paste0("./src/",model.dir,"/",model.file.name),envir=l0.env)
+        
+        #prepare data for L0 model
+        train.data <- l0.env$PREPARE.MODEL.DATA(df,...)
+        
+        # create Level 1 features
+        pred.probs <- predict(l0.env$mdl.fit,newdata = train.data$predictors,type = "prob")
+        
+        # Attribute Level 0 model to the created predictions
+        new.names <- paste0(model.dir,".",names(pred.probs))
+        names(pred.probs) <- new.names
+
+    } else {
+        # Python model
+        
+        # get R based data
+        model.file.name <- model.files[1]
+        load(paste0("./src/",model.dir,"/",model.file.name),envir=l0.env)
+        
+        # get Python based model data
+        py.model.file.name <- model.files[2]
+        
+        #prepare data for L0 model
+        train.data <- l0.env$PREPARE.MODEL.DATA(df,...)
+        
+        # write out L0 data for predictions
+        write.table(train.data$predictors,file=paste0(model.dir,"/py_test.tsv"),row.names = FALSE,
+                    sep="\t")
+        
+        # execute Python prediction code
+        python.test.command <- paste(PYTHON_COMMAND,paste0(model.dir,"/make_prediction.py"),
+                                     model.dir,
+                                     py.model.file.name,
+                                     "py_test.tsv",
+                                     "py_test_predictions.tsv")
+        system(python.test.command)
+        
+        # retrieve predictions from Python
+        pred.probs <- fread(paste0(model.dir,"/py_test_predictions.tsv"), sep="\t")
+        
+        # clean up files
+        file.remove(c(paste0(model.dir,"/py_test.tsv"),
+                      paste0(model.dir,"/py_test_predictions.tsv")))
+        
+    }
     
     return(pred.probs)
 }
