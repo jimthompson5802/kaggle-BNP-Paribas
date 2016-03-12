@@ -1,1 +1,5 @@
 .ipynb_checkpoints
+*.PyData
+*.RData
+model_performance.tsv
+submission.csv
