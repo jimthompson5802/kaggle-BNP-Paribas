@@ -30,7 +30,7 @@ FORCE_RECORDING_MODEL <- FALSE
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
-train.df <- rbind(train0.raw)
+train.df <- rbind(train0.raw,train1.raw)
 
 # extract subset for inital training
 set.seed(29)
