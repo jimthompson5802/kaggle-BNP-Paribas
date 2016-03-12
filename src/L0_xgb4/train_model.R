@@ -16,7 +16,7 @@ source("./src/CommonFunctions.R")
 # set caret training parameters
 CARET.TRAIN.PARMS <- list(method="xgbTree")   # Replace MODEL.METHOD with appropriate caret model
 
-CARET.TUNE.GRID <-  expand.grid(nrounds=700, 
+CARET.TUNE.GRID <-  expand.grid(nrounds=400, 
                                 max_depth=20, 
                                 eta=0.01, 
                                 gamma=0.1, 
@@ -44,12 +44,12 @@ MODEL.SPECIFIC.PARMS <- list(verbose=0)
                              
 
 PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
-PREPARE.MODEL.DATA <- prepL0FeatureSet2a
+PREPARE.MODEL.DATA <- prepL0FeatureSetAll
 
 MODEL.COMMENT <- "custom xgb tree model, with train0.raw"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.5
+FRACTION.TRAIN.DATA <- 1.0
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
