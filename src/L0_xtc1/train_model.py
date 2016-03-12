@@ -15,6 +15,7 @@ from sklearn.ensemble import ExtraTreesClassifier
 from sklearn import ensemble
 
 # model data stricture
+# parameters gleaned from R script submission: ExtraTreesClassifier (score 0.45911)
 mdl_fit = ExtraTreesClassifier(n_estimators=700,max_features= 50, 
                                criterion = 'entropy',min_samples_split= 5,
                                 max_depth= 50, min_samples_leaf= 5)      
