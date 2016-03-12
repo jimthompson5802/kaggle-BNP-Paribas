@@ -205,6 +205,10 @@ createLevel1Features <- function (model.dir,df,...) {
         # retrieve predictions from Python
         pred.probs <- fread(paste0("./src/",model.dir,"/py_test_predictions.tsv"), sep="\t")
         
+        # Attribute Level 0 model to the created predictions
+        new.names <- paste0(model.dir,".",names(pred.probs))
+        names(pred.probs) <- new.names
+        
         # clean up files
         file.remove(c(paste0("./src/",model.dir,"/py_test.tsv"),
                       paste0("./src/",model.dir,"/py_test_predictions.tsv")))
