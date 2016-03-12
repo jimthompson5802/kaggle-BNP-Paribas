@@ -1,5 +1,10 @@
 .ipynb_checkpoints
+py_train.tsv
+model_performance.tsv
+README.html
+py_test.tsv
+py_test_predictions.tsv
+possible_model
 *.PyData
 *.RData
-model_performance.tsv
 submission.csv
