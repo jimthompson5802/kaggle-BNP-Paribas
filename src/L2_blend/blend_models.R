@@ -13,22 +13,22 @@ WORK.DIR <- "./src/L2_blend"
 
 MODEL.METHOD <- "blend"
 
-load(paste0(DATA.DIR,"/train_calib_test.RData"))
+# get training data for calibration
 
-# training data for blending
-train.data <- prepL2FeatureSet(calib.raw)
+# L1_gbm2
+load("./src/L1_gbm2/data_for_level2_optimization.RData")
+L1.gbm2 <- pred.probs
 
+# L1_nnet1
+load("./src/L1_nnet1/data_for_level2_optimization.RData")
+L1.nnet1 <- pred.probs
 
+# combine Level 1 Calibration data
+train.data <- list()
+train.data$predictors <- cbind(L1.gbm2.Class_1=L1.gbm2[,"Class_1"],
+                               L1.nnet1.Class_1=L1.nnet1[,"Class_1"])
 
-#
-#  simple average
-#
-avg.probs <- apply(train.data$predictors,1,sum)/ncol(train.data$predictors)
-
-cat("simple avg",logLossEval(avg.probs,train.data$response),"\n")
-
-
-
+train.data$response = L1.gbm2$target
 
 #
 # determine optimal weighting factor for combining model estimates
