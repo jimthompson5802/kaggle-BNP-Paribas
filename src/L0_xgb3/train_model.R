@@ -46,14 +46,14 @@ MODEL.SPECIFIC.PARMS <- list(verbose=0)
 PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
 PREPARE.MODEL.DATA <- prepL0FeatureSet2a
 
-MODEL.COMMENT <- "custom xgb tree model, with train0.raw & train1.raw , calib.raw and test.raw"
+MODEL.COMMENT <- "custom xgb tree model, with train0.raw"
 
 # amount of data to train
 FRACTION.TRAIN.DATA <- 1.0
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
-train.df <- rbind(train0.raw,train1.raw,calib.raw,test.raw)
+train.df <- rbind(train0.raw)
 
 # extract subset for inital training
 set.seed(29)
