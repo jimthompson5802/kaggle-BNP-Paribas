@@ -19,23 +19,37 @@ load(paste0(WORK.DIR,"/",model.file.name))
 
 # read kaggle submission data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
-new.df <- calib.raw
 
+# data used for determining optimal weights
+new.df <- calib.raw
 #save id vector
 id <- new.df$ID
 
-# prep the data for submission
+# prep the data for prediction model
 train.data <- PREPARE.MODEL.DATA(LEVEL0.MODELS,new.df,includeResponse=TRUE)
-
 
 # predict class probabilities
 pred.probs <- predict(mdl.fit,newdata = train.data$predictors,type = "prob")
 
 # augment with identifier and target variable
-pred.probs <- cbind(ID=id,pred.probs,target=train.data$response)
+calib.pred.probs <- cbind(ID=id,pred.probs,target=train.data$response)
+
+# data used for testing optimal weights
+new.df <- test.raw
+#save id vector
+id <- new.df$ID
+
+# prep the data for prediciton model
+train.data <- PREPARE.MODEL.DATA(LEVEL0.MODELS,new.df,includeResponse=TRUE)
+
+# predict class probabilities
+pred.probs <- predict(mdl.fit,newdata = train.data$predictors,type = "prob")
+
+# augment with identifier and target variable
+test.pred.probs <- cbind(ID=id,pred.probs,target=train.data$response)
 
 # save data for calibrating Level 2 model weights
-save(pred.probs,file=paste0(WORK.DIR,"/data_for_level2_optimization.RData"))
+save(calib.pred.probs,test.pred.probs,file=paste0(WORK.DIR,"/data_for_level2_optimization.RData"))
 
 
 
