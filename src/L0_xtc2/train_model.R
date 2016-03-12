@@ -22,7 +22,7 @@ MODEL.COMMENT <- "All Features, Python model"
 
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.25
+FRACTION.TRAIN.DATA <- 1.0
 
 # force recording model flag
 FORCE_RECORDING_MODEL <- FALSE
@@ -30,7 +30,7 @@ FORCE_RECORDING_MODEL <- FALSE
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
-train.df <- rbind(train0.raw,train1.raw)
+train.df <- rbind(train0.raw)
 
 # extract subset for inital training
 set.seed(29)
