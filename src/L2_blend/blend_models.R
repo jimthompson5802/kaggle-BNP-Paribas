@@ -14,21 +14,35 @@ WORK.DIR <- "./src/L2_blend"
 MODEL.METHOD <- "blend"
 
 # get training data for calibration
-
 # L1_gbm2
 load("./src/L1_gbm2/data_for_level2_optimization.RData")
-L1.gbm2 <- pred.probs
+calib.gbm2 <- calib.pred.probs
 
 # L1_nnet1
 load("./src/L1_nnet1/data_for_level2_optimization.RData")
-L1.nnet1 <- pred.probs
+calib.nnet1 <- calib.pred.probs
 
 # combine Level 1 Calibration data
 train.data <- list()
-train.data$predictors <- cbind(L1.gbm2.Class_1=L1.gbm2[,"Class_1"],
-                               L1.nnet1.Class_1=L1.nnet1[,"Class_1"])
+train.data$predictors <- cbind(gbm2=calib.gbm2[,"Class_1"],
+                               nnet1=calib.nnet1[,"Class_1"])
 
-train.data$response = ifelse(L1.gbm2$target == "Class_1",1,0)
+train.data$response = ifelse(calib.gbm2$target == "Class_1",1,0)
+
+# get test data for calibration
+# L1_gbm2
+test.gbm2 <- test.pred.probs
+
+# L1_nnet1
+test.nnet1 <- test.pred.probs
+
+# combine Level 1 Calibration data
+test.data <- list()
+test.data$predictors <- cbind(gbm2=test.gbm2[,"Class_1"],
+                               nnet1=test.nnet1[,"Class_1"])
+
+test.data$response = ifelse(test.gbm2$target == "Class_1",1,0)
+
 
 #
 # determine optimal weighting factor for combining model estimates
@@ -39,11 +53,15 @@ makeBlendFunction <- function(target,probs.mat) {
     
     function(w) {
         
-        pred.probs <- probs.mat * matrix(rep(w,nrow(probs.mat)),
-                                             ncol=ncol(probs.mat),byrow=TRUE)
+        wt.mat <- matrix(rep(w,nrow(probs.mat)),
+                         ncol=ncol(probs.mat),byrow=TRUE)
+        
+        pred.probs <- probs.mat * wt.mat
+            
         pred.probs <- apply(pred.probs,1,sum)
         
-        logLossEval(pred.probs,target)
+        ans <- logLossEval(pred.probs,target)
+        return(ans)
     }
 }
 
@@ -91,53 +109,50 @@ names(opt.wts$par) <- colnames(train.data$predictors)
 cat("optimaal weights",opt.wts$par,", training score:",opt.wts$value,"\n")
 
 
-# check score for test data
-test.data <- prepL2FeatureSet(test.raw)
-
-pred.probs <- test.data$predictors * matrix(rep(opt.wts$par,nrow(test.data$predictors)),
-                                            ncol=ncol(test.data$predictors),byrow=TRUE)
-pred.probs <- apply(pred.probs,1,sum)
-
-test.score <- logLossEval(pred.probs,test.data$response)
-
-cat("optimaal weights",opt.wts$par,", test score:",test.score,"\n")
-
-#
-# record Model performance
-#
-
-ensemble.weights <- c(opt.wts$par[1],opt.wts$par[2], opt.wts$par[3])
-names(ensemble.weights) <- c("rf", "gbm_one_vs_all","gbm_one_vs_all_synth")
-
-model.weights <- paste(c("rf", "gbm_one_vs_all","gbm_one_vs_all_syth"),ensemble.weights,sep="=",collapse=",")
-bestTune <- data.frame(model.weights, stringsAsFactors=FALSE)
-
-# set up dummy data structures to account for recrodModelPerf() function
-time.data <- system.time(dummy.df <- data.frame())
-
-# record performance
-modPerf.df <- recordModelPerf(modPerf.df,MODEL.METHOD,time.data,
-                              dummy.df,
-                              score,bestTune)
-save(modPerf.df,file=paste0(WORK.DIR,"/modPerf.RData"))
-
-#display model performance record for this run
-tail(modPerf.df[,1:(ncol(modPerf.df)-1)],1)
-
-# if last score recorded is better than previous ones save model object
-last.idx <- length(modPerf.df$score)
-if (last.idx == 1 ||
-        modPerf.df$score[last.idx] < min(modPerf.df$score[1:(last.idx-1)])) {
-    cat("found improved model, saving...\n")
-    flush.console()
-    #yes we have improvement or first score, save generated model
-    file.name <- paste0("/ensembleWeights_",Sys.time(),".RData")
-    file.name <- gsub(" ","_",file.name)
-    file.name <- gsub(":","_",file.name)
-    
-    save(ensemble.weights,file=paste0(WORK.DIR,file.name))
-} else {
-    cat("no improvement!!!\n")
-    flush.console()
-}
+# # check score for test data
+# pred.probs <- test.data$predictors * matrix(rep(opt.wts$par,nrow(test.data$predictors)),
+#                                             ncol=ncol(test.data$predictors),byrow=TRUE)
+# pred.probs <- apply(pred.probs,1,sum)
+# 
+# test.score <- logLossEval(pred.probs,test.data$response)
+# 
+# cat("optimal weights",opt.wts$par,", test score:",test.score,"\n")
+# 
+# #
+# # record Model performance
+# #
+# 
+# ensemble.weights <- opt.wts$par
+# 
+# model.weights <- paste(,ensemble.weights,sep="=",collapse=",")
+# bestTune <- data.frame(model.weights, stringsAsFactors=FALSE)
+# 
+# # set up dummy data structures to account for recrodModelPerf() function
+# time.data <- system.time(dummy.df <- data.frame())
+# 
+# # record performance
+# modPerf.df <- recordModelPerf(modPerf.df,MODEL.METHOD,time.data,
+#                               dummy.df,
+#                               score,bestTune)
+# save(modPerf.df,file=paste0(WORK.DIR,"/modPerf.RData"))
+# 
+# #display model performance record for this run
+# tail(modPerf.df[,1:(ncol(modPerf.df)-1)],1)
+# 
+# # if last score recorded is better than previous ones save model object
+# last.idx <- length(modPerf.df$score)
+# if (last.idx == 1 ||
+#         modPerf.df$score[last.idx] < min(modPerf.df$score[1:(last.idx-1)])) {
+#     cat("found improved model, saving...\n")
+#     flush.console()
+#     #yes we have improvement or first score, save generated model
+#     file.name <- paste0("/ensembleWeights_",Sys.time(),".RData")
+#     file.name <- gsub(" ","_",file.name)
+#     file.name <- gsub(":","_",file.name)
+#     
+#     save(ensemble.weights,file=paste0(WORK.DIR,file.name))
+# } else {
+#     cat("no improvement!!!\n")
+#     flush.console()
+# }
 
