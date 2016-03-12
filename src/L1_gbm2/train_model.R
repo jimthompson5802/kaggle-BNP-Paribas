@@ -44,11 +44,15 @@ MODEL.COMMENT <- "Only Class_1 probabilites as features, expanded Boruta feature
 
 LEVEL0.MODELS <- c("L0_gbm2",
                    #"L0_rngr1",
+                   "L0_xtc1",
                    "L0_xgb2",
                    "L0_xgb3")
 
 # amount of data to train
 FRACTION.TRAIN.DATA <- 1.0
+
+# force recording model flag
+FORCE_RECORDING_MODEL <- FALSE
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
@@ -119,7 +123,7 @@ tail(modelPerf.df[,1:10],1)
 
 # if last score recorded is better than previous ones save model object
 last.idx <- length(modelPerf.df$score)
-if (last.idx == 1 || improved == "Yes") {
+if (last.idx == 1 || improved == "Yes" || FORCE_RECORDING_MODEL) {
     cat("found improved model, saving...\n")
     flush.console()
     #yes we have improvement or first score, save generated model
