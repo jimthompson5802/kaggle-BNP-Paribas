@@ -166,7 +166,7 @@ createLevel1Features <- function (model.dir,df,...) {
     model.file.name <- readLines(paste0("./src/",model.dir,"/this_model"))
     if (length(model.file.name) == 1) {
         # R Model
-        load(paste0("./src/",model.dir,"/",model.file.name),envir=l0.env)
+        load(paste0("./src/",model.dir,"/",model.file.name[1]),envir=l0.env)
         
         #prepare data for L0 model
         train.data <- l0.env$PREPARE.MODEL.DATA(df,...)
@@ -182,33 +182,32 @@ createLevel1Features <- function (model.dir,df,...) {
         # Python model
         
         # get R based data
-        model.file.name <- model.files[1]
-        load(paste0("./src/",model.dir,"/",model.file.name),envir=l0.env)
+        load(paste0("./src/",model.dir,"/",model.file.name[1]),envir=l0.env)
         
         # get Python based model data
-        py.model.file.name <- model.files[2]
+        py.model.file.name <- model.file.name[2]
         
         #prepare data for L0 model
         train.data <- l0.env$PREPARE.MODEL.DATA(df,...)
         
         # write out L0 data for predictions
-        write.table(train.data$predictors,file=paste0(model.dir,"/py_test.tsv"),row.names = FALSE,
+        write.table(train.data$predictors,file=paste0("./src/",model.dir,"/py_test.tsv"),row.names = FALSE,
                     sep="\t")
         
         # execute Python prediction code
-        python.test.command <- paste(PYTHON_COMMAND,paste0(model.dir,"/make_prediction.py"),
-                                     model.dir,
+        python.test.command <- paste(PYTHON_COMMAND,paste0("./src/",model.dir,"/make_prediction.py"),
+                                     paste0("./src/",model.dir),
                                      py.model.file.name,
                                      "py_test.tsv",
                                      "py_test_predictions.tsv")
         system(python.test.command)
         
         # retrieve predictions from Python
-        pred.probs <- fread(paste0(model.dir,"/py_test_predictions.tsv"), sep="\t")
+        pred.probs <- fread(paste0("./src/",model.dir,"/py_test_predictions.tsv"), sep="\t")
         
         # clean up files
-        file.remove(c(paste0(model.dir,"/py_test.tsv"),
-                      paste0(model.dir,"/py_test_predictions.tsv")))
+        file.remove(c(paste0("./src/",model.dir,"/py_test.tsv"),
+                      paste0("./src/",model.dir,"/py_test_predictions.tsv")))
         
     }
     
