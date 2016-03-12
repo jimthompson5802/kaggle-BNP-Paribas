@@ -8,7 +8,7 @@ library(data.table)
 library(caTools)
 
 # set working directory
-WORK.DIR <- "./src/L1_gbm2"   # directory where model artifacts are stored
+WORK.DIR <- "./src/L1_nnet1"   # directory where model artifacts are stored
 
 # Common Functions and Global variables
 source("./src/CommonFunctions.R")
@@ -30,6 +30,9 @@ train.data <- PREPARE.MODEL.DATA(LEVEL0.MODELS,new.df,includeResponse=TRUE)
 
 # predict class probabilities
 pred.probs <- predict(mdl.fit,newdata = train.data$predictors,type = "prob")
+
+# augment with identifier and target variable
+pred.probs <- cbind(ID=id,pred.probs,target=train.data$response)
 
 # save data for calibrating Level 2 model weights
 save(pred.probs,file=paste0(WORK.DIR,"/data_for_level2_optimization.RData"))
