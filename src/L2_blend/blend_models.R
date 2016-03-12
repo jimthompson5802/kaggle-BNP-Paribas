@@ -28,7 +28,7 @@ train.data <- list()
 train.data$predictors <- cbind(L1.gbm2.Class_1=L1.gbm2[,"Class_1"],
                                L1.nnet1.Class_1=L1.nnet1[,"Class_1"])
 
-train.data$response = L1.gbm2$target
+train.data$response = ifelse(L1.gbm2$target == "Class_1",1,0)
 
 #
 # determine optimal weighting factor for combining model estimates
@@ -87,7 +87,7 @@ system.time(opt.wts <- constrOptim.nl(rep(1/ncol(train.data$predictors),ncol(tra
 
 score <- opt.wts$value
 
-names(opt.wts$par) <- names(train.data$predictors)
+names(opt.wts$par) <- colnames(train.data$predictors)
 cat("optimaal weights",opt.wts$par,", training score:",opt.wts$value,"\n")
 
 
