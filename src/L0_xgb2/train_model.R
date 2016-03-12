@@ -46,14 +46,17 @@ MODEL.SPECIFIC.PARMS <- list(verbose=0)
 PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
 PREPARE.MODEL.DATA <- prepL0FeatureSetAll
 
-MODEL.COMMENT <- "custom xgb tree model, trian0 and train1, calib and test"
+MODEL.COMMENT <- "custom xgb tree model, trian0 and train1"
 
 # amount of data to train
 FRACTION.TRAIN.DATA <- 1.0
 
+# force recording model flag
+FORCE_RECORDING_MODEL <- FALSE
+
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
-train.df <- rbind(train0.raw,train1.raw, calib.raw, test.raw)
+train.df <- rbind(train0.raw,train1.raw)
 
 # extract subset for inital training
 set.seed(29)
@@ -120,7 +123,7 @@ tail(modelPerf.df[,1:10],1)
 
 # if last score recorded is better than previous ones save model object
 last.idx <- length(modelPerf.df$score)
-if (last.idx == 1 || improved == "Yes") {
+if (last.idx == 1 || improved == "Yes" || FORCE_RECORDING_MODEL) {
     cat("found improved model, saving...\n")
     flush.console()
     #yes we have improvement or first score, save generated model
