@@ -114,7 +114,7 @@ if (last.idx == 1 || improved == "Yes" || FORCE_RECORDING_MODEL) {
     file.name <- paste0("model_",MODEL.NAME,"_",modelPerf.df$date.time[last.idx],".RData")
     file.name <- gsub(" ","_",file.name)
     file.name <- gsub(":","_",file.name)
-    save(PREPARE.MODEL.DATA,file=paste0(WORK.DIR,"/",file.name))
+    save(LEVEL0.MODELS,PREPARE.MODEL.DATA,file=paste0(WORK.DIR,"/",file.name))
     
     # save Python model data
     py.file.name <- paste0("model_",MODEL.NAME,"_",modelPerf.df$date.time[last.idx],".PyData")
