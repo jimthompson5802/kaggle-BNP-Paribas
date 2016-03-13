@@ -13,6 +13,10 @@ WORK.DIR <- "./src/L2_blend"
 
 MODEL.METHOD <- "blend"
 
+MODEL.COMMENT <- "Determine optimal weights"
+
+FORCE_RECORDING_MODEL <- FALSE
+
 # get training data for calibration
 # L1_gbm2
 load("./src/L1_gbm2/data_for_level2_optimization.RData")
@@ -96,17 +100,15 @@ hin <- function(w) {
 #     return(rbind(diag(1,27),diag(-1,27)))
 # }
 # 
-system.time(opt.wts <- constrOptim.nl(rep(1/ncol(train.data$predictors),ncol(train.data$predictors)),
+time.data <- system.time(opt.wts <- constrOptim.nl(rep(1/ncol(train.data$predictors),ncol(train.data$predictors)),
                                       fn=ensFunc,  #gr=grFunc,
                                       hin=hin, #hin.jac=hin.jac,
                                       heq=heq, #heq.jac=heq.jac,
                                       #control.outer=list(itmax=10),
                                       control.optim=list(trace=2)))
 
-score <- opt.wts$value
-
 names(opt.wts$par) <- colnames(train.data$predictors)
-cat("optimaal weights",opt.wts$par,", training score:",opt.wts$value,"\n")
+cat("optimal weights",opt.wts$par,", training score:",opt.wts$value,"\n")
 
 
 # check score for test data
@@ -114,45 +116,59 @@ pred.probs <- test.data$predictors * matrix(rep(opt.wts$par,nrow(test.data$predi
                                             ncol=ncol(test.data$predictors),byrow=TRUE)
 pred.probs <- apply(pred.probs,1,sum)
 
-test.score <- logLossEval(pred.probs,test.data$response)
+score <- logLossEval(pred.probs,test.data$response)
 
-cat("optimal weights",opt.wts$par,", test score:",test.score,"\n")
+cat("optimal weights",opt.wts$par,", test score:",score,"\n")
 
-# #
-# # record Model performance
-# #
-# 
-# ensemble.weights <- opt.wts$par
-# 
-# model.weights <- paste(,ensemble.weights,sep="=",collapse=",")
-# bestTune <- data.frame(model.weights, stringsAsFactors=FALSE)
-# 
-# # set up dummy data structures to account for recrodModelPerf() function
-# time.data <- system.time(dummy.df <- data.frame())
-# 
-# # record performance
-# modPerf.df <- recordModelPerf(modPerf.df,MODEL.METHOD,time.data,
-#                               dummy.df,
-#                               score,bestTune)
-# save(modPerf.df,file=paste0(WORK.DIR,"/modPerf.RData"))
-# 
-# #display model performance record for this run
-# tail(modPerf.df[,1:(ncol(modPerf.df)-1)],1)
-# 
-# # if last score recorded is better than previous ones save model object
-# last.idx <- length(modPerf.df$score)
-# if (last.idx == 1 ||
-#         modPerf.df$score[last.idx] < min(modPerf.df$score[1:(last.idx-1)])) {
-#     cat("found improved model, saving...\n")
-#     flush.console()
-#     #yes we have improvement or first score, save generated model
-#     file.name <- paste0("/ensembleWeights_",Sys.time(),".RData")
-#     file.name <- gsub(" ","_",file.name)
-#     file.name <- gsub(":","_",file.name)
-#     
-#     save(ensemble.weights,file=paste0(WORK.DIR,file.name))
-# } else {
-#     cat("no improvement!!!\n")
-#     flush.console()
-# }
+#
+# record Model performance
+#
+
+blending.weights <- opt.wts$par
+
+model.weights <- paste(names(blending.weights),blending.weights,sep="=",collapse=",")
+bestTune <- data.frame(model.weights, stringsAsFactors=FALSE)
+
+# record Model performance
+modelPerf.df <- read.delim(paste0(WORK.DIR,"/model_performance.tsv"),
+                           stringsAsFactors=FALSE)
+# determine if score improved
+improved <- ifelse(score < min(modelPerf.df$score),"Yes","No")
+
+recordModelPerf(paste0(WORK.DIR,"/model_performance.tsv"),
+                MODEL.METHOD,
+                time.data,
+                train.data$predictors,
+                score,
+                improved=improved,
+                bestTune=flattenDF(bestTune),
+                tune.grid=NA,
+                model.parms=NA,
+                comment=MODEL.COMMENT)
+
+modelPerf.df <- read.delim(paste0(WORK.DIR,"/model_performance.tsv"),
+                           stringsAsFactors=FALSE)
+
+
+#display model performance record for this run
+tail(modelPerf.df[,1:10],1)
+
+# if last score recorded is better than previous ones save model object
+last.idx <- length(modelPerf.df$score)
+if (last.idx == 1 || improved == "Yes" || FORCE_RECORDING_MODEL) {
+    cat("found improved model, saving...\n")
+    flush.console()
+    #yes we have improvement or first score, save generated model
+    file.name <- paste0("model_",MODEL.NAME,"_",modelPerf.df$date.time[last.idx],".RData")
+    file.name <- gsub(" ","_",file.name)
+    file.name <- gsub(":","_",file.name)
+    
+    save(ensemble.weights,file=paste0(WORK.DIR,"/",file.name))
+    
+    # estalish pointer to current model
+    writeLines(file.name,paste0(WORK.DIR,"/this_model"))
+} else {
+    cat("no improvement!!!\n")
+    flush.console()
+}
 
