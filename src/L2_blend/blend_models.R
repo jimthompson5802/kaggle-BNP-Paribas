@@ -27,7 +27,7 @@ train.data <- list()
 train.data$predictors <- cbind(gbm2=calib.gbm2[,"Class_1"],
                                nnet1=calib.nnet1[,"Class_1"])
 
-train.data$response = ifelse(calib.gbm2$target == "Class_1",1,0)
+train.data$response = calib.gbm2$target
 
 # get test data for calibration
 # L1_gbm2
@@ -41,7 +41,7 @@ test.data <- list()
 test.data$predictors <- cbind(gbm2=test.gbm2[,"Class_1"],
                                nnet1=test.nnet1[,"Class_1"])
 
-test.data$response = ifelse(test.gbm2$target == "Class_1",1,0)
+test.data$response = test.gbm2$target
 
 
 #
@@ -77,7 +77,7 @@ heq <- function(w) {
 
     return(h)
 }
-
+# 
 # heq.jac <- function(w){
 #     j <- matrix(NA,1,length(w))
 #     j[1,] <- rep(1,length(w))
@@ -109,15 +109,15 @@ names(opt.wts$par) <- colnames(train.data$predictors)
 cat("optimaal weights",opt.wts$par,", training score:",opt.wts$value,"\n")
 
 
-# # check score for test data
-# pred.probs <- test.data$predictors * matrix(rep(opt.wts$par,nrow(test.data$predictors)),
-#                                             ncol=ncol(test.data$predictors),byrow=TRUE)
-# pred.probs <- apply(pred.probs,1,sum)
-# 
-# test.score <- logLossEval(pred.probs,test.data$response)
-# 
-# cat("optimal weights",opt.wts$par,", test score:",test.score,"\n")
-# 
+# check score for test data
+pred.probs <- test.data$predictors * matrix(rep(opt.wts$par,nrow(test.data$predictors)),
+                                            ncol=ncol(test.data$predictors),byrow=TRUE)
+pred.probs <- apply(pred.probs,1,sum)
+
+test.score <- logLossEval(pred.probs,test.data$response)
+
+cat("optimal weights",opt.wts$par,", test score:",test.score,"\n")
+
 # #
 # # record Model performance
 # #
