@@ -35,34 +35,48 @@ id <- new.df$ID
 calib.data <- PREPARE.MODEL.DATA(LEVEL0.MODELS,new.df,includeResponse=TRUE)
 
 # predict class probabilities
+write.table(calib.data$predictors,file=paste0(WORK.DIR,"/py_calib.tsv"),row.names = FALSE,
+            sep="\t")
 # execute Python prediction code
-python.test.command <- paste(PYTHON_COMMAND,paste0(WORK.DIR,"/make_prediction.py"),
+python.predict.command <- paste(PYTHON_COMMAND,paste0(WORK.DIR,"/make_prediction.py"),
                              WORK.DIR,
                              py.model.file.name,
-                             "py_test.tsv",
-                             "py_test_predictions.tsv")
-system(python.test.command)
+                             "py_calib.tsv",
+                             "py_calib_predictions.tsv")
+system(python.predict.command)
 
 # retrieve predictions from Python
-pred.probs <- fread(paste0(WORK.DIR,"/py_test_predictions.tsv"), sep="\t")
-pred.probs <- predict(mdl.fit,newdata = train.data$predictors,type = "prob")
+pred.probs <- fread(paste0(WORK.DIR,"/py_calib_predictions.tsv"), sep="\t")
 
 # augment with identifier and target variable
-calib.pred.probs <- cbind(ID=id,pred.probs,target=train.data$response)
+calib.pred.probs <- cbind(ID=id,pred.probs,target=calib.data$response)
 
-# data used for testing optimal weights
+# data used to test 
 new.df <- test.raw
 #save id vector
 id <- new.df$ID
 
-# prep the data for prediciton model
-train.data <- PREPARE.MODEL.DATA(LEVEL0.MODELS,new.df,includeResponse=TRUE)
+# prep the data for prediction model
+test.data <- PREPARE.MODEL.DATA(LEVEL0.MODELS,new.df,includeResponse=TRUE)
 
 # predict class probabilities
-pred.probs <- predict(mdl.fit,newdata = train.data$predictors,type = "prob")
+write.table(calib.data$predictors,file=paste0(WORK.DIR,"/py_test.tsv"),row.names = FALSE,
+            sep="\t")
+
+# execute Python prediction code
+python.predict.command <- paste(PYTHON_COMMAND,paste0(WORK.DIR,"/make_prediction.py"),
+                                WORK.DIR,
+                                py.model.file.name,
+                                "py_test.tsv",
+                                "py_test_predictions.tsv")
+system(python.predict.command)
+
+# retrieve predictions from Python
+pred.probs <- fread(paste0(WORK.DIR,"/py_test_predictions.tsv"), sep="\t")
 
 # augment with identifier and target variable
-test.pred.probs <- cbind(ID=id,pred.probs,target=train.data$response)
+test.pred.probs <- cbind(ID=id,pred.probs,target=test.data$response)
+
 
 # save data for calibrating Level 2 model weights
 save(calib.pred.probs,test.pred.probs,file=paste0(WORK.DIR,"/data_for_level2_optimization.RData"))
