@@ -31,7 +31,7 @@ new.df <- fread(paste0(DATA.DIR,"/test.csv"))
 id <- new.df$ID
 
 # prep the data for submission
-submission <- PREPARE.MODEL.DATA(new.df,includeResponse=FALSE)
+submission <- PREPARE.MODEL.DATA(LEVEL0.MODELS,new.df,includeResponse=FALSE)
 
 
 # predict class probabilities
