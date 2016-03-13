@@ -21,10 +21,12 @@ FORCE_RECORDING_MODEL <- FALSE
 # L1_gbm2
 load("./src/L1_gbm2/data_for_level2_optimization.RData")
 calib.gbm2 <- calib.pred.probs
+test.gbm2 <- test.pred.probs
 
 # L1_nnet1
 load("./src/L1_nnet1/data_for_level2_optimization.RData")
 calib.nnet1 <- calib.pred.probs
+test.nnet1 <- test.pred.probs
 
 # combine Level 1 Calibration data
 train.data <- list()
@@ -32,13 +34,6 @@ train.data$predictors <- cbind(gbm2=calib.gbm2[,"Class_1"],
                                nnet1=calib.nnet1[,"Class_1"])
 
 train.data$response = calib.gbm2$target
-
-# get test data for calibration
-# L1_gbm2
-test.gbm2 <- test.pred.probs
-
-# L1_nnet1
-test.nnet1 <- test.pred.probs
 
 # combine Level 1 Calibration data
 test.data <- list()
