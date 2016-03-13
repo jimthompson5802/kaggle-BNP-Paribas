@@ -29,7 +29,7 @@ LEVEL0.MODELS <- c("L0_gbm2",
 FRACTION.TRAIN.DATA <- 1.0
 
 # force recording model flag
-FORCE_RECORDING_MODEL <- TRUE
+FORCE_RECORDING_MODEL <- FALSE
 
 
 # get training data
