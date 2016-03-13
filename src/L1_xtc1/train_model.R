@@ -26,7 +26,7 @@ LEVEL0.MODELS <- c("L0_gbm2",
                    "L0_xgb3")
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.25
+FRACTION.TRAIN.DATA <- 1.0
 
 # force recording model flag
 FORCE_RECORDING_MODEL <- TRUE
