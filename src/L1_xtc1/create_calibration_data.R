@@ -81,6 +81,11 @@ test.pred.probs <- cbind(ID=id,pred.probs,target=test.data$response)
 # save data for calibrating Level 2 model weights
 save(calib.pred.probs,test.pred.probs,file=paste0(WORK.DIR,"/data_for_level2_optimization.RData"))
 
+# clean up files no longer needed
+file.remove(c(paste0(WORK.DIR,"/py_calib.tsv"),
+              paste0(WORK.DIR,"/py_calib_predictions.tsv"),
+              paste0(WORK.DIR,"/py_test.tsv"),
+              paste0(WORK.DIR,"/py_test_predictions.tsv")))
 
 
 
