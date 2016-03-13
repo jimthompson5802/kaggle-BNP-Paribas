@@ -159,11 +159,11 @@ if (last.idx == 1 || improved == "Yes" || FORCE_RECORDING_MODEL) {
     cat("found improved model, saving...\n")
     flush.console()
     #yes we have improvement or first score, save generated model
-    file.name <- paste0("model_",MODEL.NAME,"_",modelPerf.df$date.time[last.idx],".RData")
+    file.name <- paste0("model_",MODEL.METHOD,"_",modelPerf.df$date.time[last.idx],".RData")
     file.name <- gsub(" ","_",file.name)
     file.name <- gsub(":","_",file.name)
     
-    save(ensemble.weights,file=paste0(WORK.DIR,"/",file.name))
+    save(blending.weights,file=paste0(WORK.DIR,"/",file.name))
     
     # estalish pointer to current model
     writeLines(file.name,paste0(WORK.DIR,"/this_model"))
