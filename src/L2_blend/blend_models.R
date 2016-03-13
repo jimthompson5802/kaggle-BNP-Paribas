@@ -100,7 +100,7 @@ hin <- function(w) {
 #     return(rbind(diag(1,27),diag(-1,27)))
 # }
 # 
-time.data <- system.time(opt.wts <- constrOptim.nl(rep(1/ncol(train.data$predictors),ncol(train.data$predictors)),
+time.data <- system.time(opt.wts <- constrOptim.nl(c(0.0001,0.9999),
                                       fn=ensFunc,  #gr=grFunc,
                                       hin=hin, #hin.jac=hin.jac,
                                       heq=heq, #heq.jac=heq.jac,
