@@ -10,38 +10,26 @@ library(caret)
 source("./src/CommonFunctions.R")
 WORK.DIR <- "./src/L2_blend"
 
-# read kaggle submission data
-new.df <- fread(paste0(DATA.DIR,"/test.csv"))
+# retrive generated blending weights data structure
+model.file.name <- readLines(paste0(WORK.DIR,"/this_model"))
+load(paste0(WORK.DIR,"/",model.file.name))
 
-id <- new.df$ID
+# retrieve Level 1 submissions
+# L1_gbm2
+gbm2.pred.probs <- read.csv("./src/L1_gbm2/submission.csv")
 
-# training data for blending
-submission <- prepL2FeatureSet(new.df,includeResponse = FALSE)
+#L1_nnet1
+nnet1.pred.probs <- read.csv("./src/L1_nnet1/submission.csv")
+
+# combine model probabilities into a single matrix
+probs.mat <- cbind(gbm2=gbm2.pred.probs[,"PredictedProb"],
+                   nnet1=nnet1.pred.probs[,"PredictedProb"])
 
 
-#
-# Average the individual probablities
-#
-
-pred.probs <- apply(submission$predictors,1,sum)/ncol(submission$predictors)
-
-
-# # 
-# # use optimal weights calculated
-# #
-# 
-# # combine three models probabilities into a single matrix
-# probs.mat <- cbind(rf2.probs,gbm2.probs,gbm4.probs)
-# 
-# #set up weight matrix to combine the individual weights
-# wmat <- rbind(diag(opt.wts$par[1:9]),diag(opt.wts$par[10:18]),diag(opt.wts$par[19:27]))
-# 
-# # compute overall probablities using invidual model class weights
-# pred.probs <- probs.mat %*% wmat
-# colnames(pred.probs) <- paste0("Class_",1:9)
-#     
+# compute overall probablities using invidual model class weights
+pred.probs <- probs.mat %*% blending.weights
 
 #create kaggle submission file
-write.csv(data.frame(ID=id,PredictedProb=pred.probs),file=paste0(WORK.DIR,"/submission.csv"),
+write.csv(data.frame(ID=gbm2.pred.probs[,"ID"],PredictedProb=pred.probs),file=paste0(WORK.DIR,"/submission.csv"),
           row.names=FALSE)
 
