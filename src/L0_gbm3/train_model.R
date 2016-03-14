@@ -17,7 +17,7 @@ source("./src/CommonFunctions.R")
 CARET.TRAIN.PARMS <- list(method="gbm")   # Replace MODEL.METHOD with appropriate caret model
 
 #CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
-CARET.TUNE.GRID <- expand.grid(interaction.depth=5,n.trees=1000,
+CARET.TUNE.GRID <- expand.grid(interaction.depth=10,n.trees=1000,
                                shrinkage=0.01,n.minobsinnode=10)
 
 # user specified tuning parameters
