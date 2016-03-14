@@ -43,7 +43,7 @@ PREPARE.MODEL.DATA <- prepL0FeatureSetAll
 MODEL.COMMENT <- "expanded boruta feature set, imputing median values"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.25
+FRACTION.TRAIN.DATA <- 1.0
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
