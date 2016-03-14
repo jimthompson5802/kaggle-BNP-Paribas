@@ -39,13 +39,12 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
 
 MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific parameters
 
-PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
 PREPARE.MODEL.DATA <- prepL0FeatureSetAll
 
 MODEL.COMMENT <- "all features, train0"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.25
+FRACTION.TRAIN.DATA <- 1.0
 
 # force recording model flag
 FORCE_RECORDING_MODEL <- TRUE
