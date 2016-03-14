@@ -36,7 +36,7 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
                            tuneLength=5,
                            metric="LogLoss")
 
-MODEL.SPECIFIC.PARMS <- list(verbose=FALSE,num.trees=1000) #NULL # Other model specific parameters
+MODEL.SPECIFIC.PARMS <- list(verbose=FALSE,num.trees=1500) #NULL # Other model specific parameters
 
 PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
 PREPARE.MODEL.DATA <- prepL0FeatureSet2a
