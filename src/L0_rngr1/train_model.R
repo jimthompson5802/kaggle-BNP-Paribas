@@ -19,7 +19,7 @@ CARET.TRAIN.PARMS <- list(method="ranger")   # Replace MODEL.METHOD with appropr
 #CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
 
 # user specified tuning parameters
-CARET.TUNE.GRID <- expand.grid(mtry=c(29))
+CARET.TUNE.GRID <- expand.grid(mtry=c(20))
 
 # model specific training parameter
 CARET.TRAIN.CTRL <- trainControl(method="none",
