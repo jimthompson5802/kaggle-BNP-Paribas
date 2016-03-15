@@ -18,11 +18,11 @@ MODEL.NAME <- "ExtraTreeClassifier"
 #PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
 PREPARE.MODEL.DATA <- prepL0FeatureSet3
 
-MODEL.COMMENT <- "All Features, Python model"
+MODEL.COMMENT <- "Based on Rscript, Python model, prepL0FeatureSet3"
 
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.25
+FRACTION.TRAIN.DATA <- 1.0
 
 # force recording model flag
 FORCE_RECORDING_MODEL <- FALSE
