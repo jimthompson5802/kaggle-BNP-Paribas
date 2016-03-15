@@ -16,7 +16,7 @@ source("./src/CommonFunctions.R")
 MODEL.NAME <- "ExtraTreeClassifier"
 
 #PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
-PREPARE.MODEL.DATA <- prepL0FeatureSetAll
+PREPARE.MODEL.DATA <- prepL0FeatureSet3
 
 MODEL.COMMENT <- "All Features, Python model"
 
