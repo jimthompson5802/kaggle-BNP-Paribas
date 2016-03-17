@@ -21,15 +21,15 @@ gbm2.pred.probs <- read.csv("./src/L1_gbm2/submission.csv")
 #L1_nnet1
 nnet1.pred.probs <- read.csv("./src/L1_nnet1/submission.csv")
 
-# combine model probabilities into a single matrix
-probs.mat <- cbind(gbm2=gbm2.pred.probs[,"PredictedProb"],
-                   nnet1=nnet1.pred.probs[,"PredictedProb"])
+#create data for predictions
+submission <- list()
+submission$predictors <- cbind(gbm2=gbm2.pred.probs[,"PredictedProb"],
+                               nnet1=nnet1.pred.probs[,"PredictedProb"])
 
-
-# compute overall probablities using invidual model class weights
-pred.probs <- probs.mat %*% blending.weights
+# make prediction
+pred.probs <- predict(mdl.fit,newdata = submission$predictors,type = "prob")
 
 #create kaggle submission file
-write.csv(data.frame(ID=gbm2.pred.probs[,"ID"],PredictedProb=pred.probs),file=paste0(WORK.DIR,"/submission.csv"),
+write.csv(data.frame(ID=gbm2.pred.probs[,"ID"],PredictedProb=pred.probs[,"Class_1"]),file=paste0(WORK.DIR,"/submission.csv"),
           row.names=FALSE)
 
