@@ -2,8 +2,6 @@
 # Global Variables
 ###
 
-# TODO: Add Level 1 prepModelData to access L0 Python models
-
 DATA.DIR <- "./data"
 
 PYTHON_COMMAND <- "/Users/jim/anaconda/bin/python"
@@ -72,6 +70,11 @@ recordModelPerf <- function(model.performance.file,
     
     # write new performance records
     write.table(new.row,file=model.performance.file,
+                append=TRUE,sep="\t",row.names=FALSE,col.names=FALSE)
+    
+    # write new performance records to consolidate area
+    write.table(new.row,
+                file="./model_results/ConsolidatedModelPerformance.tsv",
                 append=TRUE,sep="\t",row.names=FALSE,col.names=FALSE)
     
     return(NULL)
