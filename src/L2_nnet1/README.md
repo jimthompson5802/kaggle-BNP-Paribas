@@ -1,5 +1,5 @@
-Level 2 Blending Model
+Level 2 Blending Model 
 ==================================================
 
 ## Overview
-Calculates blending weights to combine the Level 1 models
+Combines Level 1 results using neural networks
