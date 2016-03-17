@@ -100,17 +100,9 @@ pred.probs <- predict(mdl.fit,newdata = test.data$predictors,type = "prob")
 score <- logLossEval(pred.probs[,1],test.data$response)
 score
 
-
-
-
 #
 # record Model performance
 #
-
-blending.weights <- opt.wts$par
-
-model.weights <- paste(names(blending.weights),blending.weights,sep="=",collapse=",")
-bestTune <- data.frame(model.weights, stringsAsFactors=FALSE)
 
 # record Model performance
 modelPerf.df <- read.delim(paste0(WORK.DIR,"/model_performance.tsv"),
@@ -119,14 +111,16 @@ modelPerf.df <- read.delim(paste0(WORK.DIR,"/model_performance.tsv"),
 improved <- ifelse(score < min(modelPerf.df$score),"Yes","No")
 
 recordModelPerf(paste0(WORK.DIR,"/model_performance.tsv"),
-                MODEL.METHOD,
+                mdl.fit$method,
                 time.data,
                 train.data$predictors,
                 score,
                 improved=improved,
                 bestTune=flattenDF(bestTune),
-                tune.grid=NA,
-                model.parms=NA,
+                tune.grid=flattenDF(CARET.TUNE.GRID),
+                model.parms=paste(names(MODEL.SPECIFIC.PARMS),
+                                  as.character(MODEL.SPECIFIC.PARMS),
+                                  sep="=",collapse=","),
                 comment=MODEL.COMMENT)
 
 modelPerf.df <- read.delim(paste0(WORK.DIR,"/model_performance.tsv"),
@@ -142,7 +136,7 @@ if (last.idx == 1 || improved == "Yes" || FORCE_RECORDING_MODEL) {
     cat("found improved model, saving...\n")
     flush.console()
     #yes we have improvement or first score, save generated model
-    file.name <- paste0("model_",MODEL.METHOD,"_",modelPerf.df$date.time[last.idx],".RData")
+    file.name <- paste0("model_",mdl.fit$method,"_",modelPerf.df$date.time[last.idx],".RData")
     file.name <- gsub(" ","_",file.name)
     file.name <- gsub(":","_",file.name)
     
