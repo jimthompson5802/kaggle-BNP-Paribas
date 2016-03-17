@@ -116,7 +116,7 @@ recordModelPerf(paste0(WORK.DIR,"/model_performance.tsv"),
                 train.data$predictors,
                 score,
                 improved=improved,
-                bestTune=flattenDF(bestTune),
+                bestTune=flattenDF(mdl.fit$bestTune),
                 tune.grid=flattenDF(CARET.TUNE.GRID),
                 model.parms=paste(names(MODEL.SPECIFIC.PARMS),
                                   as.character(MODEL.SPECIFIC.PARMS),
@@ -140,7 +140,7 @@ if (last.idx == 1 || improved == "Yes" || FORCE_RECORDING_MODEL) {
     file.name <- gsub(" ","_",file.name)
     file.name <- gsub(":","_",file.name)
     
-    save(blending.weights,file=paste0(WORK.DIR,"/",file.name))
+    save(mdl.fit,file=paste0(WORK.DIR,"/",file.name))
     
     # estalish pointer to current model
     writeLines(file.name,paste0(WORK.DIR,"/this_model"))
