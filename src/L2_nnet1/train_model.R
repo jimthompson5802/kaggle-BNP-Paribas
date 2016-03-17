@@ -22,17 +22,24 @@ load("./src/L1_nnet1/data_for_level2_optimization.RData")
 calib.nnet1 <- calib.pred.probs
 test.nnet1 <- test.pred.probs
 
+# L1_xtc1
+load("./src/L1_xtc1/data_for_level2_optimization.RData")
+calib.xtc1 <- calib.pred.probs
+test.xtc1 <- test.pred.probs
+
 # combine Level 1 Calibration data
 train.data <- list()
 train.data$predictors <- cbind(gbm2=calib.gbm2[,"Class_1"],
-                               nnet1=calib.nnet1[,"Class_1"])
+                               nnet1=calib.nnet1[,"Class_1"],
+                               xtc1=calib.xtc1[,Class_1])
 
 train.data$response = calib.gbm2$target
 
 # combine Level 1 Calibration data
 test.data <- list()
 test.data$predictors <- cbind(gbm2=test.gbm2[,"Class_1"],
-                               nnet1=test.nnet1[,"Class_1"])
+                               nnet1=test.nnet1[,"Class_1"],
+                              xtc1=test.xtc1[,Class_1])
 
 test.data$response = test.gbm2$target
 
