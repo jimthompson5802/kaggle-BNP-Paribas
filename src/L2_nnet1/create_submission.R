@@ -8,7 +8,7 @@ library(caret)
 
 # import global variabels and common functions
 source("./src/CommonFunctions.R")
-WORK.DIR <- "./src/L2_blend"
+WORK.DIR <- "./src/L2_nnet1"
 
 # retrive generated blending weights data structure
 model.file.name <- readLines(paste0(WORK.DIR,"/this_model"))
