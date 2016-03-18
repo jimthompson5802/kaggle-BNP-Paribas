@@ -18,7 +18,7 @@ MODEL.NAME <- "ExtraTreeClassifier"
 #PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
 PREPARE.MODEL.DATA <- prepL0FeatureSet4
 
-MODEL.COMMENT <- "Based on Rscript, Python model, prepL0FeatureSet3"
+MODEL.COMMENT <- "Based on Rscript, Python model, prepL0FeatureSet4"
 
 
 # amount of data to train
