@@ -2,8 +2,6 @@
 # Global Variables
 ###
 
-# TODO: Add Level 1 prepModelData to access L0 Python models
-
 DATA.DIR <- "./data"
 
 PYTHON_COMMAND <- "/Users/jim/anaconda/bin/python"
@@ -72,6 +70,11 @@ recordModelPerf <- function(model.performance.file,
     
     # write new performance records
     write.table(new.row,file=model.performance.file,
+                append=TRUE,sep="\t",row.names=FALSE,col.names=FALSE)
+    
+    # write new performance records to consolidate area
+    write.table(cbind(WORK.DIR,new.row),
+                file="./model_results/ConsolidatedModelPerformance.tsv",
                 append=TRUE,sep="\t",row.names=FALSE,col.names=FALSE)
     
     return(NULL)
@@ -494,6 +497,115 @@ prepL0FeatureSetAll <- function(df,includeResponse=TRUE){
 
     # eliminate unwanted variables
     predictors <- cbind(df[,predictor.vars,with=FALSE],all.var.na.count)
+    
+    # get data types and change all strings to factors
+    load(paste0(DATA.DIR,"/attr_data_types.RData"))
+    load(paste0(DATA.DIR,"/factor_levels.RData"))
+    
+    # set NA to -999
+    num.attr <- intersect(predictor.vars,c(attr.data.types$numeric,attr.data.types$integer))
+    for (x in num.attr) {
+        idx <- is.na(predictors[[x]])
+        predictors[[x]][idx] <- -999
+    }
+    
+    # standardize factor levels for modeling
+    char.attr <- intersect(predictor.vars,attr.data.types$character)
+    
+    for (x in char.attr) {
+        predictors[[x]] <- as.integer(factor(predictors[[x]],levels = factor.levels[[x]]))
+    }
+    
+    
+    if (includeResponse) {
+        
+        response <- factor(ifelse(df$target == 1,"Class_1","Class_0"),
+                           levels=c("Class_1","Class_0"))
+        ans <- list(predictors=predictors,response=response)
+        
+    } else {
+        
+        ans <- list(predictors=predictors)
+    }
+    
+    return(ans)
+}
+
+# Feature set based on Rscipt w/ one synthetic feature
+# Categorical represented as integers
+# numeric NA set to -999
+prepL0FeatureSet3 <- function(df,includeResponse=TRUE){
+    # prepL0FeatureSet3
+    # df: raw data
+    # if only.predcitors is TRUE then return list(predictors)
+    # if only.predictors is FALSE then return list(predictors,response)
+    
+    require(plyr)
+    require(caret)
+    
+    predictor.vars <- setdiff(names(df),c('ID','target','v8','v23','v25','v31','v36','v37','v46','v51',
+                                          'v53','v54','v63','v73','v75','v79','v81','v82','v89','v92',
+                                          'v95','v105','v107','v108','v109','v110','v116','v117','v118',
+                                          'v119','v123','v124','v128'))
+    
+    # count missing values for all attributes and those deemed important by Boruta
+    all.var.na.count <- apply(df,1,function(row){sum(is.na(row))})
+    
+    # eliminate unwanted variables
+    predictors <- cbind(df[,predictor.vars,with=FALSE],all.var.na.count)
+    
+    # get data types and change all strings to factors
+    load(paste0(DATA.DIR,"/attr_data_types.RData"))
+    load(paste0(DATA.DIR,"/factor_levels.RData"))
+    
+    # set NA to -999
+    num.attr <- intersect(predictor.vars,c(attr.data.types$numeric,attr.data.types$integer))
+    for (x in num.attr) {
+        idx <- is.na(predictors[[x]])
+        predictors[[x]][idx] <- -999
+    }
+    
+    # standardize factor levels for modeling
+    char.attr <- intersect(predictor.vars,attr.data.types$character)
+    
+    for (x in char.attr) {
+        predictors[[x]] <- as.integer(factor(predictors[[x]],levels = factor.levels[[x]]))
+    }
+    
+    
+    if (includeResponse) {
+        
+        response <- factor(ifelse(df$target == 1,"Class_1","Class_0"),
+                           levels=c("Class_1","Class_0"))
+        ans <- list(predictors=predictors,response=response)
+        
+    } else {
+        
+        ans <- list(predictors=predictors)
+    }
+    
+    return(ans)
+}
+
+# Feature set based on Rscipt
+# Categorical represented as integers
+# numeric NA set to -999
+prepL0FeatureSet4 <- function(df,includeResponse=TRUE){
+    # prepL0FeatureSet4
+    # df: raw data
+    # if only.predcitors is TRUE then return list(predictors)
+    # if only.predictors is FALSE then return list(predictors,response)
+    
+    require(plyr)
+    require(caret)
+    
+    predictor.vars <- setdiff(names(df),c('ID','target','v8','v23','v25','v31','v36','v37','v46','v51',
+                                          'v53','v54','v63','v73','v75','v79','v81','v82','v89','v92',
+                                          'v95','v105','v107','v108','v109','v110','v116','v117','v118',
+                                          'v119','v123','v124','v128'))
+    
+    # eliminate unwanted variables
+    predictors <- df[,predictor.vars,with=FALSE]
     
     # get data types and change all strings to factors
     load(paste0(DATA.DIR,"/attr_data_types.RData"))
