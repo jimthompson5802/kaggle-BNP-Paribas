@@ -22,7 +22,7 @@ MODEL.COMMENT <- "Based on Rscript, Python model, prepL0FeatureSet4"
 
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.25
+FRACTION.TRAIN.DATA <- 1.0
 
 # force recording model flag
 FORCE_RECORDING_MODEL <- FALSE
