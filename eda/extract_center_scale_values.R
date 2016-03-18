@@ -19,11 +19,17 @@ all.data <- rbind(train0.raw,train1.raw)
 
 #determine levels for each factor attribute
 center.scale.parms <- lapply(c(attr.data.types$numeric,attr.data.types$integer),function(x){
+    min.value <- min(all.data[[x]],na.rm = TRUE)
+    max.value <- max(all.data[[x]],na.rm=TRUE)
     mean.value <- mean(all.data[[x]],na.rm=TRUE)
     sd.value <- sd(all.data[[x]],na.rm=TRUE)
     center.scale.x <- (all.data[[x]]-mean.value)/sd.value
     median.value <- median(center.scale.x,na.rm = TRUE)
-    return(list(mean.value=mean.value,sd.value=sd.value,median.value=median.value))
+    return(list(mean.value=mean.value,
+                sd.value=sd.value,
+                median.value=median.value,
+                min.value=min.value,
+                max.value=max.value))
 })
 
 names(center.scale.parms) <- c(attr.data.types$numeric,attr.data.types$integer)
