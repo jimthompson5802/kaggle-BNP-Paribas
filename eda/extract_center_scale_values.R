@@ -23,8 +23,7 @@ center.scale.parms <- lapply(c(attr.data.types$numeric,attr.data.types$integer),
     max.value <- max(all.data[[x]],na.rm=TRUE)
     mean.value <- mean(all.data[[x]],na.rm=TRUE)
     sd.value <- sd(all.data[[x]],na.rm=TRUE)
-    center.scale.x <- (all.data[[x]]-mean.value)/sd.value
-    median.value <- median(center.scale.x,na.rm = TRUE)
+    median.value <- median(all.data[[x]],na.rm=TRUE)
     return(list(mean.value=mean.value,
                 sd.value=sd.value,
                 median.value=median.value,
