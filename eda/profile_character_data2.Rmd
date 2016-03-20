@@ -1,0 +1,92 @@
+---
+title: "Profile Character Data II"
+author: "Jim Thompson"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+```{r}
+###
+#  profile character data
+###
+
+library(plyr)
+library(ggplot2)
+library(caret)
+
+
+DATA.DIR <- "../data"
+
+load(paste0(DATA.DIR,"/train_calib_test.RData"))
+load(paste0(DATA.DIR,"/char_attributes.RData"))
+
+sample.df <- rbind(train0.raw,train1.raw)
+
+
+char.attr <- char.exclude.too.many.unique.values
+
+sample.df <- sample.df[c("target",char.attr)]
+head(sample.df)
+
+```
+
+```{r,eval=FALSE}
+
+# Set null to *BLANK*
+for (x in char.attr) {
+    sample.df[[x]] <- ifelse(sample.df[[x]] == "","*BLANK*",sample.df[[x]])
+}
+
+
+# number of unique values 
+number.unique.values <- sapply(char.attr,
+                               function(x){length(unique(sample.df[,x]))})
+
+summary(number.unique.values)
+qplot(number.unique.values[number.unique.values<=20],geom = "histogram",binwidth=1)
+
+
+# record attributes names to exlude because of too many unique values
+char.exclude.too.many.unique.values <- names(number.unique.values[number.unique.values>20])
+
+# eliminate from list the attributes with too many unique values
+char.attr <- setdiff(char.attr,char.exclude.too.many.unique.values)
+
+# determine if any are near zero variance
+# idx <- nearZeroVar(sample.df[char.attr],saveMetrics=FALSE)
+# char.exclude.nearZeroVar <- char.attr[idx]
+# char.attr <- setdiff(char.attr,char.exclude.nearZeroVar)
+
+
+# summarize the various data types
+a_ply(attr.by.data.types[["character"]],1,function(x){cat("\n\n",x);print(table(sample.df[x]))})
+
+
+# function to conduct Chi Square test 
+testChiSquare <- function(x,df) {
+    cat("\n\nChi Squared test for",x)
+    chisq.result <- chisq.test(table(df[c(x,"target")]),simulate.p.value = TRUE)
+    print(chisq.result)
+    return(data.frame(attr=x,p.value=chisq.result$p.value,stringsAsFactors=FALSE))
+}
+
+
+ll <- alply(char.attr,1,testChiSquare,sample.df)
+chisq.df <- do.call(rbind,ll)
+
+# determine cut-off value based on Bonferroni criteria
+bonferroni.cut.off <- 0.05/length(char.attr)
+
+cat("Bonferroni cut-off:",bonferroni.cut.off,"\n")
+
+
+
+
+
+```
+
+
+
+
+
