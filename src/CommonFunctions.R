@@ -235,10 +235,10 @@ prepL1FeatureSet1 <- function(level0.models,df,includeResponse=TRUE){
     
     require(plyr)
     require(caret)
+    require(foreach)
     
-    ll <- lapply(level0.models,createLevel1Features,df,includeResponse)
-    
-    predictors <- do.call(cbind,ll)
+    predictors <- foreach(mdl.dir=level0.models,.combine=cbind) %dopar%
+        createLevel1Features(mdl.dir,df,includeResponse)
     
     #extract only Class_1 probabilities
     class1.names <- grep("Class_1",names(predictors),value = TRUE)
