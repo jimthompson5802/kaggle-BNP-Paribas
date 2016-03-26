@@ -40,12 +40,13 @@ MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific paramet
 PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
 PREPARE.MODEL.DATA <- prepL1FeatureSet1
 
-MODEL.COMMENT <- "Only Class_1 probabilites as features, expanded Boruta feature set"
+MODEL.COMMENT <- "Only Class_1 probabilites as features"
 
 LEVEL0.MODELS <- c("L0_gbm2",
                    #"L0_rngr1",
                    "L0_xtc1",
                    "L0_xtc2",
+                   "L0_xtc3",
                    "L0_xgb2",
                    "L0_xgb3")
 
@@ -64,11 +65,11 @@ set.seed(29)
 idx <- createDataPartition(train.df$target,p=FRACTION.TRAIN.DATA,list=FALSE)
 train.df <- train.df[idx,]
 
-# prepare data for training
-train.data <- PREPARE.MODEL.DATA(LEVEL0.MODELS,train.df)
-
 library(doMC)
 registerDoMC(cores = 7)
+
+# prepare data for training
+train.data <- PREPARE.MODEL.DATA(LEVEL0.MODELS,train.df)
 
 # library(doSNOW)
 # cl <- makeCluster(5,type="SOCK")
