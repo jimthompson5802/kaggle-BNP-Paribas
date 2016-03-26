@@ -162,11 +162,16 @@ createLevel1Features <- function (model.dir,df,...) {
     force(df)
     force(model.dir)
     
+    cat("generating Level 1 features for",model.dir,"\n")
+    flush.console()
+    
     # create environment to hold Level 0 Model data structures
     l0.env <- new.env()
 
     # determine if R or Python model
     model.file.name <- readLines(paste0("./src/",model.dir,"/this_model"))
+    cat("loading .RData",model.file.name[1],"\n")
+    flush.console()
     if (length(model.file.name) == 1) {
         # R Model
         load(paste0("./src/",model.dir,"/",model.file.name[1]),envir=l0.env)
