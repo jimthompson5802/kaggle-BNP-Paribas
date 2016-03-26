@@ -65,11 +65,11 @@ set.seed(29)
 idx <- createDataPartition(train.df$target,p=FRACTION.TRAIN.DATA,list=FALSE)
 train.df <- train.df[idx,]
 
-# prepare data for training
-train.data <- PREPARE.MODEL.DATA(LEVEL0.MODELS,train.df)
-
 library(doMC)
 registerDoMC(cores = 7)
+
+# prepare data for training
+train.data <- PREPARE.MODEL.DATA(LEVEL0.MODELS,train.df)
 
 # library(doSNOW)
 # cl <- makeCluster(5,type="SOCK")
