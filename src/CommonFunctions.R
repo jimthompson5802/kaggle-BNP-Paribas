@@ -162,11 +162,16 @@ createLevel1Features <- function (model.dir,df,...) {
     force(df)
     force(model.dir)
     
+    cat("generating Level 1 features for",model.dir,"\n")
+    flush.console()
+    
     # create environment to hold Level 0 Model data structures
     l0.env <- new.env()
 
     # determine if R or Python model
     model.file.name <- readLines(paste0("./src/",model.dir,"/this_model"))
+    cat("loading .RData",model.file.name[1],"\n")
+    flush.console()
     if (length(model.file.name) == 1) {
         # R Model
         load(paste0("./src/",model.dir,"/",model.file.name[1]),envir=l0.env)
@@ -230,10 +235,10 @@ prepL1FeatureSet1 <- function(level0.models,df,includeResponse=TRUE){
     
     require(plyr)
     require(caret)
+    require(foreach)
     
-    ll <- lapply(level0.models,createLevel1Features,df,includeResponse)
-    
-    predictors <- do.call(cbind,ll)
+    predictors <- foreach(mdl.dir=level0.models,.combine=cbind) %dopar%
+        createLevel1Features(mdl.dir,df,includeResponse)
     
     #extract only Class_1 probabilities
     class1.names <- grep("Class_1",names(predictors),value = TRUE)
