@@ -9,6 +9,7 @@ source("./src/CommonFunctions.R")
 load(file=paste0(DATA.DIR,"/train_calib_test.RData"))
 
 # Features selected from expanded Boruta analysis 
+# number attributes set to raw values, NA set to -999
 # character attributes set as dummy variables
 prepL0FeatureSet5 <- function(df,includeResponse=TRUE){
     # prepL0FeatureSet5
