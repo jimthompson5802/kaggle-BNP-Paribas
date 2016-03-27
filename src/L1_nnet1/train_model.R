@@ -54,7 +54,7 @@ LEVEL0.MODELS <- c("L0_gbm2",
 FRACTION.TRAIN.DATA <- 1.0
 
 # force recording model flag
-FORCE_RECORDING_MODEL <- FALSE
+FORCE_RECORDING_MODEL <- TRUE
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
