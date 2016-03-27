@@ -25,6 +25,9 @@ new.df <- calib.raw
 #save id vector
 id <- new.df$ID
 
+library(doMC)
+registerDoMC(cores = 7)
+
 # prep the data for prediction model
 train.data <- PREPARE.MODEL.DATA(LEVEL0.MODELS,new.df,includeResponse=TRUE)
 
