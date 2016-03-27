@@ -7,6 +7,9 @@ library(data.table)
 # add model specific libraries
 library(caTools)
 
+library(doMC)
+registerDoMC(cores = 7)
+
 # set working directory
 WORK.DIR <- "./src/L1_gbm2"   # directory where model artifacts are stored
 
