@@ -43,7 +43,7 @@ PREPARE.MODEL.DATA <- prepL1FeatureSet1
 MODEL.COMMENT <- "Only Class_1 probabilites as features"
 
 LEVEL0.MODELS <- c("L0_gbm2",
-                   #"L0_rngr1",
+                   "L0_gbm4",
                    "L0_xtc1",
                    "L0_xtc2",
                    "L0_xtc3",
