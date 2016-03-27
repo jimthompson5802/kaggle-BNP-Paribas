@@ -16,7 +16,8 @@ source("./src/CommonFunctions.R")
 # set caret training parameters
 CARET.TRAIN.PARMS <- list(method="gbm")   # Replace MODEL.METHOD with appropriate caret model
 
-CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
+CARET.TUNE.GRID <- expand.grid(interaction.depth=5,n.trees=1000,
+                                shrinkage=0.01,n.minobsinnode=10)
 
 # user specified tuning parameters
 #CARET.TUNE.GRID <- expand.grid(nIter=c(100))
@@ -43,7 +44,7 @@ PREPARE.MODEL.DATA <- prepL1FeatureSet1
 MODEL.COMMENT <- "Only Class_1 probabilites as features, expanded Boruta feature set"
 
 LEVEL0.MODELS <- c("L0_gbm2",
-                   #"L0_rngr1",
+                   "L0_gbm4",
                    "L0_xtc1",
                    "L0_xtc2",
                    "L0_xtc3",
@@ -65,11 +66,13 @@ set.seed(29)
 idx <- createDataPartition(train.df$target,p=FRACTION.TRAIN.DATA,list=FALSE)
 train.df <- train.df[idx,]
 
+library(doMC)
+registerDoMC(cores = 7)
+
+
 # prepare data for training
 train.data <- PREPARE.MODEL.DATA(LEVEL0.MODELS,train.df)
 
-library(doMC)
-registerDoMC(cores = 7)
 
 # library(doSNOW)
 # cl <- makeCluster(5,type="SOCK")
