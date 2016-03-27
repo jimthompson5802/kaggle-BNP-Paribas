@@ -29,4 +29,15 @@ factor.levels <- lapply(attr.data.types$character,function(x){
 names(factor.levels) <- attr.data.types$character
 comment(factor.levels) <- "defines factor levels for categorical attributes"
 
-save(factor.levels,file=paste0(DATA.DIR,"/factor_levels.RData"))
+#determine dummy variables
+dummy.vars <- lapply(attr.data.types$character,function(x){
+    df <- data.frame(all.data[,x])
+    names(df) <- x
+    dummy.effect <- dummyVars(~.,data=df)
+    return(dummy.effect)
+})
+
+names(dummy.vars) <- attr.data.types$character
+comment(dummy.vars) <- "dummy var specification"
+
+save(factor.levels,dummy.vars,file=paste0(DATA.DIR,"/factor_levels.RData"))
