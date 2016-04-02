@@ -8,11 +8,8 @@ source("./src/CommonFunctions.R")
 
 load(file=paste0(DATA.DIR,"/train_calib_test.RData"))
 
-# Features selected from expanded Boruta analysis 
-# number attributes set to raw values, NA set to -999
-# character attributes set as dummy variables
-prepL0FeatureSet99 <- function(df,includeResponse=TRUE){
-    # prepL0FeatureSet5
+prepL0FeatureSet7 <- function(df,includeResponse=TRUE){
+    # prepL0FeatureSet7
     # df: raw data
     # if only.predcitors is TRUE then return list(predictors)
     # if only.predictors is FALSE then return list(predictors,response)
@@ -20,9 +17,8 @@ prepL0FeatureSet99 <- function(df,includeResponse=TRUE){
     require(plyr)
     require(caret)
     require(Boruta)
-    require(data.table)
     
-    ans <- list(data.set.name="FeatureSet99")
+    ans <- list(data.set.name="FeatureSet7")
     
     # use only attributes confirmed by Boruta feature analysis
     load(paste0(DATA.DIR,"/boruta_feature_analysis2.RData"))
@@ -31,8 +27,23 @@ prepL0FeatureSet99 <- function(df,includeResponse=TRUE){
     load(paste0(DATA.DIR,"/attr_data_types.RData"))
     load(paste0(DATA.DIR,"/factor_levels.RData"))
     
-    number.vars <- union(intersect(getSelectedAttributes(bor.results),attr.data.types$numeric),
-          intersect(getSelectedAttributes(bor.results),attr.data.types$integer))
+    # get Boruta revelant attributes
+    relevant.vars <- setdiff(getSelectedAttributes(bor.results),
+                              c("all.var.na.count","imp.var.na.count"))
+    
+    # pick out the numeric variables to scale [0,1]
+    number.vars <- intersect(relevant.vars,union(attr.data.types$numeric,attr.data.types$integer))
+    ll <- lapply(number.vars,function(x){
+        xnew <- (df[[x]] - center.scale.parms[[x]]$min.value) / 
+            (center.scale.parms[[x]]$max.value - center.scale.parms[[x]]$min.value)
+        idx <- is.na(xnew)
+        xnew[idx] <- -1
+        return(xnew)        
+    })
+    
+    xnew <- do.call(cbind,ll)
+    names(xnew) <- number.vars
+    
     
     # get categorical variables
     char.vars <- intersect(getSelectedAttributes(bor.results),attr.data.types$character)
@@ -45,13 +56,7 @@ prepL0FeatureSet99 <- function(df,includeResponse=TRUE){
     
     y <- do.call(cbind,ll)
     
-    predictors <- cbind(df[,number.vars,with=FALSE],y)
-    
-    # set NA to -999
-    for (x in number.vars) {
-        idx <- is.na(predictors[[x]])
-        predictors[[x]][idx] <- -999
-    }
+    predictors <- cbind(xnew,y)
     
     ans <- c(ans,list(predictors=predictors))
     
@@ -67,4 +72,4 @@ prepL0FeatureSet99 <- function(df,includeResponse=TRUE){
 }
 
 
-train.data <- prepL0FeatureSet99(train0.raw)
+train.data <- prepL0FeatureSet7(train0.raw)
