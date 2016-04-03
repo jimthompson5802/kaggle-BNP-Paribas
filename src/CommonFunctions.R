@@ -758,9 +758,10 @@ prepL0FeatureSet6 <- function(df,includeResponse=TRUE){
     return(ans)
 }
 
-# Boruta relevant parameters and low correlated numeric variables
+# Boruta relevant parameters 
 # numeric variables scaled to [0,1]
 # number attributes set to raw values, NA set to -1
+# categorical variables specified as dummy variables
 prepL0FeatureSet7 <- function(df,includeResponse=TRUE){
     # prepL0FeatureSet7
     # df: raw data
@@ -788,7 +789,6 @@ prepL0FeatureSet7 <- function(df,includeResponse=TRUE){
     
     # pick out the numeric variables to scale [0,1]
     number.vars <- intersect(relevant.vars,union(attr.data.types$numeric,attr.data.types$integer))
-    number.vars <- intersect(number.vars,low.correlated.vars)
     ll <- lapply(number.vars,function(x){
         xnew <- (df[[x]] - center.scale.parms[[x]]$min.value) / 
             (center.scale.parms[[x]]$max.value - center.scale.parms[[x]]$min.value)
@@ -801,20 +801,20 @@ prepL0FeatureSet7 <- function(df,includeResponse=TRUE){
     colnames(xnew) <- number.vars
     
     
-    # # get categorical variables
-    # char.vars <- intersect(getSelectedAttributes(bor.results),attr.data.types$character)
-    # 
-    # # create dummy variables 
-    # ll <- lapply(char.vars,function(x){
-    #     y <- predict(dummy.vars[[x]],newdata=df[,x,with=FALSE])
-    #     return(y)
-    # })
-    # 
-    # y <- do.call(cbind,ll)
-    # 
-    # predictors <- cbind(xnew,y)
+    # get categorical variables
+    char.vars <- intersect(getSelectedAttributes(bor.results),attr.data.types$character)
+
+    # create dummy variables
+    ll <- lapply(char.vars,function(x){
+        y <- predict(dummy.vars[[x]],newdata=df[,x,with=FALSE])
+        return(y)
+    })
+
+    y <- do.call(cbind,ll)
+
+    predictors <- data.frame(xnew,y)
     
-    predictors <- data.frame(xnew)
+    # predictors <- data.frame(xnew)
     
     ans <- c(ans,list(predictors=predictors))
     
