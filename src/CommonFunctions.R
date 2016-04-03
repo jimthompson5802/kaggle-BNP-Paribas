@@ -758,10 +758,9 @@ prepL0FeatureSet6 <- function(df,includeResponse=TRUE){
     return(ans)
 }
 
-# Boruta relevant parameters
+# Boruta relevant parameters and low correlated numeric variables
 # numeric variables scaled to [0,1]
-# number attributes set to raw values, NA set to median
-# Boruta selected character attributes set as dummy variables
+# number attributes set to raw values, NA set to -1
 prepL0FeatureSet7 <- function(df,includeResponse=TRUE){
     # prepL0FeatureSet7
     # df: raw data
@@ -780,6 +779,8 @@ prepL0FeatureSet7 <- function(df,includeResponse=TRUE){
     # get data types and change all strings to factors
     load(paste0(DATA.DIR,"/attr_data_types.RData"))
     load(paste0(DATA.DIR,"/factor_levels.RData"))
+    load(paste0(DATA.DIR,"/center_scale_parms.RData"))
+    load(paste0(DATA.DIR,"/low_correlated_vars.RData"))
     
     # get Boruta revelant attributes
     relevant.vars <- setdiff(getSelectedAttributes(bor.results),
@@ -787,6 +788,7 @@ prepL0FeatureSet7 <- function(df,includeResponse=TRUE){
     
     # pick out the numeric variables to scale [0,1]
     number.vars <- intersect(relevant.vars,union(attr.data.types$numeric,attr.data.types$integer))
+    number.vars <- intersect(number.vars,low.correlated.vars)
     ll <- lapply(number.vars,function(x){
         xnew <- (df[[x]] - center.scale.parms[[x]]$min.value) / 
             (center.scale.parms[[x]]$max.value - center.scale.parms[[x]]$min.value)
@@ -799,18 +801,20 @@ prepL0FeatureSet7 <- function(df,includeResponse=TRUE){
     names(xnew) <- number.vars
     
     
-    # get categorical variables
-    char.vars <- intersect(getSelectedAttributes(bor.results),attr.data.types$character)
+    # # get categorical variables
+    # char.vars <- intersect(getSelectedAttributes(bor.results),attr.data.types$character)
+    # 
+    # # create dummy variables 
+    # ll <- lapply(char.vars,function(x){
+    #     y <- predict(dummy.vars[[x]],newdata=df[,x,with=FALSE])
+    #     return(y)
+    # })
+    # 
+    # y <- do.call(cbind,ll)
+    # 
+    # predictors <- cbind(xnew,y)
     
-    # create dummy variables 
-    ll <- lapply(char.vars,function(x){
-        y <- predict(dummy.vars[[x]],newdata=df[,x,with=FALSE])
-        return(y)
-    })
-    
-    y <- do.call(cbind,ll)
-    
-    predictors <- cbind(xnew,y)
+    predictors <- xnew
     
     ans <- c(ans,list(predictors=predictors))
     
