@@ -16,11 +16,11 @@ source("./src/CommonFunctions.R")
 # set caret training parameters
 CARET.TRAIN.PARMS <- list(method="knn")   # Replace MODEL.METHOD with appropriate caret model
 
-CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
+#CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
 
 
 # user specified tuning parameters
-#CARET.TUNE.GRID <- expand.grid(nIter=c(100))
+CARET.TUNE.GRID <- expand.grid(k=c(13,15,17,19,21))
 
 # model specific training parameter
 CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
@@ -61,8 +61,8 @@ train.df <- train.df[idx,]
 # prepare data for training
 train.data <- PREPARE.MODEL.DATA(train.df)
 
-# library(doMC)
-# registerDoMC(cores = 6)
+library(doMC)
+registerDoMC(cores = 7)
 
 # library(doSNOW)
 # cl <- makeCluster(5,type="SOCK")
