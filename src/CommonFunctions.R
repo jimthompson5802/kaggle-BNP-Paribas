@@ -812,7 +812,7 @@ prepL0FeatureSet7 <- function(df,includeResponse=TRUE){
 
     y <- do.call(cbind,ll)
 
-    # predictors <- data.frame(xnew,y)
+    predictors <- data.frame(xnew,y)
     
     ans <- c(ans,list(predictors=predictors))
     
