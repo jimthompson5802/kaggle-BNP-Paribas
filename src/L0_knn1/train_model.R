@@ -20,7 +20,7 @@ CARET.TRAIN.PARMS <- list(method="knn")   # Replace MODEL.METHOD with appropriat
 
 
 # user specified tuning parameters
-CARET.TUNE.GRID <- expand.grid(k=c(13,15,17,19,21))
+CARET.TUNE.GRID <- expand.grid(k=c(21,23,25,27,29))
 
 # model specific training parameter
 CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
