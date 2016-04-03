@@ -259,6 +259,44 @@ prepL1FeatureSet1 <- function(level0.models,df,includeResponse=TRUE){
     return(ans)
 }
 
+
+# using only Class_1 probabilities for features
+# raw data features as well
+prepL1FeatureSet2 <- function(level0.models,df,includeResponse=TRUE){
+    # prepL1FeatureSet2
+    # l0_models: character vector of Level 0 models to include the Level 1 Feature set
+    # df: raw data
+    # if only.predcitors is TRUE then return list(predictors)
+    # if only.predictors is FALSE then return list(predictors,response)
+    
+    require(plyr)
+    require(caret)
+    require(foreach)
+    
+    ans <- list(data.set.name="prepL1FeatureSet2")
+    
+    predictors <- foreach(mdl.dir=level0.models,.combine=cbind) %dopar%
+        createLevel1Features(mdl.dir,df,includeResponse)
+    
+    #extract only Class_1 probabilities
+    class1.names <- grep("Class_1",names(predictors),value = TRUE)
+    predictors <- predictors[class1.names]
+    
+    ans <- c(ans,list(predictors=predictors))
+    
+    if (includeResponse) {
+        
+        response <- factor(ifelse(df$target == 1,"Class_1","Class_0"),
+                           levels=c("Class_1","Class_0"))
+        
+        ans <- c(ans,list(response=response))
+        
+    } 
+    
+    return(ans)
+}
+
+
 # uses both Class_1 and Class_0 probabilities as features
 prepL1gbm1ModelData <- function(df,includeResponse=TRUE){
     # df: raw data
