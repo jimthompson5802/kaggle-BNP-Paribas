@@ -49,7 +49,7 @@ LEVEL0.MODELS <- c("L0_gbm2",
                    "L0_xtc3",
                    #"L0_xtc4",  did not improve score
                    "L0_xtc5",
-                   #"L0_nnet1", did not improve score
+                   "L0_nnet1",
                    "L0_xgb2",
                    "L0_xgb3")
 
