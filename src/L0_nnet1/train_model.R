@@ -1,26 +1,25 @@
 ###
-# training skeleton
+# neural network model
 ###
 
 library(data.table)
 library(caret)
 # add any model specific package library commands
-
+library(nnet)
 
 # set working directory
-WORK.DIR <- "./src/L0_knn1"  # modify to specify directory to contain model artififacts
+WORK.DIR <- "./src/L0_nnet1"  # modify to specify directory to contain model artififacts
 
 # Common Functions and Global variables
 source("./src/CommonFunctions.R")
 
 # set caret training parameters
-CARET.TRAIN.PARMS <- list(method="knn")   # Replace MODEL.METHOD with appropriate caret model
+CARET.TRAIN.PARMS <- list(method="nnet")   # Replace MODEL.METHOD with appropriate caret model
 
-#CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
-
+CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
 
 # user specified tuning parameters
-CARET.TUNE.GRID <- expand.grid(k=c(29,31,33,35,37))
+#CARET.TUNE.GRID <- expand.grid(nIter=c(100))
 
 # model specific training parameter
 CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
@@ -36,33 +35,34 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
                            tuneLength=5,
                            metric="LogLoss")
 
-MODEL.SPECIFIC.PARMS <- NULL # Other model specific parameters
+MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific parameters
 
 PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
 PREPARE.MODEL.DATA <- prepL0FeatureSet7
 
-MODEL.COMMENT <- "prepL0FeatureSet7, combined train0"
+MODEL.COMMENT <- "prepL0FeatureSet7"
+
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 1.0
+FRACTION.TRAIN.DATA <- 0.25
 
 # force recording model flag
 FORCE_RECORDING_MODEL <- FALSE
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
-train.df <- rbind(train0.raw)
+train.df <- train1.raw
 
 # extract subset for inital training
 set.seed(29)
 idx <- createDataPartition(train.df$target,p=FRACTION.TRAIN.DATA,list=FALSE)
 train.df <- train.df[idx,]
 
-# prepare data for training
-train.data <- PREPARE.MODEL.DATA(train.df)
-
 library(doMC)
 registerDoMC(cores = 7)
+
+# prepare data for training
+train.data <- PREPARE.MODEL.DATA(train.df)
 
 # library(doSNOW)
 # cl <- makeCluster(5,type="SOCK")
@@ -87,7 +87,7 @@ mdl.fit
 test.data <- PREPARE.MODEL.DATA(test.raw)
 pred.probs <- predict(mdl.fit,newdata = test.data$predictors,type = "prob")
 
-score <- logLossEval(pred.probs[,"Class_1"],test.data$response)
+score <- logLossEval(pred.probs[,1],test.data$response)
 score
 
 # record Model performance
@@ -107,7 +107,7 @@ recordModelPerf(paste0(WORK.DIR,"/model_performance.tsv"),
                               model.parms=paste(names(MODEL.SPECIFIC.PARMS),
                                                 as.character(MODEL.SPECIFIC.PARMS),
                                                 sep="=",collapse=","),
-                              comment=MODEL.COMMENT)
+                              comment=paste0(MODEL.COMMENT))
 
 modelPerf.df <- read.delim(paste0(WORK.DIR,"/model_performance.tsv"),
                          stringsAsFactors=FALSE)
@@ -126,7 +126,7 @@ if (last.idx == 1 || improved == "Yes" || FORCE_RECORDING_MODEL) {
     file.name <- gsub(" ","_",file.name)
     file.name <- gsub(":","_",file.name)
     
-    save(mdl.fit,PREPARE.MODEL.DATA,file=paste0(WORK.DIR,"/",file.name))
+    save(PREPARE.MODEL.DATA,mdl.fit,file=paste0(WORK.DIR,"/",file.name))
     
     # estalish pointer to current model
     writeLines(file.name,paste0(WORK.DIR,"/this_model"))
