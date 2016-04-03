@@ -16,8 +16,10 @@ source("./src/CommonFunctions.R")
 # set caret training parameters
 CARET.TRAIN.PARMS <- list(method="gbm")   # Replace MODEL.METHOD with appropriate caret model
 
-CARET.TUNE.GRID <- expand.grid(interaction.depth=5,n.trees=1000,
-                                shrinkage=0.01,n.minobsinnode=10)
+CARET.TUNE.GRID <- expand.grid(interaction.depth=c(1,3,5,7),
+                               n.trees=seq(100,1000,100),
+                                shrinkage=0.01,
+                               n.minobsinnode=10)
 
 # user specified tuning parameters
 #CARET.TUNE.GRID <- expand.grid(nIter=c(100))
