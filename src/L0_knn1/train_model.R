@@ -5,7 +5,7 @@
 library(data.table)
 library(caret)
 # add any model specific package library commands
-library(gbm)
+
 
 # set working directory
 WORK.DIR <- "./src/L0_knn1"  # modify to specify directory to contain model artififacts
@@ -36,22 +36,22 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
                            tuneLength=5,
                            metric="LogLoss")
 
-MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific parameters
+MODEL.SPECIFIC.PARMS <- NULL # Other model specific parameters
 
 PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
-PREPARE.MODEL.DATA <- prepL0FeatureSet2
+PREPARE.MODEL.DATA <- prepL0FeatureSet7
 
-MODEL.COMMENT <- "using expanded feature set, combined train0, train1, calib, test "
+MODEL.COMMENT <- "prepL0FeatureSet7, combined train0"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 1.0
+FRACTION.TRAIN.DATA <- 0.25
 
 # force recording model flag
 FORCE_RECORDING_MODEL <- FALSE
 
 # get training data
 load(paste0(DATA.DIR,"/train_calib_test.RData"))
-train.df <- rbind(train0.raw,train1.raw,calib.raw,test.raw)
+train.df <- rbind(train0.raw)
 
 # extract subset for inital training
 set.seed(29)
@@ -61,8 +61,8 @@ train.df <- train.df[idx,]
 # prepare data for training
 train.data <- PREPARE.MODEL.DATA(train.df)
 
-library(doMC)
-registerDoMC(cores = 6)
+# library(doMC)
+# registerDoMC(cores = 6)
 
 # library(doSNOW)
 # cl <- makeCluster(5,type="SOCK")
