@@ -16,10 +16,10 @@ source("./src/CommonFunctions.R")
 # set caret training parameters
 CARET.TRAIN.PARMS <- list(method="nnet")   # Replace MODEL.METHOD with appropriate caret model
 
-CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
+# CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
 
 # user specified tuning parameters
-#CARET.TUNE.GRID <- expand.grid(nIter=c(100))
+CARET.TUNE.GRID <- expand.grid(size=seq(9,17,2), decay=10^(-1:-4))
 
 # model specific training parameter
 CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
@@ -35,7 +35,7 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
                            tuneLength=5,
                            metric="LogLoss")
 
-MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific parameters
+MODEL.SPECIFIC.PARMS <- list(verbose=FALSE,MaxNWts=7000) #NULL # Other model specific parameters
 
 PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
 PREPARE.MODEL.DATA <- prepL0FeatureSet7
