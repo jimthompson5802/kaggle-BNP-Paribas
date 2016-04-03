@@ -761,7 +761,6 @@ prepL0FeatureSet6 <- function(df,includeResponse=TRUE){
 # Boruta relevant parameters 
 # numeric variables scaled to [0,1]
 # number attributes set to raw values, NA set to -1
-# categorical variables specified as dummy variables
 prepL0FeatureSet7 <- function(df,includeResponse=TRUE){
     # prepL0FeatureSet7
     # df: raw data
@@ -801,18 +800,18 @@ prepL0FeatureSet7 <- function(df,includeResponse=TRUE){
     colnames(xnew) <- number.vars
     
     
-    # get categorical variables
-    char.vars <- intersect(getSelectedAttributes(bor.results),attr.data.types$character)
+    # # get categorical variables
+    # char.vars <- intersect(getSelectedAttributes(bor.results),attr.data.types$character)
+    # 
+    # # create dummy variables
+    # ll <- lapply(char.vars,function(x){
+    #     y <- predict(dummy.vars[[x]],newdata=df[,x,with=FALSE])
+    #     return(y)
+    # })
+    # 
+    # y <- do.call(cbind,ll)
 
-    # create dummy variables
-    ll <- lapply(char.vars,function(x){
-        y <- predict(dummy.vars[[x]],newdata=df[,x,with=FALSE])
-        return(y)
-    })
-
-    y <- do.call(cbind,ll)
-
-    predictors <- data.frame(xnew,y)
+    predictors <- data.frame(xnew)
     
     # predictors <- data.frame(xnew)
     
