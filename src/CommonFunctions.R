@@ -282,6 +282,10 @@ prepL1FeatureSet2 <- function(level0.models,df,includeResponse=TRUE){
     class1.names <- grep("Class_1",names(predictors),value = TRUE)
     predictors <- predictors[class1.names]
     
+    raw <- prepL0FeatureSetAll(df,includeResponse=FALSE)
+    
+    predictors <- data.frame(predictors,raw$predictors)
+    
     ans <- c(ans,list(predictors=predictors))
     
     if (includeResponse) {
