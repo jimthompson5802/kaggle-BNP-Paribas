@@ -798,7 +798,7 @@ prepL0FeatureSet7 <- function(df,includeResponse=TRUE){
     })
     
     xnew <- do.call(cbind,ll)
-    names(xnew) <- number.vars
+    colnames(xnew) <- number.vars
     
     
     # # get categorical variables
@@ -814,7 +814,7 @@ prepL0FeatureSet7 <- function(df,includeResponse=TRUE){
     # 
     # predictors <- cbind(xnew,y)
     
-    predictors <- xnew
+    predictors <- data.frame(xnew)
     
     ans <- c(ans,list(predictors=predictors))
     
