@@ -74,17 +74,17 @@ registerDoMC(cores = 6)
 # clusterExport(cl,list("logLossEval"))
 
 
-trainFolds <- function(train.data) {
+trainFolds <- function() {
     set.seed(825)
     
-    time.data <- system.time(mdl.fit <- do.call(train,c(list(x=train.data$predictors,
-                                                             y=train.data$response),
+    time.data <- system.time(mdl.fit <- do.call(train,c(list(x=train0.data$predictors,
+                                                             y=train0.data$response),
                                                         CARET.TRAIN.PARMS,
                                                         MODEL.SPECIFIC.PARMS,
                                                         CARET.TRAIN.OTHER.PARMS)))
     
     # prepare data for generating Level 1 feature and test
-    test.data <- PREPARE.MODEL.DATA(test.raw)
+    test.data <- PREPARE.MODEL.DATA(train1.data)
     pred.probs <- predict(mdl.fit,newdata = test.data$predictors,type = "prob")
     
     score <- logLossEval(pred.probs[,"Class_1"],test.data$response)
