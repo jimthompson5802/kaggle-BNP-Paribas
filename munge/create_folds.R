@@ -22,11 +22,11 @@ data.folds <- createFolds(raw$target, k=2)
 # check porportion of classes
 dim(raw)
 
-length(raw$target[folds[[1]]]) + length(raw$target[folds[[2]]])
+length(raw$target[data.folds[[1]]]) + length(raw$target[data.folds[[2]]])
 
-table(raw$target[folds[[1]]])/length(raw$target[folds[[1]]])
+table(raw$target[data.folds[[1]]])/length(raw$target[data.folds[[1]]])
 
-table(raw$target[folds[[2]]])/length(raw$target[folds[[2]]])
+table(raw$target[data.folds[[2]]])/length(raw$target[data.folds[[2]]])
 
 
 #save folds
