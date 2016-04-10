@@ -1,5 +1,5 @@
 ###
-# training skeleton
+# Model training
 ###
 
 library(data.table)
@@ -51,19 +51,13 @@ FRACTION.TRAIN.DATA <- 0.25
 FORCE_RECORDING_MODEL <- TRUE
 
 # get training data
-load(paste0(DATA.DIR,"/train0_train1.RData"))
+train.raw <- fread(paste0(DATA.DIR,"/train.csv"))
+setkey(train.raw,ID)
 
-if (FRACTION.TRAIN.DATA != 1 ) {
-    # extract subset for inital training
-    set.seed(29)
-    idx <- createDataPartition(train0.raw$target,p=FRACTION.TRAIN.DATA,list=FALSE)
-    train0.raw <- train0.raw[idx,]
-    train1.raw <- train1.raw[idx,]
-}
+# get data fold specification
+load(paste0(DATA.DIR,"/fold_specification.RData"))
 
-# prepare data for training
-train0.data <- PREPARE.MODEL.DATA(train0.raw)
-train1.data <- PREPARE.MODEL.DATA(train1.raw)
+
 
 library(doMC)
 registerDoMC(cores = 6)
@@ -75,6 +69,19 @@ registerDoMC(cores = 6)
 
 
 trainFolds <- function() {
+    if (FRACTION.TRAIN.DATA != 1 ) {
+        # extract subset for inital training
+        set.seed(29)
+        idx <- createDataPartition(train0.raw$target,p=FRACTION.TRAIN.DATA,list=FALSE)
+        train0.raw <- train0.raw[idx,]
+        train1.raw <- train1.raw[idx,]
+    }
+    
+    # prepare data for training
+    train0.data <- PREPARE.MODEL.DATA(train0.raw)
+    train1.data <- PREPARE.MODEL.DATA(train1.raw)
+    
+    
     set.seed(825)
     
     time.data <- system.time(mdl.fit <- do.call(train,c(list(x=train0.data$predictors,
