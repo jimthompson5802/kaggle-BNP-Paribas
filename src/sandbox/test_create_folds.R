@@ -28,3 +28,7 @@ length(raw$target[folds[[1]]]) + length(raw$target[folds[[2]]])
 table(raw$target[folds[[1]]])/length(raw$target[folds[[1]]])
 
 table(raw$target[folds[[2]]])/length(raw$target[folds[[2]]])
+
+train0.raw <- raw[folds[[1]],]
+
+train1.raw <- raw[folds[[2]],]
