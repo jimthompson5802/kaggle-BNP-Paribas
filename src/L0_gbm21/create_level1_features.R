@@ -3,6 +3,7 @@
 ###
 
 library(data.table)
+library(plyr)
 library(caret)
 # add any model specific package library commands
 library(gbm)
@@ -98,18 +99,22 @@ trainFolds <- function(this.fold) {
     score <- logLossEval(pred.probs[,"Class_1"],test.data$response)
     score
     
-    return(list(score=score,level1.features=pred.probs,ID=test.data$ID))
+    ans <- list(score=score,
+                level1.features=data.frame(ID=test.data$ID,pred.probs,response=test.data$response))
+    
+    return(ans)
     
 }
 # train the model
 Sys.time()
 
-time.data <- system.time(ll <- lapply(data.folds,trainFolds))
+time.data <- system.time(ll <- llply(data.folds,trainFolds,.parallel = TRUE))
 
 time.data
 # stopCluster(cl)
 
-
+fold.scores <- unlist(lapply(ll,function(x){x$score}))
+level1.features <- do.call(rbind,lapply(ll,function(x){x$level1.features}))
 
 # record Model performance
 modelPerf.df <- read.delim(paste0(WORK.DIR,"/model_performance.tsv"),
