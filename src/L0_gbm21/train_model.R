@@ -45,7 +45,7 @@ PREPARE.MODEL.DATA <- prepL0FeatureSet2
 MODEL.COMMENT <- "prepL0FeatureSet2, 2-fold training"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.25
+FRACTION.TRAIN.DATA <- 1.0
 
 # force recording model flag
 FORCE_RECORDING_MODEL <- TRUE
@@ -69,39 +69,42 @@ registerDoMC(cores = 6)
 
 
 trainFolds <- function(this.fold) {
+    # prepare data for training
+    test.data <- PREPARE.MODEL.DATA(train.raw[this.fold,])
+    test.data$ID <- train.raw[this.fold,ID]
+    
+    train.data <- PREPARE.MODEL.DATA(train.raw[-this.fold,])
+    
+    
     if (FRACTION.TRAIN.DATA != 1 ) {
         # extract subset for inital training
         set.seed(29)
-        idx <- createDataPartition(train0.raw$target,p=FRACTION.TRAIN.DATA,list=FALSE)
-        train0.raw <- train0.raw[idx,]
-        train1.raw <- train1.raw[idx,]
+        idx <- createDataPartition(train.data$response,p=FRACTION.TRAIN.DATA,list=FALSE)
+        train.data$predictors <- train.data$predictors[idx,]
+        train.data$response <- train.data$response[idx]
     }
     
-    # prepare data for training
-    train0.data <- PREPARE.MODEL.DATA(train0.raw)
-    train1.data <- PREPARE.MODEL.DATA(train1.raw)
-    
-    
     set.seed(825)
-    
-    time.data <- system.time(mdl.fit <- do.call(train,c(list(x=train0.data$predictors,
-                                                             y=train0.data$response),
+    time.data <- system.time(mdl.fit <- do.call(train,c(list(x=train.data$predictors,
+                                                             y=train.data$response),
                                                         CARET.TRAIN.PARMS,
                                                         MODEL.SPECIFIC.PARMS,
                                                         CARET.TRAIN.OTHER.PARMS)))
+    time.data
     
-    # prepare data for generating Level 1 feature and test
-    test.data <- PREPARE.MODEL.DATA(train1.data)
+    
     pred.probs <- predict(mdl.fit,newdata = test.data$predictors,type = "prob")
     
     score <- logLossEval(pred.probs[,"Class_1"],test.data$response)
     score
     
+    return(list(score=score,level1.features=pred.probs,ID=test.data$ID))
     
 }
 # train the model
 Sys.time()
 
+time.data <- system.time(ll <- lapply(data.folds,trainFolds))
 
 time.data
 # stopCluster(cl)
