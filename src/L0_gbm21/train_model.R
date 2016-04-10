@@ -20,6 +20,12 @@ CARET.TRAIN.PARMS <- list(method="gbm")   # Replace MODEL.METHOD with appropriat
 CARET.TUNE.GRID <- expand.grid(interaction.depth=5,n.trees=1000,
                                shrinkage=0.01,n.minobsinnode=10)
 
+PREPARE.MODEL.DATA <- prepL0FeatureSet2
+
+MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific parameters
+
+MODEL.COMMENT <- "using expanded feature set, reset to train0 "
+
 # user specified tuning parameters
 #CARET.TUNE.GRID <- expand.grid(nIter=c(100))
 
@@ -37,12 +43,7 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
                            tuneLength=5,
                            metric="LogLoss")
 
-MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific parameters
 
-PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
-PREPARE.MODEL.DATA <- prepL0FeatureSet2
-
-MODEL.COMMENT <- "using expanded feature set, reset to train0 "
 
 # amount of data to train
 FRACTION.TRAIN.DATA <- 1.0
