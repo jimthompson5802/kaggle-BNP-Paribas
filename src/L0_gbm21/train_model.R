@@ -68,7 +68,7 @@ registerDoMC(cores = 6)
 # clusterExport(cl,list("logLossEval"))
 
 
-trainFolds <- function() {
+trainFolds <- function(this.fold) {
     if (FRACTION.TRAIN.DATA != 1 ) {
         # extract subset for inital training
         set.seed(29)
