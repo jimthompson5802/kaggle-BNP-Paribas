@@ -8,7 +8,7 @@ library(caret)
 library(gbm)
 
 # set working directory
-WORK.DIR <- "./src/L0_gbm2"  # modify to specify directory to contain model artififacts
+WORK.DIR <- "./src/L0_gbm21"  # modify to specify directory to contain model artififacts
 
 # Common Functions and Global variables
 source("./src/CommonFunctions.R")
@@ -51,8 +51,8 @@ FRACTION.TRAIN.DATA <- 1.0
 FORCE_RECORDING_MODEL <- TRUE
 
 # get training data
-load(paste0(DATA.DIR,"/train_calib_test.RData"))
-train.df <- rbind(train0.raw)
+train.df <- fread(paste0(DATA.DIR,"/train.csv"))
+setkey(train.raw,ID)
 
 # extract subset for inital training
 set.seed(29)
