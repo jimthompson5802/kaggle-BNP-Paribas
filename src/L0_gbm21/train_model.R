@@ -13,16 +13,9 @@ WORK.DIR <- "./src/L0_gbm21"  # modify to specify directory to contain model art
 # Common Functions and Global variables
 source("./src/CommonFunctions.R")
 
-# set caret training parameters
-CARET.TRAIN.PARMS <- list(method="gbm")   # Replace MODEL.METHOD with appropriate caret model
+# import model configuration parameters
+source(paste0(WORK.DIR,"/model_parameters.R"))
 
-#CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
-CARET.TUNE.GRID <- expand.grid(interaction.depth=5,n.trees=1000,
-                               shrinkage=0.01,n.minobsinnode=10)
-
-PREPARE.MODEL.DATA <- prepL0FeatureSet2
-
-MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific parameters
 
 MODEL.COMMENT <- "using expanded feature set, reset to train0 "
 
