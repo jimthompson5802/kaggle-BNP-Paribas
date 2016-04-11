@@ -17,7 +17,7 @@ table(raw$target)/nrow(raw)
 
 # create the partitions
 set.seed(13)
-data.folds <- createFolds(raw$target, k=2)
+data.folds <- createFolds(raw$target, k=5)
 
 # check porportion of classes
 dim(raw)
