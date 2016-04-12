@@ -18,19 +18,6 @@ source("./src/CommonFunctions.R")
 source(paste0(WORK.DIR,"/model_parameters.R"))
 
 
-# model specific training parameter
-CARET.TRAIN.CTRL <- trainControl(method="none",
-                                 number=5,
-                                 repeats=1,
-                                 verboseIter=FALSE,
-                                 classProbs=TRUE,
-                                 summaryFunction=caretLogLossSummary)
-
-CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
-                            maximize=FALSE,
-                           tuneGrid=CARET.TUNE.GRID,
-                           tuneLength=5,
-                           metric="LogLoss")
 
 MODEL.COMMENT <- "prepL0FeatureSet2a, 5-fold training"
 

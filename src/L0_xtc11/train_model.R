@@ -23,14 +23,14 @@ MODEL.COMMENT <- "K-Fold, Build Model"
 
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 1.0
+FRACTION.TRAIN.DATA <- 0.1
 
 # force recording model flag
 FORCE_RECORDING_MODEL <- FALSE
 
 # get training data
 train.df <- fread(paste0(DATA.DIR,"/train.csv"))
-setkey(train.raw,ID)
+setkey(train.df,ID)
 
 if (FRACTION.TRAIN.DATA != 1.0) {
     # extract subset for inital training
@@ -71,7 +71,7 @@ save(PREPARE.MODEL.DATA,file=paste0(WORK.DIR,"/",file.name))
 py.file.name <- paste0("model_",MODEL.NAME,"_",date.time,".PyData")
 py.file.name <- gsub(" ","_",py.file.name)
 py.file.name <- gsub(":","_",py.file.name)
-file.rename(paste0(WORK.DIR,"/possible_model"),paste0(WORK.DIR,"/",py.file.name))
+file.rename(paste0(WORK.DIR,"/possible_model.PyData"),paste0(WORK.DIR,"/",py.file.name))
 
 # estalish pointer to current model
 writeLines(c(file.name,py.file.name),paste0(WORK.DIR,"/this_model"))
