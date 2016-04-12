@@ -77,7 +77,9 @@ file.rename(paste0(WORK.DIR,"/possible_model"),paste0(WORK.DIR,"/",py.file.name)
 writeLines(c(file.name,py.file.name),paste0(WORK.DIR,"/this_model"))
 
 # clean up files no longer needed
-file.remove(c(paste0(WORK.DIR,"/py_train.tsv"),paste0(WORK.DIR,"/py_test.tsv"),
-              paste0(WORK.DIR,"/py_test_predictions.tsv")))
+file.remove(paste0(WORK.DIR,"/py_train.tsv"))
+              #paste0(WORK.DIR,"/py_test.tsv"),
+              #paste0(WORK.DIR,"/py_test_predictions.tsv")
+              #))
 
 
