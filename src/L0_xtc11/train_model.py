@@ -51,9 +51,10 @@ if __name__ == "__main__":
     # save fitted model structure
     model_dict = {'model':mdl_fit}    
     
-    model_file = work_dir + "/possible_model"
+    model_file = work_dir + "/possible_model.PyData"
     with open(model_file,"wb") as f:
-        pickle.dump(model_dict,f)
+        f.write(zlib.compress(pickle.dumps(model_dict)))
+        f.close()
         
     print "Saved " + model_file
         
