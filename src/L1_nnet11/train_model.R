@@ -32,7 +32,7 @@ CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
 CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
                             maximize=FALSE,
                            tuneGrid=CARET.TUNE.GRID,
-                           tuneLength=5,
+                           tuneLength=7,
                            metric="LogLoss")
 
 MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific parameters
