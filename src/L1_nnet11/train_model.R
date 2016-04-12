@@ -37,7 +37,6 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
 
 MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific parameters
 
-PREPARE.MODEL.DATA <- function(data){return(data)}  #default data prep
 PREPARE.MODEL.DATA <- prepL1FeatureSet1
 
 MODEL.COMMENT <- "Only Class_1 probabilites as features"
@@ -64,33 +63,72 @@ FORCE_RECORDING_MODEL <- FALSE
 train.data <- prepL1FeatureSet3(LEVEL0.MODELS)
 
 
-# # extract subset for inital training
-# set.seed(29)
-# idx <- createDataPartition(train.df$target,p=FRACTION.TRAIN.DATA,list=FALSE)
-# train.df <- train.df[idx,]
-# 
-# library(doMC)
-# registerDoMC(cores = 7)
-# 
-# # library(doSNOW)
-# # cl <- makeCluster(5,type="SOCK")
-# # registerDoSNOW(cl)
-# # clusterExport(cl,list("logLossEval"))
-# 
-# # train the model
-# Sys.time()
-# set.seed(825)
-# 
-# time.data <- system.time(mdl.fit <- do.call(train,c(list(x=train.data$predictors,
-#                                                          y=train.data$response),
-#                                                     CARET.TRAIN.PARMS,
-#                                                     MODEL.SPECIFIC.PARMS,
-#                                                     CARET.TRAIN.OTHER.PARMS)))
-# 
-# time.data
-# mdl.fit
-# # stopCluster(cl)
-# 
+# create the partitions
+set.seed(13)
+data.folds <- createFolds(raw$target, k=5)
+
+library(doMC)
+registerDoMC(cores = 7)
+
+
+# trainFolds <- function(this.fold) {
+#     # prepare data for training
+#     test.data <- train.data$predictors[this.fold,]
+#     
+#     train.data <- train.data$predictors[-this.fold,]
+#     
+#     
+#     if (FRACTION.TRAIN.DATA != 1 ) {
+#         # extract subset for inital training
+#         set.seed(29)
+#         idx <- createDataPartition(train.data$response,p=FRACTION.TRAIN.DATA,list=FALSE)
+#         train.data$predictors <- train.data$predictors[idx,]
+#         train.data$response <- train.data$response[idx]
+#     }
+#     
+#     set.seed(825)
+#     time.data <- system.time(mdl.fit <- do.call(train,c(list(x=train.data$predictors,
+#                                                              y=train.data$response),
+#                                                         CARET.TRAIN.PARMS,
+#                                                         MODEL.SPECIFIC.PARMS,
+#                                                         CARET.TRAIN.OTHER.PARMS)))
+#     time.data
+#     
+#     
+#     pred.probs <- predict(mdl.fit,newdata = test.data$predictors,type = "prob")
+#     
+#     score <- logLossEval(pred.probs[,"Class_1"],test.data$response)
+#     score
+#     
+#     ans <- list(score=score,
+#                 level1.features=data.frame(ID=test.data$ID,pred.probs,response=test.data$response))
+#     
+#     return(ans)
+#     
+# }
+
+# library(doSNOW)
+# cl <- makeCluster(5,type="SOCK")
+# registerDoSNOW(cl)
+# clusterExport(cl,list("logLossEval"))
+
+# estimate error
+
+
+# train the model
+Sys.time()
+set.seed(825)
+
+time.data <- system.time(mdl.fit <- do.call(train,c(list(x=train.data$predictors,
+                                                         y=train.data$response),
+                                                    CARET.TRAIN.PARMS,
+                                                    MODEL.SPECIFIC.PARMS,
+                                                    CARET.TRAIN.OTHER.PARMS)))
+
+time.data
+mdl.fit
+# stopCluster(cl)
+
 # # prepare data for training
 # test.data <- PREPARE.MODEL.DATA(LEVEL0.MODELS,test.raw)
 # pred.probs <- predict(mdl.fit,newdata = test.data$predictors,type = "prob")
@@ -129,19 +167,20 @@ train.data <- prepL1FeatureSet3(LEVEL0.MODELS)
 # if (last.idx == 1 || improved == "Yes" || FORCE_RECORDING_MODEL) {
 #     cat("found improved model, saving...\n")
 #     flush.console()
-#     #yes we have improvement or first score, save generated model
-#     file.name <- paste0("model_",mdl.fit$method,"_",modelPerf.df$date.time[last.idx],".RData")
-#     file.name <- gsub(" ","_",file.name)
-#     file.name <- gsub(":","_",file.name)
-#     
-#     save(LEVEL0.MODELS,PREPARE.MODEL.DATA,mdl.fit,file=paste0(WORK.DIR,"/",file.name))
-#     
-#     # estalish pointer to current model
-#     writeLines(file.name,paste0(WORK.DIR,"/this_model"))
+    #yes we have improvement or first score, save generated model
+    # file.name <- paste0("model_",mdl.fit$method,"_",modelPerf.df$date.time[last.idx],".RData")
+    file.name <- paste0("model_",mdl.fit$method,"_",as.character(Sys.time()),".RData")
+    file.name <- gsub(" ","_",file.name)
+    file.name <- gsub(":","_",file.name)
+
+    save(LEVEL0.MODELS,PREPARE.MODEL.DATA,mdl.fit,file=paste0(WORK.DIR,"/",file.name))
+
+    # estalish pointer to current model
+    writeLines(file.name,paste0(WORK.DIR,"/this_model"))
 # } else {
 #     cat("no improvement!!!\n")
 #     flush.console()
 # }
-# 
+
 
 
