@@ -32,7 +32,7 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
                            tuneLength=5,
                            metric="LogLoss")
 
-MODEL.COMMENT <- "prepL0FeatureSet2, 2-fold training"
+MODEL.COMMENT <- "prepL0FeatureSet2, 5-fold training"
 
 # amount of data to train
 FRACTION.TRAIN.DATA <- 1.0
@@ -105,19 +105,21 @@ time.data
 fold.scores <- unlist(lapply(ll,function(x){x$score}))
 level1.features <- do.call(rbind,lapply(ll,function(x){x$level1.features}))
 
+mean(fold.scores)
+
 # record Model performance
 modelPerf.df <- read.delim(paste0(WORK.DIR,"/model_performance.tsv"),
                          stringsAsFactors=FALSE)
 # determine if score improved
-improved <- ifelse(score < min(modelPerf.df$score),"Yes","No")
+improved <- ifelse(mean(fold.scores) < min(modelPerf.df$score),"Yes","No")
 
 recordModelPerf(paste0(WORK.DIR,"/model_performance.tsv"),
-                              mdl.fit$method,
+                              CARET.TRAIN.PARMS$method,
                               time.data,
-                              train.data$predictors,
-                              score,
+                              data.frame(),
+                              mean(fold.scores),
                               improved=improved,
-                              bestTune=flattenDF(mdl.fit$bestTune),
+                              bestTune=NA,
                               tune.grid=flattenDF(CARET.TUNE.GRID),
                               model.parms=paste(names(MODEL.SPECIFIC.PARMS),
                                                 as.character(MODEL.SPECIFIC.PARMS),
@@ -137,14 +139,14 @@ if (last.idx == 1 || improved == "Yes"  || FORCE_RECORDING_MODEL) {
     cat("found improved model, saving...\n")
     flush.console()
     #yes we have improvement or first score, save generated model
-    file.name <- paste0("model_",mdl.fit$method,"_",modelPerf.df$date.time[last.idx],".RData")
+    file.name <- paste0("level1_features_",CARET.TRAIN.PARMS$method,"_",modelPerf.df$date.time[last.idx],".RData")
     file.name <- gsub(" ","_",file.name)
     file.name <- gsub(":","_",file.name)
     
-    save(mdl.fit,PREPARE.MODEL.DATA,file=paste0(WORK.DIR,"/",file.name))
+    save(level1.features,PREPARE.MODEL.DATA,file=paste0(WORK.DIR,"/",file.name))
     
     # estalish pointer to current model
-    writeLines(file.name,paste0(WORK.DIR,"/this_model"))
+    writeLines(file.name,paste0(WORK.DIR,"/this_level1_features"))
 } else {
     cat("no improvement!!!\n")
     flush.console()
