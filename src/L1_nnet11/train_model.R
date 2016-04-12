@@ -63,9 +63,9 @@ FORCE_RECORDING_MODEL <- FALSE
 train.data <- prepL1FeatureSet3(LEVEL0.MODELS)
 
 
-# create the partitions
-set.seed(13)
-data.folds <- createFolds(raw$target, k=5)
+# # create the partitions
+# set.seed(13)
+# data.folds <- createFolds(raw$target, k=5)
 
 library(doMC)
 registerDoMC(cores = 7)
