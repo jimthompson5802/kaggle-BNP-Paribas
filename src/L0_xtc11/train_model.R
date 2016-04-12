@@ -16,7 +16,10 @@ source("./src/CommonFunctions.R")
 # import model configuration parameters
 source(paste0(WORK.DIR,"/model_parameters.R"))
 
-MODEL.COMMENT <- "Build Model"
+# import model configuration parameters
+source(paste0(WORK.DIR,"/model_parameters.R"))
+
+MODEL.COMMENT <- "K-Fold, Build Model"
 
 
 # model specific training parameter
