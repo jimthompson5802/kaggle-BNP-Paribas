@@ -300,6 +300,53 @@ prepL1FeatureSet2 <- function(level0.models,df,includeResponse=TRUE){
     return(ans)
 }
 
+# Extract pre-computed Level1 features for each specified Level0 models
+prepL1FeatureSet3 <- function(level0.models,includeResponse=TRUE){
+    # l0_models: character vector of Level 0 models to include the Level 1 Feature set
+    # if includeResponse is TRUE then return list(predictors,response)
+    # if includeResponse is FALSE then return list(predictors)
+    
+    ans <- list(data.set.name="Level1FeatureSet3")
+    
+    # for each Level0 model retrieve pre-computed Level1 Feature
+    ll <- lapply(level0.models, function(model.dir){
+        cat("retrieving Level1 features from",model.dir,"\n")
+        flush.console()
+        
+        # retrieve name of Level1 features data set
+        level1.features.file.name <- readLines(paste0("./src/",model.dir,"/this_level1_features"))
+        
+        # create environment to hold Level 0 Model data structures
+        l0.env <- new.env()
+        
+        # retrieve Level1 features
+        load(paste0("./src/",model.dir,"/",level1.features.file.name[1]),envir=l0.env)
+        
+        ans <- l0.env$level1.features[,c("Class_1","response")]
+        names(ans) <- paste0(model.dir,c(".Class_1",".response"))
+        
+        return(ans)
+        
+        
+    })
+    
+    
+    features <- do.call(cbind,ll)
+    
+    #extract only Class_1 probabilities
+    class1.names <- grep("Class_1",names(features),value = TRUE)
+    predictors <- features[class1.names]
+    
+    ans <- c(ans,list(predictors=predictors))
+    
+    if (includeResponse) {
+        
+        ans <- c(ans,list(response=features[,2]))
+        
+    } 
+    
+    return(ans)
+}
 
 # uses both Class_1 and Class_0 probabilities as features
 prepL1gbm1ModelData <- function(df,includeResponse=TRUE){

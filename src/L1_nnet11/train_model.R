@@ -59,60 +59,9 @@ FRACTION.TRAIN.DATA <- 1.0
 # force recording model flag
 FORCE_RECORDING_MODEL <- FALSE
 
-# Extract pre-computed Level1 features for each specified Level0 models
-prepL1FeatureSet3 <- function(level0.models,includeResponse=TRUE){
-    # l0_models: character vector of Level 0 models to include the Level 1 Feature set
-    # if includeResponse is TRUE then return list(predictors,response)
-    # if includeResponse is FALSE then return list(predictors)
-    
-    
-    # predictors <- foreach(mdl.dir=level0.models,.combine=cbind) %dopar%
-    #     createLevel1Features(mdl.dir,df,includeResponse)
-    
-    # for each Level0 model retrieve pre-computed Level1 Feature
-    ll <- lapply(level0.models, function(model.dir){
-        cat("retrieving Level1 features from",model.dir,"\n")
-        flush.console()
-        
-        # retrieve name of Level1 features data set
-        level1.features.file.name <- readLines(paste0("./src/",model.dir,"/this_level1_features"))
-        
-        # create environment to hold Level 0 Model data structures
-        l0.env <- new.env()
-        
-        # retrieve Level1 features
-        load(paste0("./src/",model.dir,"/",level1.features.file.name[1]),envir=l0.env)
-        
-        return(l0.env$level1.features[,c("Class_1","response")])
-        
-        
-    })
-    
-    predictors <- do.call(cbind,ll)
-    colnames(predictors) <- paste0(level0.models,c(".Class_1","response"))
-    
-    if (includeResponse) {
-        
-        response <- factor(ifelse(df$target == 1,"Class_1","Class_0"),
-                           levels=c("Class_1","Class_0"))
-        ans <- list(predictors=predictors,response=response)
-        
-    } else {
-        
-        ans <- list(predictors=predictors)
-        
-    }
-    
-    return(ans)
-}
 
 # get training data
-
-
-
-
-# prepare data for training
-train.data <- prepL1FeatureSet3(LEVEL0.MODELS,FALSE)
+train.data <- prepL1FeatureSet3(LEVEL0.MODELS)
 
 
 # # extract subset for inital training
