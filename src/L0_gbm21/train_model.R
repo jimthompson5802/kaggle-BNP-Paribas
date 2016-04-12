@@ -16,11 +16,8 @@ source("./src/CommonFunctions.R")
 # import model configuration parameters
 source(paste0(WORK.DIR,"/model_parameters.R"))
 
+MODEL.COMMENT <- "Build Model"
 
-MODEL.COMMENT <- "using expanded feature set, reset to train0 "
-
-# user specified tuning parameters
-#CARET.TUNE.GRID <- expand.grid(nIter=c(100))
 
 # model specific training parameter
 CARET.TRAIN.CTRL <- trainControl(method="none",
@@ -48,10 +45,12 @@ FORCE_RECORDING_MODEL <- TRUE
 train.df <- fread(paste0(DATA.DIR,"/train.csv"))
 setkey(train.raw,ID)
 
-# extract subset for inital training
-set.seed(29)
-idx <- createDataPartition(train.df$target,p=FRACTION.TRAIN.DATA,list=FALSE)
-train.df <- train.df[idx,]
+if (FRACTION.TRAIN.DATA != 1.0) {
+    # extract subset for inital training
+    set.seed(29)
+    idx <- createDataPartition(train.df$target,p=FRACTION.TRAIN.DATA,list=FALSE)
+    train.df <- train.df[idx,]
+}
 
 # prepare data for training
 train.data <- PREPARE.MODEL.DATA(train.df)
@@ -78,57 +77,17 @@ time.data
 mdl.fit
 # stopCluster(cl)
 
-# prepare data for training
-test.data <- PREPARE.MODEL.DATA(test.raw)
-pred.probs <- predict(mdl.fit,newdata = test.data$predictors,type = "prob")
+cat("saving...\n")
+date.time <- as.character(Sys.time())
+file.name <- paste0("model_",CARET.TRAIN.PARMS$method,"_",date.time[last.idx],".RData")
+file.name <- gsub(" ","_",file.name)
+file.name <- gsub(":","_",file.name)
 
-score <- logLossEval(pred.probs[,"Class_1"],test.data$response)
-score
+save(mdl.fit,PREPARE.MODEL.DATA,file=paste0(WORK.DIR,"/",file.name))
 
-# record Model performance
-modelPerf.df <- read.delim(paste0(WORK.DIR,"/model_performance.tsv"),
-                         stringsAsFactors=FALSE)
-# determine if score improved
-improved <- ifelse(score < min(modelPerf.df$score),"Yes","No")
+# estalish pointer to current model
+writeLines(file.name,paste0(WORK.DIR,"/this_model"))
 
-recordModelPerf(paste0(WORK.DIR,"/model_performance.tsv"),
-                              mdl.fit$method,
-                              time.data,
-                              train.data$predictors,
-                              score,
-                              improved=improved,
-                              bestTune=flattenDF(mdl.fit$bestTune),
-                              tune.grid=flattenDF(CARET.TUNE.GRID),
-                              model.parms=paste(names(MODEL.SPECIFIC.PARMS),
-                                                as.character(MODEL.SPECIFIC.PARMS),
-                                                sep="=",collapse=","),
-                              comment=MODEL.COMMENT)
-
-modelPerf.df <- read.delim(paste0(WORK.DIR,"/model_performance.tsv"),
-                         stringsAsFactors=FALSE)
-
-
-#display model performance record for this run
-tail(modelPerf.df[,1:10],1)
-
-# if last score recorded is better than previous ones save model object
-last.idx <- length(modelPerf.df$score)
-if (last.idx == 1 || improved == "Yes"  || FORCE_RECORDING_MODEL) {
-    cat("found improved model, saving...\n")
-    flush.console()
-    #yes we have improvement or first score, save generated model
-    file.name <- paste0("model_",mdl.fit$method,"_",modelPerf.df$date.time[last.idx],".RData")
-    file.name <- gsub(" ","_",file.name)
-    file.name <- gsub(":","_",file.name)
-    
-    save(mdl.fit,PREPARE.MODEL.DATA,file=paste0(WORK.DIR,"/",file.name))
-    
-    # estalish pointer to current model
-    writeLines(file.name,paste0(WORK.DIR,"/this_model"))
-} else {
-    cat("no improvement!!!\n")
-    flush.console()
-}
 
 
 
