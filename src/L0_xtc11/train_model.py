@@ -9,6 +9,7 @@ Created on Wed Mar  2 22:16:47 2016
 
 import sys
 import pickle
+import zlib
 import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import ExtraTreesClassifier

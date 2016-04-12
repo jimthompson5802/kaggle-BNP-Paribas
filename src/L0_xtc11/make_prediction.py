@@ -9,6 +9,7 @@ Created on Wed Mar  2 22:16:47 2016
 
 import sys
 import pickle
+import zlib
 import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import ExtraTreesClassifier
@@ -33,8 +34,9 @@ if __name__ == "__main__":
     # retrieve pickled model object
     model_file = work_dir + "/" + model_file
     print "Retrieving " + model_file
-    with open(model_file,"rb") as f:
-        model_dict = pickle.load(f)
+        
+    with open(model_file,'rb') as f:
+        model_dict = pickle.loads(zlib.decompress(f.read()))
         
     mdl_fit = model_dict['model']
     
