@@ -22,22 +22,6 @@ source(paste0(WORK.DIR,"/model_parameters.R"))
 MODEL.COMMENT <- "K-Fold, Build Model"
 
 
-# model specific training parameter
-CARET.TRAIN.CTRL <- trainControl(method="none",
-                                 number=5,
-                                 repeats=1,
-                                 verboseIter=FALSE,
-                                 classProbs=TRUE,
-                                 summaryFunction=caretLogLossSummary)
-
-CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
-                            maximize=FALSE,
-                           tuneGrid=CARET.TUNE.GRID,
-                           tuneLength=5,
-                           metric="LogLoss")
-
-
-
 # amount of data to train
 FRACTION.TRAIN.DATA <- 1.0
 
@@ -58,39 +42,42 @@ if (FRACTION.TRAIN.DATA != 1.0) {
 # prepare data for training
 train.data <- PREPARE.MODEL.DATA(train.df)
 
-library(doMC)
-registerDoMC(cores = 6)
+# save prepared training data for Python function
+# put response as first column in data set
+write.table(cbind(response=train.data$response,train.data$predictors),
+            file=paste0(WORK.DIR,"/py_train.tsv"),row.names = FALSE,
+            sep="\t")
 
-# library(doSNOW)
-# cl <- makeCluster(5,type="SOCK")
-# registerDoSNOW(cl)
-# clusterExport(cl,list("logLossEval"))
 
-# train the model
+# invoke Python training model
+python.train.command <- paste(PYTHON_COMMAND,paste0(WORK.DIR,"/train_model.py"),WORK.DIR)
+
 Sys.time()
-set.seed(825)
 
-time.data <- system.time(mdl.fit <- do.call(train,c(list(x=train.data$predictors,
-                                                         y=train.data$response),
-                                                    CARET.TRAIN.PARMS,
-                                                    MODEL.SPECIFIC.PARMS,
-                                                    CARET.TRAIN.OTHER.PARMS)))
+
+time.data <- system.time(system(python.train.command))
 
 time.data
-mdl.fit
-# stopCluster(cl)
+
 
 cat("saving...\n")
 date.time <- as.character(Sys.time())
-file.name <- paste0("model_",CARET.TRAIN.PARMS$method,"_",date.time[last.idx],".RData")
+file.name <- paste0("model_",MODEL.NAME,"_",date.time,".RData")
 file.name <- gsub(" ","_",file.name)
 file.name <- gsub(":","_",file.name)
+save(PREPARE.MODEL.DATA,file=paste0(WORK.DIR,"/",file.name))
 
-save(mdl.fit,PREPARE.MODEL.DATA,file=paste0(WORK.DIR,"/",file.name))
+# save Python model data
+py.file.name <- paste0("model_",MODEL.NAME,"_",date.time,".PyData")
+py.file.name <- gsub(" ","_",py.file.name)
+py.file.name <- gsub(":","_",py.file.name)
+file.rename(paste0(WORK.DIR,"/possible_model"),paste0(WORK.DIR,"/",py.file.name))
 
 # estalish pointer to current model
-writeLines(file.name,paste0(WORK.DIR,"/this_model"))
+writeLines(c(file.name,py.file.name),paste0(WORK.DIR,"/this_model"))
 
-
+# clean up files no longer needed
+file.remove(c(paste0(WORK.DIR,"/py_train.tsv"),paste0(WORK.DIR,"/py_test.tsv"),
+              paste0(WORK.DIR,"/py_test_predictions.tsv")))
 
 
