@@ -32,7 +32,7 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
                            tuneLength=5,
                            metric="LogLoss")
 
-MODEL.COMMENT <- "prepL0FeatureSet2, 5-fold training"
+MODEL.COMMENT <- "prepL0FeatureSetAll, 5-fold training"
 
 # amount of data to train
 FRACTION.TRAIN.DATA <- 1.0
