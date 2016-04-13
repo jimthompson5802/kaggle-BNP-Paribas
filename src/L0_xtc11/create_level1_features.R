@@ -19,7 +19,7 @@ source(paste0(WORK.DIR,"/model_parameters.R"))
 
 
 
-MODEL.COMMENT <- "prepL0FeatureSet2a, 5-fold training"
+MODEL.COMMENT <- "prepL0FeatureSetAll, 5-fold training"
 
 # amount of data to train
 FRACTION.TRAIN.DATA <- 1.0
@@ -33,16 +33,6 @@ setkey(train.raw,ID)
 
 # get data fold specification
 load(paste0(DATA.DIR,"/fold_specification.RData"))
-
-
-
-library(doMC)
-registerDoMC(cores = 6)
-
-# library(doSNOW)
-# cl <- makeCluster(5,type="SOCK")
-# registerDoSNOW(cl)
-# clusterExport(cl,list("logLossEval"))
 
 
 trainFolds <- function(this.fold) {
@@ -61,19 +51,46 @@ trainFolds <- function(this.fold) {
         train.data$response <- train.data$response[idx]
     }
     
-    set.seed(825)
-    time.data <- system.time(mdl.fit <- do.call(train,c(list(x=train.data$predictors,
-                                                             y=train.data$response),
-                                                        CARET.TRAIN.PARMS,
-                                                        MODEL.SPECIFIC.PARMS,
-                                                        CARET.TRAIN.OTHER.PARMS)))
+    # save prepared training data for Python function
+    # put response as first column in data set
+    write.table(cbind(response=train.data$response,train.data$predictors),
+                file=paste0(WORK.DIR,"/py_train.tsv"),row.names = FALSE,
+                sep="\t")
+    
+    
+    # invoke Python training model
+    python.train.command <- paste(PYTHON_COMMAND,paste0(WORK.DIR,"/train_model.py"),WORK.DIR)
+    
+    Sys.time()
+    
+    
+    time.data <- system.time(system(python.train.command))
+    
     time.data
+    # stopCluster(cl)
     
+    # prepare data for training
+    test.data <- PREPARE.MODEL.DATA(test.raw)
+    write.table(test.data$predictors,file=paste0(WORK.DIR,"/py_test.tsv"),row.names = FALSE,
+                sep="\t")
     
-    pred.probs <- predict(mdl.fit,newdata = test.data$predictors,type = "prob")
+    # execute Python prediction code
+    python.test.command <- paste(PYTHON_COMMAND,paste0(WORK.DIR,"/make_prediction.py"),
+                                 WORK.DIR,
+                                 "possible_model",
+                                 "py_test.tsv",
+                                 "py_test_predictions.tsv")
+    system(python.test.command)
     
-    score <- logLossEval(pred.probs[,"Class_1"],test.data$response)
+    # get predictions from Python model
+    pred.probs <- fread(paste0(WORK.DIR,"/py_test_predictions.tsv"), sep="\t")
+    
+    score <- logLossEval(pred.probs[,Class_1],test.data$response)
     score
+    
+    # clean up files no longer needed
+    file.remove(c(paste0(WORK.DIR,"/py_train.tsv"),paste0(WORK.DIR,"/py_test.tsv"),
+                  paste0(WORK.DIR,"/py_test_predictions.tsv")))
     
     ans <- list(score=score,
                 level1.features=data.frame(ID=test.data$ID,pred.probs,response=test.data$response))
@@ -84,10 +101,9 @@ trainFolds <- function(this.fold) {
 # train the model
 Sys.time()
 
-time.data <- system.time(ll <- llply(data.folds,trainFolds,.parallel = TRUE))
+time.data <- system.time(ll <- llply(data.folds,trainFolds,.parallel = FALSE))
 
 time.data
-# stopCluster(cl)
 
 fold.scores <- unlist(lapply(ll,function(x){x$score}))
 level1.features <- do.call(rbind,lapply(ll,function(x){x$level1.features}))
@@ -101,16 +117,14 @@ modelPerf.df <- read.delim(paste0(WORK.DIR,"/model_performance.tsv"),
 improved <- ifelse(mean(fold.scores) < min(modelPerf.df$score),"Yes","No")
 
 recordModelPerf(paste0(WORK.DIR,"/model_performance.tsv"),
-                              CARET.TRAIN.PARMS$method,
+                                MODEL.NAME,
                               time.data,
                               data.frame(),
                               mean(fold.scores),
                               improved=improved,
                               bestTune=NA,
-                              tune.grid=flattenDF(CARET.TUNE.GRID),
-                              model.parms=paste(names(MODEL.SPECIFIC.PARMS),
-                                                as.character(MODEL.SPECIFIC.PARMS),
-                                                sep="=",collapse=","),
+                              tune.grid=NA,
+                              model.parms=NA,
                               comment=MODEL.COMMENT)
 
 modelPerf.df <- read.delim(paste0(WORK.DIR,"/model_performance.tsv"),

@@ -35,8 +35,8 @@ if __name__ == "__main__":
     model_file = work_dir + "/" + model_file
     print "Retrieving " + model_file
         
-    with open(model_file,'rb') as f:
-        model_dict = pickle.loads(zlib.decompress(f.read()))
+    with open(model_file,"rb") as f:
+        model_dict = pickle.load(f)
         
     mdl_fit = model_dict['model']
     
