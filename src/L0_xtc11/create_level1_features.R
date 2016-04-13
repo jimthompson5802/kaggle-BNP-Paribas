@@ -70,7 +70,6 @@ trainFolds <- function(this.fold) {
     # stopCluster(cl)
     
     # prepare data for training
-    test.data <- PREPARE.MODEL.DATA(test.raw)
     write.table(test.data$predictors,file=paste0(WORK.DIR,"/py_test.tsv"),row.names = FALSE,
                 sep="\t")
     
@@ -90,6 +89,7 @@ trainFolds <- function(this.fold) {
     
     # clean up files no longer needed
     file.remove(c(paste0(WORK.DIR,"/py_train.tsv"),paste0(WORK.DIR,"/py_test.tsv"),
+                  paste0(WORK.DIR,"/possible_model"),
                   paste0(WORK.DIR,"/py_test_predictions.tsv")))
     
     ans <- list(score=score,
@@ -140,7 +140,7 @@ if (last.idx == 1 || improved == "Yes"  || FORCE_RECORDING_MODEL) {
     cat("found improved model, saving...\n")
     flush.console()
     #yes we have improvement or first score, save generated model
-    file.name <- paste0("level1_features_",CARET.TRAIN.PARMS$method,"_",modelPerf.df$date.time[last.idx],".RData")
+    file.name <- paste0("level1_features_",MODEL.NAME,"_",modelPerf.df$date.time[last.idx],".RData")
     file.name <- gsub(" ","_",file.name)
     file.name <- gsub(":","_",file.name)
     
