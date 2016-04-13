@@ -19,7 +19,7 @@ from sklearn import ensemble
 # parameters gleaned from R script submission: ExtraTreesClassifier (score 0.45911)
 mdl_fit = ExtraTreesClassifier(n_estimators=700,max_features= 50, 
                                criterion = 'entropy',min_samples_split= 5,
-                                max_depth= 50, min_samples_leaf= 5)      
+                                max_depth= 50, min_samples_leaf= 5,n_jobs=-1)      
    
     
 if __name__ == "__main__":
@@ -52,10 +52,9 @@ if __name__ == "__main__":
     # save fitted model structure
     model_dict = {'model':mdl_fit}    
     
-    model_file = work_dir + "/possible_model.PyData"
+    model_file = work_dir + "/possible_model"
     with open(model_file,"wb") as f:
-        f.write(zlib.compress(pickle.dumps(model_dict)))
-        f.close()
+        pickle.dump(model_dict,f)
         
     print "Saved " + model_file
         
