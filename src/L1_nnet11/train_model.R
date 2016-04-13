@@ -43,7 +43,7 @@ MODEL.COMMENT <- "Only Class_1 probabilites as features"
 
 LEVEL0.MODELS <- c("L0_gbm21",
                    #"L0_gbm4",
-                   #"L0_xtc1",
+                   "L0_xtc11",
                    #"L0_xtc2",
                    #"L0_xtc3",
                    #"L0_xtc4",  did not improve score
@@ -129,44 +129,40 @@ time.data
 mdl.fit
 # stopCluster(cl)
 
-# # prepare data for training
-# test.data <- PREPARE.MODEL.DATA(LEVEL0.MODELS,test.raw)
-# pred.probs <- predict(mdl.fit,newdata = test.data$predictors,type = "prob")
-# 
-# score <- logLossEval(pred.probs[,1],test.data$response)
-# score
-# 
-# # record Model performance
-# modelPerf.df <- read.delim(paste0(WORK.DIR,"/model_performance.tsv"),
-#                          stringsAsFactors=FALSE)
-# # determine if score improved
-# improved <- ifelse(score < min(modelPerf.df$score),"Yes","No")
-# 
-# recordModelPerf(paste0(WORK.DIR,"/model_performance.tsv"),
-#                               mdl.fit$method,
-#                               time.data,
-#                               train.data$predictors,
-#                               score,
-#                               improved=improved,
-#                               bestTune=flattenDF(mdl.fit$bestTune),
-#                               tune.grid=flattenDF(CARET.TUNE.GRID),
-#                               model.parms=paste(names(MODEL.SPECIFIC.PARMS),
-#                                                 as.character(MODEL.SPECIFIC.PARMS),
-#                                                 sep="=",collapse=","),
-#                               comment=paste0(MODEL.COMMENT,":",paste0(LEVEL0.MODELS,collapse=", ")))
-# 
-# modelPerf.df <- read.delim(paste0(WORK.DIR,"/model_performance.tsv"),
-#                          stringsAsFactors=FALSE)
-# 
-# 
-# #display model performance record for this run
-# tail(modelPerf.df[,1:10],1)
-# 
-# # if last score recorded is better than previous ones save model object
-# last.idx <- length(modelPerf.df$score)
-# if (last.idx == 1 || improved == "Yes" || FORCE_RECORDING_MODEL) {
-#     cat("found improved model, saving...\n")
-#     flush.console()
+score <- mean(mdl.fit$resample$LogLoss)
+score
+
+# record Model performance
+modelPerf.df <- read.delim(paste0(WORK.DIR,"/model_performance.tsv"),
+                         stringsAsFactors=FALSE)
+# determine if score improved
+improved <- ifelse(score < min(modelPerf.df$score),"Yes","No")
+
+recordModelPerf(paste0(WORK.DIR,"/model_performance.tsv"),
+                              mdl.fit$method,
+                              time.data,
+                              train.data$predictors,
+                              score,
+                              improved=improved,
+                              bestTune=flattenDF(mdl.fit$bestTune),
+                              tune.grid=flattenDF(CARET.TUNE.GRID),
+                              model.parms=paste(names(MODEL.SPECIFIC.PARMS),
+                                                as.character(MODEL.SPECIFIC.PARMS),
+                                                sep="=",collapse=","),
+                              comment=paste0(MODEL.COMMENT,":",paste0(LEVEL0.MODELS,collapse=", ")))
+
+modelPerf.df <- read.delim(paste0(WORK.DIR,"/model_performance.tsv"),
+                         stringsAsFactors=FALSE)
+
+
+#display model performance record for this run
+tail(modelPerf.df[,1:10],1)
+
+# if last score recorded is better than previous ones save model object
+last.idx <- length(modelPerf.df$score)
+if (last.idx == 1 || improved == "Yes" || FORCE_RECORDING_MODEL) {
+    cat("found improved model, saving...\n")
+    flush.console()
     #yes we have improvement or first score, save generated model
     # file.name <- paste0("model_",mdl.fit$method,"_",modelPerf.df$date.time[last.idx],".RData")
     file.name <- paste0("model_",mdl.fit$method,"_",as.character(Sys.time()),".RData")
@@ -177,10 +173,10 @@ mdl.fit
 
     # estalish pointer to current model
     writeLines(file.name,paste0(WORK.DIR,"/this_model"))
-# } else {
-#     cat("no improvement!!!\n")
-#     flush.console()
-# }
+} else {
+    cat("no improvement!!!\n")
+    flush.console()
+}
 
 
 
