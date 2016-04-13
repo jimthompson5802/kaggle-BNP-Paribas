@@ -32,13 +32,13 @@ CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
                            tuneLength=5,
                            metric="LogLoss")
 
-MODEL.COMMENT <- "prepL0FeatureSet2, 5-fold training"
+MODEL.COMMENT <- "prepL0FeatureSet5, 5-fold training"
 
 # amount of data to train
 FRACTION.TRAIN.DATA <- 1.0
 
 # force recording model flag
-FORCE_RECORDING_MODEL <- TRUE
+FORCE_RECORDING_MODEL <- FALSE
 
 # get training data
 train.raw <- fread(paste0(DATA.DIR,"/train.csv"))
