@@ -14,7 +14,7 @@ WORK.DIR <- "./src/L1_xgb11"  # modify to specify directory to contain model art
 source("./src/CommonFunctions.R")
 
 # set caret training parameters
-CARET.TRAIN.PARMS <- list(method="xgboost")   # Replace MODEL.METHOD with appropriate caret model
+CARET.TRAIN.PARMS <- list(method="xgbTree")   # Replace MODEL.METHOD with appropriate caret model
 
 CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
 
@@ -32,12 +32,12 @@ CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
 CARET.TRAIN.OTHER.PARMS <- list(trControl=CARET.TRAIN.CTRL,
                             maximize=FALSE,
                            tuneGrid=CARET.TUNE.GRID,
-                           tuneLength=8,
+                           tuneLength=5,
                            metric="LogLoss")
 
 MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific parameters
 
-PREPARE.MODEL.DATA <- prepL1FeatureSet1
+PREPARE.MODEL.DATA <- prepL1FeatureSet1  # need for processing test data set
 
 MODEL.COMMENT <- "Only Class_1 probabilites as features"
 
@@ -53,14 +53,14 @@ LEVEL0.MODELS <- c("L0_gbm21",
                    "L0_xgb31")
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 1.0
+FRACTION.TRAIN.DATA <- 0.5
 
 # force recording model flag
 FORCE_RECORDING_MODEL <- FALSE
 
 
 # get training data
-train.data <- prepL1FeatureSet3(LEVEL0.MODELS)
+train.data <- prepL1FeatureSet3(LEVEL0.MODELS)  # used only for training
 
 
 # # create the partitions
