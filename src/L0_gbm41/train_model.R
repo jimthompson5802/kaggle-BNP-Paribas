@@ -43,7 +43,7 @@ FORCE_RECORDING_MODEL <- TRUE
 
 # get training data
 train.df <- fread(paste0(DATA.DIR,"/train.csv"))
-setkey(train.raw,ID)
+setkey(train.df,ID)
 
 if (FRACTION.TRAIN.DATA != 1.0) {
     # extract subset for inital training
@@ -79,7 +79,7 @@ mdl.fit
 
 cat("saving...\n")
 date.time <- as.character(Sys.time())
-file.name <- paste0("model_",CARET.TRAIN.PARMS$method,"_",date.time[last.idx],".RData")
+file.name <- paste0("model_",CARET.TRAIN.PARMS$method,"_",date.time,".RData")
 file.name <- gsub(" ","_",file.name)
 file.name <- gsub(":","_",file.name)
 
