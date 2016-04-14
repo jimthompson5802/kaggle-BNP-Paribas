@@ -44,7 +44,7 @@ MODEL.COMMENT <- "Only Class_1 probabilites as features"
 LEVEL0.MODELS <- c("L0_gbm21",
                    "L0_gbm41",
                    "L0_xtc11",
-                   #"L0_xtc2",
+                   "L0_xtc21",
                    #"L0_xtc3",
                    #"L0_xtc4",  did not improve score
                    #"L0_xtc5",
