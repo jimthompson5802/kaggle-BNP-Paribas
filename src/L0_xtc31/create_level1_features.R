@@ -22,7 +22,7 @@ source(paste0(WORK.DIR,"/model_parameters.R"))
 MODEL.COMMENT <- "prepL0FeatureSet3, 5-fold training"
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.1
+FRACTION.TRAIN.DATA <- 1.0
 
 # force recording model flag
 FORCE_RECORDING_MODEL <- FALSE
