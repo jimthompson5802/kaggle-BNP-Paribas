@@ -71,50 +71,6 @@ library(doMC)
 registerDoMC(cores = 7)
 
 
-# trainFolds <- function(this.fold) {
-#     # prepare data for training
-#     test.data <- train.data$predictors[this.fold,]
-#     
-#     train.data <- train.data$predictors[-this.fold,]
-#     
-#     
-#     if (FRACTION.TRAIN.DATA != 1 ) {
-#         # extract subset for inital training
-#         set.seed(29)
-#         idx <- createDataPartition(train.data$response,p=FRACTION.TRAIN.DATA,list=FALSE)
-#         train.data$predictors <- train.data$predictors[idx,]
-#         train.data$response <- train.data$response[idx]
-#     }
-#     
-#     set.seed(825)
-#     time.data <- system.time(mdl.fit <- do.call(train,c(list(x=train.data$predictors,
-#                                                              y=train.data$response),
-#                                                         CARET.TRAIN.PARMS,
-#                                                         MODEL.SPECIFIC.PARMS,
-#                                                         CARET.TRAIN.OTHER.PARMS)))
-#     time.data
-#     
-#     
-#     pred.probs <- predict(mdl.fit,newdata = test.data$predictors,type = "prob")
-#     
-#     score <- logLossEval(pred.probs[,"Class_1"],test.data$response)
-#     score
-#     
-#     ans <- list(score=score,
-#                 level1.features=data.frame(ID=test.data$ID,pred.probs,response=test.data$response))
-#     
-#     return(ans)
-#     
-# }
-
-# library(doSNOW)
-# cl <- makeCluster(5,type="SOCK")
-# registerDoSNOW(cl)
-# clusterExport(cl,list("logLossEval"))
-
-# estimate error
-
-
 # train the model
 Sys.time()
 set.seed(825)
