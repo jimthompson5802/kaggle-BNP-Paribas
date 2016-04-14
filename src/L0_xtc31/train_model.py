@@ -19,7 +19,7 @@ from sklearn import ensemble
 # parameters gleaned from R script submission: ExtraTreesClassifier (score 0.45911)
 mdl_fit = ExtraTreesClassifier(n_estimators=850,max_features= 60, 
                                criterion = 'entropy',min_samples_split= 4,
-                                max_depth= 40, min_samples_leaf= 2, n_jobs=-1)          
+                                max_depth= 40, min_samples_leaf= 2, n_jobs=7)          
    
     
 if __name__ == "__main__":
