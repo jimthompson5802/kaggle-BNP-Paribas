@@ -16,10 +16,14 @@ source("./src/CommonFunctions.R")
 # set caret training parameters
 CARET.TRAIN.PARMS <- list(method="xgbTree")   # Replace MODEL.METHOD with appropriate caret model
 
-CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
+# CARET.TUNE.GRID <-  NULL  # NULL provides model specific default tuning parameters
 
 # user specified tuning parameters
-#CARET.TUNE.GRID <- expand.grid(nIter=c(100))
+CARET.TUNE.GRID <- expand.grid(nrounds=540,max_depth=6,
+                               eta=0.01,
+                               gamma=0,
+                               colsample_bytree=1,
+                               min_child_weight=1)
 
 # model specific training parameter
 CARET.TRAIN.CTRL <- trainControl(method="repeatedcv",
@@ -53,7 +57,7 @@ LEVEL0.MODELS <- c("L0_gbm21",
                    "L0_xgb31")
 
 # amount of data to train
-FRACTION.TRAIN.DATA <- 0.5
+FRACTION.TRAIN.DATA <- 1.0
 
 # force recording model flag
 FORCE_RECORDING_MODEL <- FALSE
