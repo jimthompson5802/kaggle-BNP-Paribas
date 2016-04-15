@@ -17,42 +17,26 @@ source("./src/CommonFunctions.R")
 model.file.name <- readLines(paste0(WORK.DIR,"/this_model"))
 load(paste0(WORK.DIR,"/",model.file.name))
 
-# read kaggle submission data
-load(paste0(DATA.DIR,"/train_calib_test.RData"))
+# get training data
+train.raw <- fread(paste0(DATA.DIR,"/train.csv"))
+setkey(train.raw,ID)
 
-# data used for determining optimal weights
-new.df <- calib.raw
 #save id vector
-id <- new.df$ID
+id <- train.raw$ID
 
 library(doMC)
 registerDoMC(cores = 7)
 
 # prep the data for prediction model
-train.data <- PREPARE.MODEL.DATA(LEVEL0.MODELS,new.df,includeResponse=TRUE)
+train.data <- PREPARE.MODEL.DATA(LEVEL0.MODELS,train.raw,includeResponse=TRUE)
 
-# predict class probabilities
-pred.probs <- predict(mdl.fit,newdata = train.data$predictors,type = "prob")
+pred.probs <- predict(mdl.fit,data=train.data$predictors,type="prob")
 
-# augment with identifier and target variable
-calib.pred.probs <- cbind(ID=id,pred.probs,target=train.data$response)
 
-# data used for testing optimal weights
-new.df <- test.raw
-#save id vector
-id <- new.df$ID
-
-# prep the data for prediciton model
-train.data <- PREPARE.MODEL.DATA(LEVEL0.MODELS,new.df,includeResponse=TRUE)
-
-# predict class probabilities
-pred.probs <- predict(mdl.fit,newdata = train.data$predictors,type = "prob")
-
-# augment with identifier and target variable
-test.pred.probs <- cbind(ID=id,pred.probs,target=train.data$response)
+level2.data <- cbind(ID=id,pred.probs,response=train.data$response)
 
 # save data for calibrating Level 2 model weights
-save(calib.pred.probs,test.pred.probs,file=paste0(WORK.DIR,"/data_for_level2_optimization.RData"))
+save(level2.data,file=paste0(WORK.DIR,"/level2_features.RData"))
 
 
 
