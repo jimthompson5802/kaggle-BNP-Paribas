@@ -8,16 +8,21 @@ library(caret)
 
 # import global variabels and common functions
 source("./src/CommonFunctions.R")
-WORK.DIR <- "./src/L2_blend"
+WORK.DIR <- "./src/L2_avg"
 
-# read kaggle submission data
-new.df <- fread(paste0(DATA.DIR,"/test.csv"))
+# retrieve Level 1 submissions
+# L1_xgb11
+xgb11.pred.probs <- read.csv("./src/L1_xgb11/submission.csv")
 
-id <- new.df$ID
+#L1_nnet11
+nnet11.pred.probs <- read.csv("./src/L1_nnet11/submission.csv")
 
-# training data for blending
-submission <- prepL2FeatureSet(new.df,includeResponse = FALSE)
+#create data for predictions
+submission <- list()
+submission$predictors <- cbind(xgb11=xgb11.pred.probs[,"PredictedProb"],
+                               nnet1=nnet11.pred.probs[,"PredictedProb"])
 
+id <- nnet11.pred.probs$ID
 
 #
 # Average the individual probablities
