@@ -30,7 +30,7 @@ registerDoMC(cores = 7)
 # prep the data for prediction model
 train.data <- PREPARE.MODEL.DATA(LEVEL0.MODELS,train.raw,includeResponse=TRUE)
 
-pred.probs <- predict(mdl.fit,data=train.data$predictors,type="prob")
+pred.probs <- predict(mdl.fit,newdata=train.data$predictors,type="prob")
 
 
 level2.data <- cbind(ID=id,pred.probs,response=train.data$response)
