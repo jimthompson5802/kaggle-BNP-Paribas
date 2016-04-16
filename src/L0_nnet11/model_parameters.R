@@ -6,7 +6,7 @@
 # set caret training parameters
 CARET.TRAIN.PARMS <- list(method="nnet")   # Replace MODEL.METHOD with appropriate caret model
 
-CARET.TUNE.GRID <- expand.grid(size=seq(9,17,2), decay=10^(-1:-4))  # training
+CARET.TUNE.GRID <- expand.grid(size=9, decay=0.1)  # training
 
 
 PREPARE.MODEL.DATA <- prepL0FeatureSet7
