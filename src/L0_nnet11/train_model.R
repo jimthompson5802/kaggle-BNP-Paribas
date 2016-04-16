@@ -15,6 +15,9 @@ source("./src/CommonFunctions.R")
 
 # import model configuration parameters
 source(paste0(WORK.DIR,"/model_parameters.R"))
+#override
+CARET.TUNE.GRID <- expand.grid(size=seq(9,17,2), decay=10^(-1:-4)) 
+
 
 MODEL.COMMENT <- "Build Model"
 
