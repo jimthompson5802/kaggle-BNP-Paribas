@@ -734,8 +734,6 @@ prepL0FeatureSet4 <- function(df,includeResponse=TRUE){
     return(ans)
 }
 
-<<<<<<< HEAD
-=======
 # Features selected from expanded Boruta analysis 
 # number attributes set to raw values, NA set to -999
 # character attributes set as dummy variables
@@ -918,7 +916,6 @@ prepL0FeatureSet7 <- function(df,includeResponse=TRUE){
     return(ans)
 }
 
->>>>>>> experimental
 # data prep Level 0 rngr1 model
 prepL0rngr1ModelData <- function(df,includeResponse=TRUE){
     # df: raw data
