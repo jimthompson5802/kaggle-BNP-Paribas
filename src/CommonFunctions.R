@@ -259,6 +259,95 @@ prepL1FeatureSet1 <- function(level0.models,df,includeResponse=TRUE){
     return(ans)
 }
 
+
+# using only Class_1 probabilities for features
+# raw data features as well
+prepL1FeatureSet2 <- function(level0.models,df,includeResponse=TRUE){
+    # prepL1FeatureSet2
+    # l0_models: character vector of Level 0 models to include the Level 1 Feature set
+    # df: raw data
+    # if only.predcitors is TRUE then return list(predictors)
+    # if only.predictors is FALSE then return list(predictors,response)
+    
+    require(plyr)
+    require(caret)
+    require(foreach)
+    
+    ans <- list(data.set.name="prepL1FeatureSet2")
+    
+    predictors <- foreach(mdl.dir=level0.models,.combine=cbind) %dopar%
+        createLevel1Features(mdl.dir,df,includeResponse)
+    
+    #extract only Class_1 probabilities
+    class1.names <- grep("Class_1",names(predictors),value = TRUE)
+    predictors <- predictors[class1.names]
+    
+    raw <- prepL0FeatureSetAll(df,includeResponse=FALSE)
+    
+    predictors <- data.frame(predictors,raw$predictors)
+    
+    ans <- c(ans,list(predictors=predictors))
+    
+    if (includeResponse) {
+        
+        response <- factor(ifelse(df$target == 1,"Class_1","Class_0"),
+                           levels=c("Class_1","Class_0"))
+        
+        ans <- c(ans,list(response=response))
+        
+    } 
+    
+    return(ans)
+}
+
+# Extract pre-computed Level1 features for each specified Level0 models
+prepL1FeatureSet3 <- function(level0.models,includeResponse=TRUE){
+    # l0_models: character vector of Level 0 models to include the Level 1 Feature set
+    # if includeResponse is TRUE then return list(predictors,response)
+    # if includeResponse is FALSE then return list(predictors)
+    
+    ans <- list(data.set.name="Level1FeatureSet3")
+    
+    # for each Level0 model retrieve pre-computed Level1 Feature
+    ll <- lapply(level0.models, function(model.dir){
+        cat("retrieving Level1 features from",model.dir,"\n")
+        flush.console()
+        
+        # retrieve name of Level1 features data set
+        level1.features.file.name <- readLines(paste0("./src/",model.dir,"/this_level1_features"))
+        
+        # create environment to hold Level 0 Model data structures
+        l0.env <- new.env()
+        
+        # retrieve Level1 features
+        load(paste0("./src/",model.dir,"/",level1.features.file.name[1]),envir=l0.env)
+        
+        ans <- l0.env$level1.features[,c("Class_1","response")]
+        names(ans) <- paste0(model.dir,c(".Class_1",".response"))
+        
+        return(ans)
+        
+        
+    })
+    
+    
+    features <- do.call(cbind,ll)
+    
+    #extract only Class_1 probabilities
+    class1.names <- grep("Class_1",names(features),value = TRUE)
+    predictors <- features[class1.names]
+    
+    ans <- c(ans,list(predictors=predictors))
+    
+    if (includeResponse) {
+        
+        ans <- c(ans,list(response=features[,2]))
+        
+    } 
+    
+    return(ans)
+}
+
 # uses both Class_1 and Class_0 probabilities as features
 prepL1gbm1ModelData <- function(df,includeResponse=TRUE){
     # df: raw data
@@ -645,6 +734,191 @@ prepL0FeatureSet4 <- function(df,includeResponse=TRUE){
     return(ans)
 }
 
+<<<<<<< HEAD
+=======
+# Features selected from expanded Boruta analysis 
+# number attributes set to raw values, NA set to -999
+# character attributes set as dummy variables
+prepL0FeatureSet5 <- function(df,includeResponse=TRUE){
+    # prepL0FeatureSet5
+    # df: raw data
+    # if only.predcitors is TRUE then return list(predictors)
+    # if only.predictors is FALSE then return list(predictors,response)
+    
+    require(plyr)
+    require(caret)
+    require(Boruta)
+    
+    # use only attributes confirmed by Boruta feature analysis
+    load(paste0(DATA.DIR,"/boruta_feature_analysis2.RData"))
+    
+    # get data types and change all strings to factors
+    load(paste0(DATA.DIR,"/attr_data_types.RData"))
+    load(paste0(DATA.DIR,"/factor_levels.RData"))
+    
+    number.vars <- union(intersect(getSelectedAttributes(bor.results),attr.data.types$numeric),
+                         intersect(getSelectedAttributes(bor.results),attr.data.types$integer))
+    
+    # get categorical variables
+    char.vars <- intersect(getSelectedAttributes(bor.results),attr.data.types$character)
+    
+    # create dummy variables 
+    ll <- lapply(char.vars,function(x){
+        y <- predict(dummy.vars[[x]],newdata=df[,x,with=FALSE])
+        return(y)
+    })
+    
+    y <- do.call(cbind,ll)
+    
+    predictors <- cbind(df[,number.vars,with=FALSE],y)
+    
+    # set NA to -999
+    for (x in number.vars) {
+        idx <- is.na(predictors[[x]])
+        predictors[[x]][idx] <- -999
+    }
+    
+    if (includeResponse) {
+        
+        response <- factor(ifelse(df$target == 1,"Class_1","Class_0"),
+                           levels=c("Class_1","Class_0"))
+        ans <- list(predictors=predictors,response=response)
+        
+    } else {
+        
+        ans <- list(predictors=predictors)
+    }
+    
+    return(ans)
+}
+
+# Numeric features with low correlations
+# number attributes set to raw values, NA set to -999
+# Boruta selected character attributes set as dummy variables
+prepL0FeatureSet6 <- function(df,includeResponse=TRUE){
+    # prepL0FeatureSet6
+    # df: raw data
+    # if only.predcitors is TRUE then return list(predictors)
+    # if only.predictors is FALSE then return list(predictors,response)
+    
+    require(plyr)
+    require(caret)
+    require(Boruta)
+    
+    # use only attributes confirmed by Boruta feature analysis
+    load(paste0(DATA.DIR,"/boruta_feature_analysis2.RData"))
+    
+    # get data types and change all strings to factors
+    load(paste0(DATA.DIR,"/attr_data_types.RData"))
+    load(paste0(DATA.DIR,"/factor_levels.RData"))
+    load(paste0(DATA.DIR,"/low_correlated_vars.RData"))
+    
+    # get low correlated numeric variables
+    number.vars <- low.correlated.vars
+    
+    # get categorical variables
+    char.vars <- intersect(getSelectedAttributes(bor.results),attr.data.types$character)
+    
+    # create dummy variables 
+    ll <- lapply(char.vars,function(x){
+        y <- predict(dummy.vars[[x]],newdata=df[,x,with=FALSE])
+        return(y)
+    })
+    
+    y <- do.call(cbind,ll)
+    
+    predictors <- cbind(df[,number.vars,with=FALSE],y)
+    
+    # set NA to -999
+    for (x in number.vars) {
+        idx <- is.na(predictors[[x]])
+        predictors[[x]][idx] <- -999
+    }
+    
+    if (includeResponse) {
+        
+        response <- factor(ifelse(df$target == 1,"Class_1","Class_0"),
+                           levels=c("Class_1","Class_0"))
+        ans <- list(predictors=predictors,response=response)
+        
+    } else {
+        
+        ans <- list(predictors=predictors)
+    }
+    
+    return(ans)
+}
+
+# Boruta relevant parameters 
+# numeric variables scaled to [0,1]
+# number attributes set to raw values, NA set to -1
+# categorical set to dummy variables
+prepL0FeatureSet7 <- function(df,includeResponse=TRUE){
+    # prepL0FeatureSet7
+    # df: raw data
+    # if only.predcitors is TRUE then return list(predictors)
+    # if only.predictors is FALSE then return list(predictors,response)
+    
+    require(plyr)
+    require(caret)
+    require(Boruta)
+    
+    ans <- list(data.set.name="FeatureSet7")
+    
+    # use only attributes confirmed by Boruta feature analysis
+    load(paste0(DATA.DIR,"/boruta_feature_analysis2.RData"))
+    
+    # get data types and change all strings to factors
+    load(paste0(DATA.DIR,"/attr_data_types.RData"))
+    load(paste0(DATA.DIR,"/factor_levels.RData"))
+    load(paste0(DATA.DIR,"/center_scale_parms.RData"))
+    load(paste0(DATA.DIR,"/low_correlated_vars.RData"))
+    
+    # get Boruta revelant attributes
+    relevant.vars <- setdiff(getSelectedAttributes(bor.results),
+                             c("all.var.na.count","imp.var.na.count"))
+    
+    # pick out the numeric variables to scale [0,1]
+    number.vars <- intersect(relevant.vars,union(attr.data.types$numeric,attr.data.types$integer))
+    ll <- lapply(number.vars,function(x){
+        xnew <- (df[[x]] - center.scale.parms[[x]]$min.value) / 
+            (center.scale.parms[[x]]$max.value - center.scale.parms[[x]]$min.value)
+        idx <- is.na(xnew)
+        xnew[idx] <- -1
+        return(xnew)        
+    })
+    
+    xnew <- do.call(cbind,ll)
+    colnames(xnew) <- number.vars
+    
+    
+    # get categorical variables
+    char.vars <- intersect(getSelectedAttributes(bor.results),attr.data.types$character)
+
+    # create dummy variables
+    ll <- lapply(char.vars,function(x){
+        y <- predict(dummy.vars[[x]],newdata=df[,x,with=FALSE])
+        return(y)
+    })
+
+    y <- do.call(cbind,ll)
+
+    predictors <- data.frame(xnew,y)
+    
+    ans <- c(ans,list(predictors=predictors))
+    
+    if (includeResponse) {
+        
+        response <- factor(ifelse(df$target == 1,"Class_1","Class_0"),
+                           levels=c("Class_1","Class_0"))
+        ans <- c(ans,list(response=response))
+        
+    } 
+    
+    return(ans)
+}
+
+>>>>>>> experimental
 # data prep Level 0 rngr1 model
 prepL0rngr1ModelData <- function(df,includeResponse=TRUE){
     # df: raw data
