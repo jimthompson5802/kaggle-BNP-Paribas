@@ -60,10 +60,7 @@ FRACTION.TRAIN.DATA <- 1.0
 # force recording model flag
 FORCE_RECORDING_MODEL <- FALSE
 
-<<<<<<< HEAD:src/L1_gbm2/train_model.R
-=======
 
->>>>>>> experimental:src/L1_nnet11/train_model.R
 # get training data
 train.data <- prepL1FeatureSet3(LEVEL0.MODELS)
 
