@@ -9,34 +9,32 @@ library(xgboost)
 library(ggplot2)
 
 # set working directory
-WORK.DIR <- "./src/L1_xgb11"  # modify to specify directory to contain model artififacts
+WORK.DIR <- "./eda"  # modify to specify directory to contain model artififacts
 
 # Common Functions and Global variables
 source("./src/CommonFunctions.R")
 
-
-
-
 MODEL.SPECIFIC.PARMS <- list(verbose=FALSE) #NULL # Other model specific parameters
 
-PREPARE.MODEL.DATA <- prepL1FeatureSet1  # need for processing test data set
+FRACTION.TRAIN.DATA <- 1.0
+
+PREPARE.MODEL.DATA <- prepL0FeatureSetAll
 
 MODEL.COMMENT <- "Only Class_1 probabilites as features"
 
-LEVEL0.MODELS <- c("L0_gbm21",
-                   "L0_gbm41",
-                   "L0_xtc11",
-                   "L0_xtc21",
-                   "L0_xtc31",
-                   #"L0_xtc4",  did not improve score
-                   #"L0_xtc5",
-                   #"L0_nnet1",
-                   "L0_xgb21",
-                   "L0_xgb31")
-
-
 # get training data
-train.data <- prepL1FeatureSet3(LEVEL0.MODELS)  # used only for training
+train.df <- fread(paste0(DATA.DIR,"/train.csv"))
+setkey(train.df,ID)
+
+if (FRACTION.TRAIN.DATA != 1.0) {
+    # extract subset for inital training
+    set.seed(29)
+    idx <- createDataPartition(train.df$target,p=FRACTION.TRAIN.DATA,list=FALSE)
+    train.df <- train.df[idx,]
+}
+
+# prepare data for training
+train.data <- PREPARE.MODEL.DATA(train.df)
 
 library(doMC)
 registerDoMC(cores = 7)
@@ -49,13 +47,13 @@ set.seed(825)
 param <- list(booster="gbtree",
               objecive="binary:logistic",
               eval_metric="logloss",
-              max.depth=6,
+              max.depth=8,
               eta=0.01,
               gamma=0,
-              nthread=2, 
+              nthread=7, 
               min_child_weight=1,
-              subsample=0.8,
-              colsample_bytree=0.8,
+              subsample=1,
+              colsample_bytree=1,
               seed=13)
 
 
