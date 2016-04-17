@@ -5,6 +5,13 @@ Created on Thu Mar  3 06:25:18 2016
 @author: jim
 """
 
+import sys
+print sys.version
+print '\n'.join(sys.path)
+#print os.environ["HOME"]
+
+import pandas as pd
+
 z = 3333
 
 def test_func():
