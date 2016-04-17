@@ -28,7 +28,7 @@ id <- nnet11.pred.probs$ID
 # Average the individual probablities
 #
 
-pred.probs <- sqrt(submission$predictors[,"xgb11"] * submission$predictors[,"nnet11"])
+pred.probs <- submission$predictors[,"xgb11"]^0.3 * submission$predictors[,"nnet11"]^0.7
 
 
 # # 
