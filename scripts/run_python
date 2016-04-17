@@ -1,0 +1,7 @@
+#!/bin/bash
+#
+# runs Ananconda python
+#
+
+source activate py2
+python "$@"
