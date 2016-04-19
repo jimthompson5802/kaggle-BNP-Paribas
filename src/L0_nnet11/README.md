@@ -1,4 +1,4 @@
-Neural Network model
+Neural Network model - NOT USED FOR FINAL SUBMISSION
 ==================================================
 
 ## Overview
