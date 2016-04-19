@@ -33,7 +33,7 @@ lb.df$leader.score <- sapply(1:nrow(lb.df),function(pos,df){min(df[1:pos,"Score"
 lb.df$report.date <- as.Date(lb.df[,"SubmissionDate"])
 
 # get only data during the competition
-#lb.df <- subset(lb.df,report.date < as.Date("2015-05-19"))
+lb.df <- subset(lb.df,report.date < as.Date("2016-04-19"))
 
 # function to get team standings by day
 teamStandings <- function(this.date,lb.df) {
