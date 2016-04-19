@@ -14,7 +14,7 @@ for scoring.
 
 ## Directory structure
 The names of the sub-directories within the **src** directory designates the type of
-model.  Naming convention for sub-directories is of the form: <level>_<model type><numeric id>.
-* <level>: L0 - Level 0 model, L1 - Level 1 model, 
-* <model type>: "gbm" - R gradient boosted tree model; "xgb" - R eXtreme Boosted Tree model;
+model.  Naming convention for sub-directories is of the form: \<level\>_\<model type\>\<numeric id\>.
+* \<level\>: L0 - Level 0 model, L1 - Level 1 model, 
+* \<model type\>: "gbm" - R gradient boosted tree model; "xgb" - R eXtreme Boosted Tree model;
 "xtc" - sci-kit learn Extra Tree Classifier model, "nnet" - 1 hidden layer neural network
