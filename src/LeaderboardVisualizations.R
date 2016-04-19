@@ -60,7 +60,7 @@ teamRanking <- function(this.date,lb.df) {
     team.score <- standings[standings$TeamName == TEAM.NAME,"Score"]
     
     if (length(team.rank) > 0 ) {
-        team.percentile <- 100*(1-team.rank/number.teams)
+        team.percentile <- 100*(1-(team.rank-1)/number.teams)
     } else {
         team.percentile <- NA
         team.rank <- NA
