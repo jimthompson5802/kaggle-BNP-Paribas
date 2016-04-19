@@ -19,22 +19,31 @@ model.  Naming convention for sub-directories is of the form: \<level\>_\<model 
 * \<model type\>: "gbm" - R gradient boosted tree model; "xgb" - R eXtreme Boosted Tree model;
 "xtc" - sci-kit learn Extra Tree Classifier model, "nnet" - 1 hidden layer neural network
 
-## Coding convention
+## Process for Building Level 0 Models
 * Each module in this directory is dependent on a variable called **WORK.DIR**.  Ensure
-this variable is set the the directory that the module is contained in.  For example, if
+this variable is set to the directory that the module is contained in.  For example, if
 module **train_model.R** is in the **L0_gbm21** directory, then **WORK.DIR <- "./src/L0_gbm21"**.
 
-## Process for Building Level 0 Models
 * Specify model specific hyper-parameters in file **model_parameters.R**.  Hyper-paraemters
 are determined by a separate procedure.  Note: for Python model ("xtc") the hyper-parameters
 are specified in the module **train_model.py**.
 
-* Run **create_level1_features.R** and **train_model.R**
-
-The above modules will create model specific files of the form: **model_\<model type\>_datetime.RData** and **\<model type\>_datetime.PyData**.  These model specific files will be pointed 
+* Run **create_level1_features.R** and **train_model.R**  This will create model 
+specific files of the form: **model_\<model type\>_datetime.RData** and 
+**\<model type\>_datetime.PyData**.  These model specific files will be pointed 
 to by a file called **this_model**.  Level 1 model building procedures will reference **this_model** 
 to determine the Level 0 model specific files required for generating features for training
 Level 1 models.
 
+## Process for Building Level 1 Models
+* Each module in this directory is dependent on a variable called **WORK.DIR**.  Ensure
+this variable is set to the directory that the module is contained in.  For example, if
+module **train_model.R** is in the **L1_nnet11** directory, then **WORK.DIR <- "./src/L1_nnet11"**.
 
+* Run **train_model.R**.  This will create model 
+specific files of the form: **model_\<model type\>_datetime.RData**.  These model 
+specific files will be pointed to by a file called **this_model**.
+
+* Run **create_level2_features.R**.  This will create data used for use in the Level 2
+blending of Level 1 predictions to derive the overall prediction.
 
