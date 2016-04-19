@@ -26,7 +26,7 @@ are specified in the module **train_model.py**.
 
 * Run **create_level1_features.R** and **train_model.R**
 
-The above modules will create model specific files of the form: model_\<model type\>_datetime.RData" and "model_\<model type\>_datetime.PyData".  These model specific files will be pointed 
+The above modules will create model specific files of the form: **model_\<model type\>_datetime.RData and **\<model type\>_datetime.PyData**.  These model specific files will be pointed 
 to by a file called "this_model".  Level 1 model building procedures will reference "this_model" 
 to determine the model specific files required for generating features for training
 Level 1 models.
