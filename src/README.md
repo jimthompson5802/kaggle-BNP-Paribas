@@ -19,6 +19,11 @@ model.  Naming convention for sub-directories is of the form: \<level\>_\<model 
 * \<model type\>: "gbm" - R gradient boosted tree model; "xgb" - R eXtreme Boosted Tree model;
 "xtc" - sci-kit learn Extra Tree Classifier model, "nnet" - 1 hidden layer neural network
 
+## CommonFunctions.R
+This is a shared module. Sets some global variables and houses all the routines
+to pre-process raw data (train or test) to create various feature sets for training 
+and making predictions.
+
 ## Process for Building Level 0 Models
 * Each module in this directory is dependent on a variable called **WORK.DIR**.  Ensure
 this variable is set to the directory that the module is contained in.  For example, if
