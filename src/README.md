@@ -19,6 +19,11 @@ model.  Naming convention for sub-directories is of the form: \<level\>_\<model 
 * \<model type\>: "gbm" - R gradient boosted tree model; "xgb" - R eXtreme Boosted Tree model;
 "xtc" - sci-kit learn Extra Tree Classifier model, "nnet" - 1 hidden layer neural network
 
+## Coding convention
+* Each module in this directory is dependent on a variable called **WORK.DIR**.  Ensure
+this variable is set the the directory that the module is contained in.  For example, if
+module **train_model.R** is in the **L0_gbm21** directory, then **WORK.DIR <- "L0_gbm21"**.
+
 ## Process for Building Level 0 Models
 * Specify model specific hyper-parameters in file **model_parameters.R**.  Hyper-paraemters
 are determined by a separate procedure.  Note: for Python model ("xtc") the hyper-parameters
