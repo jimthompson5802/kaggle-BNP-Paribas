@@ -6,6 +6,8 @@ Kaggle competition https://www.kaggle.com/c/bnp-paribas-cardif-claims-management
 
 ## Results
 * First successful use of model stacking.
+* Placed 134 out of 2,947 teams (Pending final verification by Kaggel).  Top 
+5% finisher.
 
 ## System Requirements
 * In addition to R, the Anaconda Python distribution, which includes pandas and 
