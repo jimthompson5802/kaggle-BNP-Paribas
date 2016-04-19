@@ -3,4 +3,5 @@
 .RData
 data
 eda/*.html
-model_results
+model_results/*.png
+model_results/*.xlsx
