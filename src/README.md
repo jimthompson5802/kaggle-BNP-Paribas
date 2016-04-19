@@ -24,6 +24,9 @@ This is a shared module. Sets some global variables and houses all the routines
 to pre-process raw data (train or test) to create various feature sets for training 
 and making predictions.
 
+## Pre-requiste
+Run the scripts identified in ./eda/README.md
+
 ## Process for Building Level 0 Models
 * Each module in this directory is dependent on a variable called **WORK.DIR**.  Ensure
 this variable is set to the directory that the module is contained in.  For example, if
