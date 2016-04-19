@@ -22,7 +22,7 @@ model.  Naming convention for sub-directories is of the form: \<level\>_\<model 
 ## Coding convention
 * Each module in this directory is dependent on a variable called **WORK.DIR**.  Ensure
 this variable is set the the directory that the module is contained in.  For example, if
-module **train_model.R** is in the **L0_gbm21** directory, then **WORK.DIR <- "L0_gbm21"**.
+module **train_model.R** is in the **L0_gbm21** directory, then **WORK.DIR <- "./src/L0_gbm21"**.
 
 ## Process for Building Level 0 Models
 * Specify model specific hyper-parameters in file **model_parameters.R**.  Hyper-paraemters
