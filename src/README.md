@@ -25,8 +25,9 @@ to pre-process raw data (train or test) to create various feature sets for train
 and making predictions.
 
 ## Pre-requiste
-Run the scripts identified in ./eda/README.md
-Run script ./munge/create_folds.R
+* Run the scripts identified in ./eda/README.md
+
+* Run script ./munge/create_folds.R
 
 ## Process for Building Level 0 Models
 * Each module in this directory is dependent on a variable called **WORK.DIR**.  Ensure
