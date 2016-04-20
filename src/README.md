@@ -26,6 +26,7 @@ and making predictions.
 
 ## Pre-requiste
 Run the scripts identified in ./eda/README.md
+Run script ./munge/create_folds.R
 
 ## Process for Building Level 0 Models
 * Each module in this directory is dependent on a variable called **WORK.DIR**.  Ensure
