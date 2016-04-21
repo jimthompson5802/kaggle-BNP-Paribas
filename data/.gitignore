@@ -1,0 +1,8 @@
+*.RData
+*.csv
+*.zip
+!attr_data_types.RData
+!factore_levels.RData
+!low_correlated_vars.RData
+!median_values.RData
+!fold_specification.RData
