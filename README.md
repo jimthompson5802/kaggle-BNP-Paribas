@@ -4,8 +4,8 @@ BNP Paribas Cardif Claims Management
 ## Overview
 Kaggle competition https://www.kaggle.com/c/bnp-paribas-cardif-claims-management
 
-The [repo wiki](https://github.com/jimthompson5802/kaggle-BNP-Paribas/wiki) contains
-a high-level description of the overall model.
+The [repo wiki](https://github.com/jimthompson5802/kaggle-BNP-Paribas/wiki) describes
+the high-level approach taken in this Kaggle competion.
 
 ## Results
 * First successful use of model stacking.
