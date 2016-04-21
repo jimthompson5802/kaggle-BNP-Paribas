@@ -6,3 +6,4 @@
 !low_correlated_vars.RData
 !median_values.RData
 !fold_specification.RData
+!boruta_feature_analysis*.RData
