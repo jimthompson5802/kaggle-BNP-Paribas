@@ -1,4 +1,4 @@
-Level 2 Blending Model - Geometric Mean
+Level 2 Blending Model - Geometric Mean - Obsolete Code
 ==================================================
 
 ## Overview

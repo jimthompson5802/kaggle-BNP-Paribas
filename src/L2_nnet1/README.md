@@ -1,4 +1,4 @@
-Level 2 Blending Model 
+Level 2 Blending Model - Obsolete Model
 ==================================================
 
 ## Overview
