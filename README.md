@@ -25,7 +25,3 @@ for creating features.
 
 To run the code in this repo requires creating the **data** sub-directory and 
 downloading the Kaggle training and test data sets.
-
-
-
-
