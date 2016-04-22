@@ -9,7 +9,7 @@ the high-level approach taken in this Kaggle competion.
 
 ## Results
 * First successful use of model stacking.
-* Placed 134 (JMT5802) out of 2,947 teams (Pending final verification by Kaggle).  Top 
+* Placed 133 (JMT5802) out of 2,926 teams.  Top 
 5% finisher.
 
 ## System Requirements
