@@ -4,7 +4,7 @@
 
 DATA.DIR <- "./data"
 
-PYTHON_COMMAND <- "/Users/jim/anaconda/bin/python"
+PYTHON_COMMAND <- "./scripts/run_python"
 
 
 #####
